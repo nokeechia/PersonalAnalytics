@@ -9,14 +9,14 @@ namespace Retrospection
 {
     public partial class RetrospectionWindow : Window
     {
-        System.Windows.Forms.WebBrowser webBrowser;
-        string _currentPage;
-        VisType _currentVisType;
+        private readonly System.Windows.Forms.WebBrowser _webBrowser;
+        private string _currentPage;
+        private VisType _currentVisType;
 
         public RetrospectionWindow()
         {
             InitializeComponent();
-            webBrowser = (wbWinForms.Child as System.Windows.Forms.WebBrowser);
+            _webBrowser = (wbWinForms.Child as System.Windows.Forms.WebBrowser);
         }
 
         private void WindowLoaded(object sender, EventArgs e)
@@ -29,17 +29,17 @@ namespace Retrospection
     webBrowser.ScriptErrorsSuppressed = true;
 #endif
 
-            webBrowser.Navigating += (o, ex) =>
+            _webBrowser.Navigating += (o, ex) =>
             {
                 ShowLoading(true);
             };
 
-            webBrowser.Navigated += (o, ex) =>
+            _webBrowser.Navigated += (o, ex) =>
             {
                 ShowLoading(false);
 
 #if DEBUG
-                webBrowser.Document.Window.Error += (w, we) =>
+                _webBrowser.Document.Window.Error += (w, we) =>
                 {
                     we.Handled = true;
                     Logger.WriteToConsole(string.Format(CultureInfo.InvariantCulture, "# URL:{1}, LN: {0}, ERROR: {2}", we.LineNumber, we.Url, we.Description));
@@ -47,10 +47,10 @@ namespace Retrospection
 #endif
             };
 
-            webBrowser.IsWebBrowserContextMenuEnabled = false;
-            webBrowser.ObjectForScripting = new ObjectForScriptingHelper(); // allows to use javascript to call functions in this class
-            webBrowser.WebBrowserShortcutsEnabled = false;
-            webBrowser.AllowWebBrowserDrop = false;
+            _webBrowser.IsWebBrowserContextMenuEnabled = false;
+            _webBrowser.ObjectForScripting = new ObjectForScriptingHelper(); // allows to use javascript to call functions in this class
+            _webBrowser.WebBrowserShortcutsEnabled = false;
+            _webBrowser.AllowWebBrowserDrop = false;
 
 
             // load default page
@@ -89,15 +89,16 @@ namespace Retrospection
         /// Navigate the browser to the url in case the web browser is live, 
         /// the url is ready and the same is not the same
         /// </summary>
-        /// <param name="parameters"></param>
+        /// <param name="url"></param>
+        /// <param name="navigateEnforced"></param>
         private void WebBrowserNavigateTo(string url, bool navigateEnforced = false)
         {
-            if (webBrowser == null || url == null) return;
+            if (_webBrowser == null || url == null) return;
 
             if (_currentPage != url || navigateEnforced == true)
             {
                 _currentPage = url;
-                webBrowser.Navigate(url);
+                _webBrowser.Navigate(url);
                 Database.GetInstance().LogInfo("Retrospection, navigated to: " + url);
             }
         }

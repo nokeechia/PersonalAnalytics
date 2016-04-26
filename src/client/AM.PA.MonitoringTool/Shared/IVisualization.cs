@@ -14,7 +14,8 @@ namespace Shared
     public enum VisType
     {
         Day,
-        Week
+        Week,
+        Mini
     }
 
     /// <summary>

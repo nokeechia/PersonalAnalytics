@@ -105,6 +105,7 @@ namespace PersonalAnalytics
 
             // close the retrospection window
             Retrospection.Handler.GetInstance().CloseRetrospection();
+            Retrospection.Handler.GetInstance().CloseMiniRetrospection();
 
             // shutdown the visualization server
             Retrospection.Handler.GetInstance().Stop();
@@ -247,6 +248,10 @@ namespace PersonalAnalytics
             var m1 = new System.Windows.Controls.MenuItem { Header = "Show Retrospection" };
             m1.Click += (o, i) => Retrospection.Handler.GetInstance().OpenRetrospection();
             TaskbarIcon.ContextMenu.Items.Add(m1);
+
+            var m9 = new System.Windows.Controls.MenuItem { Header = "Show Mini-Retrospection" };
+            m9.Click += (o, i) => Retrospection.Handler.GetInstance().OpenMiniRetrospection();
+            TaskbarIcon.ContextMenu.Items.Add(m9);
 
 #if DEBUG
             var m5 = new System.Windows.Controls.MenuItem { Header = "Show Retrospection (in browser)" };

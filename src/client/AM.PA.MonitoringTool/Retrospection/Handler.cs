@@ -24,6 +24,7 @@ namespace Retrospection
         private static Handler _handler;
         private PersonalAnalyticsHttp _http;
         private RetrospectionWindow _retrospection;
+        private MiniRetrospectionWindow _miniRetrospection;
         private SettingsWindow _settingsWindow;
         private string _publishedAppVersion;
         private List<ITracker> _trackers;
@@ -88,6 +89,11 @@ namespace Retrospection
 
         #region Open/Close & Navigate Retrospection
 
+        internal string GetMiniDashboard()
+        {
+            return GetDashboardNavigateUriForType(DateTime.Now, VisType.Mini);
+        }
+
         internal string GetDashboardHome()
         {
             return GetDashboardNavigateUriForType(DateTime.Now, VisType.Day); // default: daily retrospection
@@ -99,7 +105,7 @@ namespace Retrospection
             return CreateNavigateUri(uri);
         }
 
-        private string CreateNavigateUri(string parameters)
+        private static string CreateNavigateUri(string parameters)
         {
             return "http://localhost:" + Settings.Port + "/" + parameters;
         }
@@ -109,6 +115,12 @@ namespace Retrospection
             _retrospection = new RetrospectionWindow();
             _retrospection.WindowState = (OpenRetrospectionInFullScreen) ? WindowState.Maximized : WindowState.Normal;
             _retrospection.Show();
+        }
+
+        public void OpenMiniRetrospection()
+        {
+            _miniRetrospection = new MiniRetrospectionWindow();
+            _miniRetrospection.ShowDialog();
         }
 
         /// <summary>
@@ -121,8 +133,12 @@ namespace Retrospection
 
         public void CloseRetrospection()
         {
-            if (_retrospection == null) return;
-            _retrospection.Close();
+            _retrospection?.Close();
+        }
+
+        public void CloseMiniRetrospection()
+        {
+            _miniRetrospection?.Close();
         }
 
         public void SendFeedback(string subject = "Feedback", string body = "")

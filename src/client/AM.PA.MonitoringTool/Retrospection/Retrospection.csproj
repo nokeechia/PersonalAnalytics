@@ -88,6 +88,9 @@
     <Compile Include="Feedback\FeedbackBox.cs" />
     <Compile Include="Handler.cs" />
     <Compile Include="HttpInterface.cs" />
+    <Compile Include="MiniRetrospectionWindow.xaml.cs">
+      <DependentUpon>MiniRetrospectionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ObjectForScriptingHelper.cs" />
     <Compile Include="PersonalAnalyticsHttp.cs" />
     <Compile Include="SettingsWindow.xaml.cs">
@@ -98,6 +101,10 @@
       <DependentUpon>UploadWizard.xaml</DependentUpon>
     </Compile>
     <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MiniRetrospectionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
