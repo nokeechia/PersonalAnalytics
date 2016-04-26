@@ -54,7 +54,7 @@ namespace WindowsActivityTracker.Visualizations
             html += string.Format(CultureInfo.InvariantCulture, "<table id='{0}'>", VisHelper.CreateChartHtmlTitle(Title));
             html += GetTableHeader();
             html += "<tbody>";
-            foreach (var prog in programUsePerDay)
+            foreach (var prog in programUsePerDay.OrderBy(p => p.Key))
             {
                 html += "<tr>";
                 html += "<td>" + prog.Key + "</td>";
