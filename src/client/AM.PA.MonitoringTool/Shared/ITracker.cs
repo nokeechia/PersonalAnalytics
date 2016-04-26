@@ -23,6 +23,8 @@ namespace Shared
         List<IVisualization> GetVisualizationsDay(DateTimeOffset date);
 
         List<IVisualization> GetVisualizationsWeek(DateTimeOffset date);
+
+        List<IVisualization> GetVisualizationsMini(DateTimeOffset date);
     }
 
     public abstract class BaseTracker : ITracker
@@ -46,6 +48,11 @@ namespace Shared
         }
 
         public virtual List<IVisualization> GetVisualizationsWeek(DateTimeOffset date)
+        {
+            return new List<IVisualization>(); // default: return an empty list
+        }
+
+        public virtual List<IVisualization> GetVisualizationsMini(DateTimeOffset date)
         {
             return new List<IVisualization>(); // default: return an empty list
         }
@@ -116,6 +123,11 @@ namespace Shared
         }
 
         public virtual List<IVisualization> GetVisualizationsWeek(DateTimeOffset date)
+        {
+            return new List<IVisualization>(); // default: return an empty list
+        }
+
+        public virtual List<IVisualization> GetVisualizationsMini(DateTimeOffset date)
         {
             return new List<IVisualization>(); // default: return an empty list
         }

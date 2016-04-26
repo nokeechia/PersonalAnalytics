@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using InteractionTracker.Visualizations;
 using Shared;
 
 namespace InteractionTracker
@@ -59,13 +60,13 @@ namespace InteractionTracker
             return Settings.IsEnabled;
         }
 
-        public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
+        public override List<IVisualization> GetVisualizationsMini(DateTimeOffset date)
         {
-            //var vis1 = new DayEmailsReceivedAndSent(date);
+            var vis = new MiniInteraction(date);
             //var vis2 = new DayMeetingsAttended(date);
             //var vis3 = new DayChatsReceivedAndSent(date);
             //var vis4 = new DayCallsReceivedAndSent(date);
-            return new List<IVisualization> {}; // vis1, vis2, vis3, vis4 };
+            return new List<IVisualization> { vis }; // vis1, vis2, vis3, vis4 };
         }
 
         #endregion

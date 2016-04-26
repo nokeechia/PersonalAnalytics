@@ -11,7 +11,7 @@
         xmlns:local="clr-namespace:Retrospection"
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
-        WindowStyle="None" AllowsTransparency="True" Loaded="WindowLoaded" 
+        WindowStyle="ToolWindow" Loaded="WindowLoaded" 
         Height="245" Width="500">
     <Grid>
         <WindowsFormsHost Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

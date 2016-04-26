@@ -147,6 +147,8 @@ namespace Retrospection
                         DateTimeHelper.GetWeekOfYear_Iso8601(date.Date),
                         DateTimeHelper.GetFirstDayOfWeek_Iso8801(date.Date).Date.ToShortDateString(),
                         DateTimeHelper.GetLastDayOfWeek_Iso8801(date.Date).Date.ToShortDateString());
+                case VisType.Mini:
+                    return "Mini-Retrospection for the " + date.Date.ToShortDateString();
             }
 
             return VisHelper.Error("Retrospection not supported!");
@@ -172,6 +174,9 @@ namespace Retrospection
                         break;
                     case VisType.Week:
                         visualizations.AddRange(tracker.GetVisualizationsWeek(date).Where(i => i.IsEnabled));
+                        break;
+                    case VisType.Mini:
+                        visualizations.AddRange(tracker.GetVisualizationsMini(date).Where(i => i.IsEnabled));
                         break;
                 }
             }

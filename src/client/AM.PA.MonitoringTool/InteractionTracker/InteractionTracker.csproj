@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Daemon.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Visualizations\MiniInteraction.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
