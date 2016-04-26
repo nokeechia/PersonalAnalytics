@@ -33,7 +33,7 @@ namespace MsOfficeTracker
             // on first start, a pop-up is shown to ask the user to enable/disable the tracker
             if (IsOffice365ApiFirstUse())
             {
-                var msg = string.Format(CultureInfo.InvariantCulture, "This version of the {1} tool allows you to collect information about the meetings you attend and the emails you send/receive in a work day. In case you enable this tracker, you will need to authenticate with your Office 365 work account.\n\nThe contents of the emails and meetings are NOT accessed. You can manually disable or enable this tracker anytime in the settings.\n\nDo you want to enable the {0}?", Name, Dict.ToolName);
+                var msg = string.Format(CultureInfo.InvariantCulture, "This (updated) version of the {1} tool allows you to collect information about the meetings you attend and the emails you send/receive in a work day. In case you enable this tracker, you will need to authenticate with your Office 365 work account.\n\nThe contents of the emails and meetings are NOT accessed. You can manually disable or enable this tracker anytime in the settings.\n\nDo you want to enable the {0}?", Name, Dict.ToolName);
                 var res = MessageBox.Show(msg,
                     Dict.ToolName + ": " + Name, 
                     MessageBoxButton.YesNo);
@@ -50,7 +50,6 @@ namespace MsOfficeTracker
                 }
             }
 
-
             // initialize API & authenticate if necessary
             var isAuthenticated = await Office365Api.GetInstance().Authenticate();
 
@@ -59,7 +58,7 @@ namespace MsOfficeTracker
             {
                 IsRunning = false;
 
-                var msg = string.Format(CultureInfo.InvariantCulture, "The {0} was disabled as the authentication with Office 365 failed.\n\nThe tool will prompt the Office 365 login again with the next start of the application. You can also disable the {0} in the settings.\n\nIf the problem persists, please contact us via " + Shared.Settings.EmailAddress1 + " and attach the logfile.", Name);
+                var msg = string.Format(CultureInfo.InvariantCulture, "The {0} was disabled as the authentication with Office 365 failed.\n\nThe tool will prompt the Office 365 login again with the next start of the application. You can also disable the {0} in the settings.\n\nIf the problem persists, please contact us via t-anmeye@microsoft.com and attach the logfile.", Name);
                 MessageBox.Show(msg, Dict.ToolName + ": Error", MessageBoxButton.OK); //todo: use toast message
             }
             else
@@ -75,7 +74,7 @@ namespace MsOfficeTracker
             var interval = (int)TimeSpan.FromMinutes(Settings.SaveEmailCountsIntervalInMinutes).TotalMilliseconds;
             _timer = new Timer(new TimerCallback(TimerTick), // callback
                             null,  // no idea
-                            60000, // start immediately after 1 minute
+                            10000, // start immediately after 10 seconds
                             interval); // interval
         }
 
@@ -106,8 +105,11 @@ namespace MsOfficeTracker
 
         public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
         {
-            var vis = new DayEmailsReceivedAndSent(date);
-            return new List<IVisualization> { vis };
+            var vis1 = new DayEmailsReceivedAndSent(date);
+            var vis2 = new DayMeetingsAttended(date);
+            var vis3 = new DayChatsReceivedAndSent(date);
+            var vis4 = new DayCallsReceivedAndSent(date);
+            return new List<IVisualization> { vis1, vis2, vis3, vis4 };
         }
 
         public override bool IsEnabled()
@@ -165,6 +167,7 @@ namespace MsOfficeTracker
             // save email infos & meetings infos for current timestamp
             SaveEmailsCount(now);
             SaveMeetingsCount(now);
+            SaveChatsAndCallsCount(now);
 
             // go a few days back to cache email & meeting data (if necessary)
             SaveDaysBeforeCounts();
@@ -182,6 +185,7 @@ namespace MsOfficeTracker
 
                 // create and save a new email snapshot (inbox, sent, received)
                 Queries.CreateEmailsSnapshot(date, true);
+                    
             }
             catch (Exception e)
             {
@@ -198,7 +202,7 @@ namespace MsOfficeTracker
             {
                 // don't do it if already done for the date; always check for the current date
                 if (date.Date != DateTime.Now.Date // always do it for current day
-                    && Queries.HasMeetingEntriesForDate(date)) // only do it for past day, if there are no entries
+                    && Queries.HasMeetingEntriesForDate(date.Date)) // only do it for past day, if there are no entries
                     return;
 
                 // get meetings for the date
@@ -228,6 +232,26 @@ namespace MsOfficeTracker
         }
 
         /// <summary>
+        /// Regularly runs and saves some chats and calls counts
+        /// </summary>
+        private void SaveChatsAndCallsCount(DateTime date)
+        {
+            try
+            {
+                // don't do it if already done for the date; always check for the current date
+                if (date.Date != DateTime.Now.Date && Queries.HasChatsEntriesForDate(date, true) && Queries.HasCallsEntriesForDate(date, true)) return;
+
+                // create and save a new email snapshot (inbox, sent, received)
+                Queries.CreateChatsAndCallsSnapshot(date, true);
+
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+        }
+
+        /// <summary>
         /// Once a day, save yesterday's (and some other days before) meetings and emails
         /// </summary>
         private void SaveDaysBeforeCounts()
@@ -248,6 +272,7 @@ namespace MsOfficeTracker
                     var date = DateTime.Now.AddDays(-day);
                     SaveEmailsCount(date);
                     SaveMeetingsCount(date);
+                    SaveChatsAndCallsCount(date);
                 }  
             }
             catch (Exception e)

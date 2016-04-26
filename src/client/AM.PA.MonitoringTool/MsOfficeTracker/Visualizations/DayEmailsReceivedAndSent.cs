@@ -2,6 +2,8 @@
 // Created: 2015-12-11
 // 
 // Licensed under the MIT License.
+//
+// Modified by Paige Rodeghero (paige.rodeghero@us.abb.com) from ABB USCRC
 
 using Shared;
 using Shared.Helpers;
@@ -19,9 +21,9 @@ namespace MsOfficeTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Avg. Unread Inbox Size<br />Number Emails Sent";
+            Title = "Received Emails vs.<br />Number Emails Sent";
             IsEnabled = true; //todo: handle by user
-            Order = 21; //todo: handle by user
+            Order = 4; //todo: handle by user
             Size = VisSize.Small;
             Type = VisType.Day;
         }
@@ -35,46 +37,45 @@ namespace MsOfficeTracker.Visualizations
             /////////////////////
 
             // get the latest stored email entry
-            var emailsSentResult = Queries.GetSentEmails(_date);
+            var emailsSentResult = Queries.GetSentOrReceivedEmails(_date, "sent");
             var emailsSent = emailsSentResult.Item2;
-            var inboxSize = Queries.GetAverageInboxSize(_date);
+            var inboxReceivedResult = Queries.GetSentOrReceivedEmails(_date, "received");
+            var emailsReceived = inboxReceivedResult.Item2;
 
             var isToday = (_date.Date == DateTime.Now.Date);
             var lastUpdatedMinsAgo = Math.Abs((DateTime.Now - emailsSentResult.Item1).TotalMinutes);
 
             // if database entry is outdated or not there, create a live API call and override entries
-            if (emailsSentResult.Item1 == DateTime.MinValue || // no emails stored yet
+            if ((emailsSentResult.Item1 == DateTime.MinValue || inboxReceivedResult.Item1 == DateTime.MinValue) || // no emails stored yet
                 (isToday && lastUpdatedMinsAgo > Settings.SaveEmailCountsIntervalInMinutes) || // request is for today and saved results are too old
-                (emailsSent == -1 && inboxSize == -1)) // could not fetch sent/received emails
+                (emailsSent == -1 || emailsReceived == -1)) // could not fetch sent/received emails
             {
                 // create and save a new email snapshot (inbox, sent, received)
                 var res = Queries.CreateEmailsSnapshot(_date.Date, false);
                 emailsSent = res.Item1;
-
-                inboxSize = Queries.GetAverageInboxSize(_date); // run query again
+                emailsReceived = res.Item2; 
             }
 
             // error (only if no data at all)
-            if (inboxSize == -1 && emailsSent == -1)
+            if (emailsReceived == -1 && emailsSent == -1)
             {
                 return VisHelper.NotEnoughData(Dict.NotEnoughData);
             }
 
             // no emails sent/received
-            if (inboxSize == 0 && emailsSent == 0)
+            if (emailsReceived == 0 && emailsSent == 0)
             {
-                return VisHelper.NotEnoughData("You didn't receive or send any emails that day");
+                return VisHelper.NotEnoughData("You didn't receive or send any emails today.");
             }
 
             // as a goodie get this too :)
             //var timeSpentInOutlook = Queries.TimeSpentInOutlook(_date);
 
-
             /////////////////////
             // HTML
             /////////////////////
 
-            var emailInboxString = (inboxSize == -1) ? "?" : inboxSize.ToString(CultureInfo.InvariantCulture);
+            var emailInboxString = (emailsReceived == -1) ? "?" : emailsReceived.ToString(CultureInfo.InvariantCulture);
             var emailsSentString = (emailsSent == -1) ? "?" : emailsSent.ToString(CultureInfo.InvariantCulture);
 
             html += "<p style='text-align: center; margin-top:-0.7em;'><strong style='font-size:2.7em;'>" + emailInboxString + " | " + emailsSentString + "</strong></p>";

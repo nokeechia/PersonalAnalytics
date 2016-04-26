@@ -2,12 +2,15 @@
 // Created: 2015-11-12
 // 
 // Licensed under the MIT License.
+//
+// Modified by Paige Rodeghero (paige.rodeghero@us.abb.com) from ABB USCRC
 
 using MsOfficeTracker.Helpers;
 using Shared;
 using Shared.Data;
 using System;
 using System.Globalization;
+using System.Data.SqlClient;
 
 namespace MsOfficeTracker.Data
 {
@@ -17,8 +20,18 @@ namespace MsOfficeTracker.Data
         {
             try
             {
+                if (Settings.DebugDB)
+                {
+                    Database.GetInstance().ExecuteDefaultQuery("DROP TABLE " + Settings.EmailsTable);
+                    Database.GetInstance().ExecuteDefaultQuery("DROP TABLE " + Settings.MeetingsTable);
+                    Database.GetInstance().ExecuteDefaultQuery("DROP TABLE " + Settings.ChatsTable);
+                    Database.GetInstance().ExecuteDefaultQuery("DROP TABLE " + Settings.CallsTable);
+                }
+
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.EmailsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, inbox INTEGER, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.MeetingsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, subject TEXT, durationInMins INTEGER)");
+                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.ChatsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
+                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.CallsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
             }
             catch (Exception e)
             {
@@ -78,13 +91,13 @@ namespace MsOfficeTracker.Data
             }
         }
 
-        /// <summary>
-        /// Class calls the API to determine the inbox size, number of emails sent and received.
-        /// (inbox size: is only collected for date = DateTime.Now)
-        /// </summary>
-        /// <param name="date"></param>
-        /// <param name="isFromTimer"></param>
-        internal static Tuple<int, int> CreateEmailsSnapshot(DateTime date, bool isFromTimer)
+    /// <summary>
+    /// Class calls the API to determine the inbox size, number of emails sent and received.
+    /// (inbox size: is only collected for date = DateTime.Now)
+    /// </summary>
+    /// <param name="date"></param>
+    /// <param name="isFromTimer"></param>
+    internal static Tuple<int, int> CreateEmailsSnapshot(DateTime date, bool isFromTimer)
         {
             try
             {
@@ -121,6 +134,7 @@ namespace MsOfficeTracker.Data
             }
         }
 
+       
         /// <summary>
         /// Saves the timestamp, inbox size, sent items count, received items count into the database
         /// </summary>
@@ -160,7 +174,7 @@ namespace MsOfficeTracker.Data
         /// Check if there is already meetings stored for the date
         /// </summary>
         /// <returns>true if yes, false otherwise</returns>
-        internal static bool HasMeetingEntriesForDate(DateTimeOffset date)
+        internal static bool HasMeetingEntriesForDate(DateTime date)
         {
             try
             {
@@ -169,14 +183,24 @@ namespace MsOfficeTracker.Data
                           + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + "); ";
 
                 var count = Database.GetInstance().ExecuteScalar(query);
-                if (count == 0) return false;
-                return true;
+                return (count != 0);
             }
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Counts the number of meetings for today
+        /// </summary>
+        /// <returns>returns the number of meetings for today</returns>
+        internal static int GetMeetingsForDate(DateTimeOffset date)
+        {
+            var answer = "SELECT COUNT(*) FROM " + Settings.MeetingsTable + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + ";";
+            var count = Database.GetInstance().ExecuteScalar(answer);
+            return count;
         }
 
         /// <summary>
@@ -213,17 +237,18 @@ namespace MsOfficeTracker.Data
                 return false;
             }
         }
-
+       
         /// <summary>
-        /// The emails sent
+        /// The emails sent or received
         /// </summary>
         /// <param name="date"></param>
+        /// <param name="sentOrReceived"></param>
         /// <returns>Tuple item1: sent, item2: received</returns>
-        internal static Tuple<DateTime, int> GetSentEmails(DateTimeOffset date)
+        internal static Tuple<DateTime, int> GetSentOrReceivedEmails(DateTimeOffset date, string sentOrReceived)
         {
             try
             {
-                var query = "SELECT time, sent FROM " + Settings.EmailsTable + " "
+                var query = "SELECT time, " + sentOrReceived + " FROM " + Settings.EmailsTable + " "
                             + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + " "
                             + "ORDER BY time DESC "
                             + "LIMIT 1;";
@@ -233,11 +258,11 @@ namespace MsOfficeTracker.Data
                 if (table != null && table.Rows.Count == 1)
                 {
                     var row = table.Rows[0];
-                    var sent = Convert.ToInt32(row["sent"], CultureInfo.InvariantCulture);
+                    var answer = Convert.ToInt32(row[sentOrReceived], CultureInfo.InvariantCulture);
                     var timestamp = DateTime.Parse((string)row["time"], CultureInfo.InvariantCulture);
 
                     table.Dispose();
-                    return new Tuple<DateTime, int>(timestamp, sent);
+                    return new Tuple<DateTime, int>(timestamp, answer);
                 }
                 else
                 {
@@ -253,18 +278,89 @@ namespace MsOfficeTracker.Data
         }
 
         /// <summary>
-        /// The emails sent and inbox size
+        /// Class calls the API to determine the number of calls sent and received.
+        /// (inbox size: is only collected for date = DateTime.Now)
         /// </summary>
         /// <param name="date"></param>
-        /// <returns>Tuple item1: sent, item2: received</returns>
-        internal static int GetAverageInboxSize(DateTimeOffset date)
+        /// <param name="isFromTimer"></param>
+        internal static Tuple<int, int, int, int> CreateChatsAndCallsSnapshot(DateTime date, bool isFromTimer)
         {
             try
             {
-                var query = "SELECT avg(inbox) as avg FROM " + Settings.EmailsTable + " "
+                // get chats and calls sent and received count
+                var numbersResult = Office365Api.GetInstance().GetNumberOfChatsAndCallsSentOrReceived(date.Date);
+                numbersResult.Wait();
+                var numbers = numbersResult.Result;
+
+                var chatsSent = numbers.Item1;
+                var chatsReceived = numbers.Item2;
+                var callsSent = numbers.Item3;
+                var callsReceived = numbers.Item4;
+
+                // save chats into database
+                SaveChatsSnapshot(date, chatsSent, chatsReceived, isFromTimer);
+
+                // save calls into the database
+                SaveCallsSnapshot(date, callsSent, callsReceived, isFromTimer);
+
+                // return for immediate use
+                return new Tuple<int, int, int, int>(chatsSent, chatsReceived, callsSent, callsReceived);
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return new Tuple<int, int, int, int>(-1, -1, -1, -1);
+            }
+        }
+
+        /// <summary>
+        /// Saves the timestamp, inbox size, sent items count, received items count into the database
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="process"></param>
+        internal static void SaveChatsSnapshot(DateTime date, int sent, int received, bool isFromTimer)
+        {
+            Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.ChatsTable + " (timestamp, time, service, sent, received, isFromTimer) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
+                Database.GetInstance().QTime(date) + ", " + "'skype'" + ", " + Database.GetInstance().Q(sent) + ", " + Database.GetInstance().Q(received) + ", " + Database.GetInstance().Q(isFromTimer) + ");");
+        }
+
+        /// <summary>
+        /// Check if there is already chats (with isFromTimer = 0) stored for the date
+        /// </summary>
+        /// <returns>true if yes, false otherwise</returns>
+        internal static bool HasChatsEntriesForDate(DateTimeOffset date, bool isFromTimer)
+        {
+            try
+            {
+                var query = "SELECT EXISTS( "
+                          + "SELECT 1 FROM " + Settings.ChatsTable + " "
+                          + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + " "
+                          + "AND isFromTimer = " + Database.GetInstance().Q(isFromTimer) + ");";
+
+                var count = Database.GetInstance().ExecuteScalar(query);
+                if (count == 0) return false;
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// The chats sent or received
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="sentOrReceived"></param>
+        /// <returns>Tuple item1: sent, item2: received</returns>
+        internal static Tuple<DateTime, int> GetSentOrReceivedChats(DateTimeOffset date, string sentOrReceived)
+        {
+            try
+            {
+                var query = "SELECT time, " + sentOrReceived + " FROM " + Settings.ChatsTable + " "
                             + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + " "
-                            + "AND inbox != -1 "
-                            + "ORDER BY timestamp DESC "
+                            + "ORDER BY time DESC "
                             + "LIMIT 1;";
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
@@ -272,22 +368,96 @@ namespace MsOfficeTracker.Data
                 if (table != null && table.Rows.Count == 1)
                 {
                     var row = table.Rows[0];
-                    var inbox = Convert.ToDouble(row["avg"], CultureInfo.InvariantCulture);
-                    var inboxRounded = (int)Math.Round(inbox, 0);
+                    var answer = Convert.ToInt32(row[sentOrReceived], CultureInfo.InvariantCulture);
+                    var timestamp = DateTime.Parse((string)row["time"], CultureInfo.InvariantCulture);
 
                     table.Dispose();
-                    return inboxRounded;
+                    return new Tuple<DateTime, int>(timestamp, answer);
                 }
                 else
                 {
                     table.Dispose();
-                    return -1;
+                    return new Tuple<DateTime, int>(DateTime.MinValue, -1);
                 }
             }
             catch (Exception e)
             {
-                //Logger.WriteToLogFile(e);
-                return -1;
+                Logger.WriteToLogFile(e);
+                return new Tuple<DateTime, int>(DateTime.MinValue, -1);
+            }
+        }
+
+        /// <summary>
+        /// Saves the timestamp, service, sent items count, received items count into the database
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="process"></param>
+        internal static void SaveCallsSnapshot(DateTime date, int sent, int received, bool isFromTimer)
+        {
+            Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.CallsTable + " (timestamp, time, service, sent, received, isFromTimer) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
+                Database.GetInstance().QTime(date) + ", " + "'skype'" + ", " + Database.GetInstance().Q(sent) + ", " + Database.GetInstance().Q(received) + ", " + Database.GetInstance().Q(isFromTimer) + ");");
+        }
+
+        /// <summary>
+        /// Check if there is already calls (with isFromTimer = 0) stored for the date
+        /// </summary>
+        /// <returns>true if yes, false otherwise</returns>
+        internal static bool HasCallsEntriesForDate(DateTimeOffset date, bool isFromTimer)
+        {
+            try
+            {
+                var query = "SELECT EXISTS( "
+                          + "SELECT 1 FROM " + Settings.CallsTable + " "
+                          + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + " "
+                          + "AND isFromTimer = " + Database.GetInstance().Q(isFromTimer) + ");";
+
+                var count = Database.GetInstance().ExecuteScalar(query);
+                if (count == 0) return false;
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// The calls sent or received
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="sentOrReceived"></param>
+        /// <returns>Tuple item1: sent, item2: received</returns>
+        internal static Tuple<DateTime, int> GetSentOrReceivedCalls(DateTimeOffset date, string sentOrReceived)
+        {
+            try
+            {
+                var query = "SELECT time, " + sentOrReceived + " FROM " + Settings.CallsTable + " "
+                            + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + " "
+                            + "ORDER BY time DESC "
+                            + "LIMIT 1;";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                if (table != null && table.Rows.Count == 1)
+                {
+                    var row = table.Rows[0];
+                    var answer = Convert.ToInt32(row[sentOrReceived], CultureInfo.InvariantCulture);
+                    var timestamp = DateTime.Parse((string)row["time"], CultureInfo.InvariantCulture);
+
+                    table.Dispose();
+                    return new Tuple<DateTime, int>(timestamp, answer);
+                }
+                else
+                {
+                    table.Dispose();
+                    return new Tuple<DateTime, int>(DateTime.MinValue, -1);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return new Tuple<DateTime, int>(DateTime.MinValue, -1);
             }
         }
     }

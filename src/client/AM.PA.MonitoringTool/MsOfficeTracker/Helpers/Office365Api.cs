@@ -10,6 +10,8 @@ using Microsoft.Office365.OutlookServices;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using Shared.Data;
 using MsOfficeTracker.Models;
 
@@ -19,12 +21,17 @@ namespace MsOfficeTracker.Helpers
     {
         private static Office365Api _api;
         private Uri redirectUri = new Uri(Settings.RedirectUriString);
-        private string _authority = string.Format(CultureInfo.InvariantCulture, Settings.AadInstance, "common"); // use microsoft.onmicrosoft.com for just this tenand, use "common" if used for everyone
+
+        private string _authority = string.Format(CultureInfo.InvariantCulture, Settings.AadInstance, "common");
+        // use microsoft.onmicrosoft.com for just this tenand, use "common" if used for everyone
+
         private AuthenticationContext _authContext;
         private AuthenticationResult _authResult;
         private OutlookServicesClient _client;
 
-        private string[] _scopes = { "https://outlook.office.com/mail.read", "https://outlook.office.com/calendars.read" }; // "https://outlook.office.com/user.readbasic.all" };
+        private string[] _scopes = {"https://outlook.office.com/mail.read", "https://outlook.office.com/calendars.read"};
+        // "https://outlook.office.com/user.readbasic.all" };
+
         private const string _apiUrl = "https://outlook.office.com/api/v2.0";
         //private string _loggedInUserEmail;
         //private string _loggedInUserName;
@@ -75,7 +82,10 @@ namespace MsOfficeTracker.Helpers
             {
                 // Here, we try to get an access token to call the service without invoking any UI prompt.  PromptBehavior.Never forces
                 // ADAL to throw an exception if it cannot get a token silently.
-                _authResult = await _authContext.AcquireTokenAsync(_scopes, null, Settings.ClientId, redirectUri, new PlatformParameters(PromptBehavior.Never, null));
+                _authResult =
+                    await
+                        _authContext.AcquireTokenAsync(_scopes, null, Settings.ClientId, redirectUri,
+                            new PlatformParameters(PromptBehavior.Never, null));
                 return true;
             }
             catch (AdalException ex)
@@ -115,7 +125,10 @@ namespace MsOfficeTracker.Helpers
         {
             try
             {
-                _authResult = await _authContext.AcquireTokenAsync(_scopes, null, Settings.ClientId, redirectUri, new PlatformParameters(PromptBehavior.Always, null));
+                _authResult =
+                    await
+                        _authContext.AcquireTokenAsync(_scopes, null, Settings.ClientId, redirectUri,
+                            new PlatformParameters(PromptBehavior.Always, null));
                 //_loggedInUserEmail = _authResult.UserInfo.DisplayableId; // hint: UserInfo empty after authentication
                 //_loggedInUserName = _authResult.UserInfo.Name; // hint: UserInfo empty after authentication
                 return true;
@@ -158,7 +171,8 @@ namespace MsOfficeTracker.Helpers
         {
             if (_authContext != null && _authContext.TokenCache != null) _authContext.TokenCache.Clear();
             ClearCookies();
-            Database.GetInstance().LogInfo(string.Format(CultureInfo.InvariantCulture, "Successfully signed-out user from Office 365."));
+            Database.GetInstance()
+                .LogInfo(string.Format(CultureInfo.InvariantCulture, "Successfully signed-out user from Office 365."));
         }
 
         /// <summary>
@@ -204,6 +218,60 @@ namespace MsOfficeTracker.Helpers
             return true;
         }
 
+        /// <summary>
+        /// Returns current outlook user's email with authentication.
+        /// </summary>
+        /// <returns></returns>
+        private string GetUserEmail(AuthenticationContext context, string clientId)
+        {
+            // ADAL caches the ID token in its token cache by the client ID
+            foreach (TokenCacheItem item in context.TokenCache.ReadItems())
+            {
+                if (item.Scope.Contains(clientId))
+                {
+                    return GetEmailFromIdToken(item.Token);
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Parses the authentication token.
+        /// </summary>
+        /// <returns></returns>
+        private string GetEmailFromIdToken(string token)
+        {
+            // JWT is made of three parts, separated by a '.' 
+            // First part is the header 
+            // Second part is the token 
+            // Third part is the signature 
+            string[] tokenParts = token.Split('.');
+            if (tokenParts.Length < 3)
+            {
+                // Invalid token, return empty
+            }
+            // Token content is in the second part, in urlsafe base64
+            string encodedToken = tokenParts[1];
+            // Convert from urlsafe and add padding if needed
+            int leftovers = encodedToken.Length%4;
+            if (leftovers == 2)
+            {
+                encodedToken += "==";
+            }
+            else if (leftovers == 3)
+            {
+                encodedToken += "=";
+            }
+            encodedToken = encodedToken.Replace('-', '+').Replace('_', '/');
+            // Decode the string
+            var base64EncodedBytes = System.Convert.FromBase64String(encodedToken);
+            string decodedToken = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            // Load the decoded JSON into a dynamic object
+            dynamic jwt = Newtonsoft.Json.JsonConvert.DeserializeObject(decodedToken);
+            // User's email is in the preferred_username field
+            return jwt.preferred_username;
+        }
+
         #endregion
 
         #region Meeting Queries
@@ -211,17 +279,22 @@ namespace MsOfficeTracker.Helpers
         public async Task<List<DisplayEvent>> LoadMeetings(DateTimeOffset date)
         {
             var meetings = new List<DisplayEvent>();
-
             if (!await TrySilentAuthentication() || _authResult == null) return meetings;
 
             try
             {
-                var groups = await _client.Me.Calendar.GetCalendarView(date.Date.ToUniversalTime(), date.Date.ToUniversalTime().AddDays(1).AddTicks(-1))
-                                    .Where(e => e.IsCancelled == false)
-                                    .OrderBy(e => e.Start.DateTime)
-                                    .Take(20)
-                                    .Select(e => new DisplayEvent(e.Organizer, e.IsOrganizer, e.Subject, e.ResponseStatus, e.Start.DateTime, e.End.DateTime, e.Attendees))
-                                    .ExecuteAsync();
+                var groups =
+                    await
+                        _client.Me.Calendar.GetCalendarView(date.Date.ToUniversalTime(),
+                            date.Date.ToUniversalTime().AddDays(1).AddTicks(-1))
+                            .Where(e => e.IsCancelled == false)
+                            .OrderBy(e => e.Start.DateTime)
+                            .Take(20)
+                            .Select(
+                                e =>
+                                    new DisplayEvent(e.Organizer, e.IsOrganizer, e.Subject, e.ResponseStatus,
+                                        e.Start.DateTime, e.End.DateTime, e.Attendees))
+                            .ExecuteAsync();
 
                 do
                 {
@@ -233,14 +306,12 @@ namespace MsOfficeTracker.Helpers
                     }
 
                     groups = await groups.GetNextPageAsync();
-                }
-                while (groups != null && groups.MorePagesAvailable);                
+                } while (groups != null && groups.MorePagesAvailable);
             }
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
             }
-
             return meetings;
         }
 
@@ -341,7 +412,7 @@ namespace MsOfficeTracker.Helpers
         /// <returns>number of items, -1 in case of an error</returns>
         public async Task<long> GetNumberOfEmailsInInbox()
         {
-            if (! await TrySilentAuthentication() || _authResult == null) return -1;
+            if (!await TrySilentAuthentication() || _authResult == null) return -1;
 
             try
             {
@@ -350,7 +421,7 @@ namespace MsOfficeTracker.Helpers
                 var groups = await _client.Me.MailFolders.GetById("Inbox").Messages
                     .Where(m => m.IsRead == false) // only unread emails
                     .Take(20)
-                    .Select(m => new { m.From }) // only get single info (can get more if needed)
+                    .Select(m => new {m.From}) // only get single info (can get more if needed)
                     .ExecuteAsync();
 
                 do
@@ -358,8 +429,7 @@ namespace MsOfficeTracker.Helpers
                     var mailResults = groups.CurrentPage.ToList();
                     inboxSize += mailResults.Count;
                     groups = await groups.GetNextPageAsync();
-                }
-                while (groups != null && groups.MorePagesAvailable);
+                } while (groups != null && groups.MorePagesAvailable);
 
                 return inboxSize;
             }
@@ -388,7 +458,7 @@ namespace MsOfficeTracker.Helpers
                 var groups = await _client.Me.MailFolders.GetById("SentItems").Messages
                     .Where(m => m.SentDateTime.Value >= dtStart && m.SentDateTime.Value <= dtEnd)
                     .Take(20)
-                    .Select(m => new { m.From }) //new DisplayEmail(m))
+                    .Select(m => new {m.From}) //new DisplayEmail(m))
                     .ExecuteAsync();
 
                 var numberEmailsSent = 0;
@@ -397,8 +467,7 @@ namespace MsOfficeTracker.Helpers
                     var mailResults = groups.CurrentPage.ToList();
                     numberEmailsSent += mailResults.Count;
                     groups = await groups.GetNextPageAsync(); // next page
-                }
-                while (groups != null && groups.MorePagesAvailable);
+                } while (groups != null && groups.MorePagesAvailable);
 
                 return numberEmailsSent;
             }
@@ -424,12 +493,12 @@ namespace MsOfficeTracker.Helpers
                 var dtStart = date.Date.ToUniversalTime();
                 var dtEnd = date.Date.AddDays(1).ToUniversalTime();
 
-                var groups = await _client.Me.Messages
+                var groups = await _client.Me.MailFolders.GetById("Inbox").Messages
                     .OrderByDescending(m => m.ReceivedDateTime)
                     .Where(m => m.ReceivedDateTime.Value >= dtStart && m.ReceivedDateTime.Value <= dtEnd)
-                    //todo: filter if not in Junk Email and Deleted Folder (maybe with ParentFolderId)
+                    //todo: get other user folders (maybe with ParentFolderId)
                     .Take(20)
-                    .Select(m => new { m.From }) // new DisplayEmail(m))
+                    .Select(m => new {m.From}) // new DisplayEmail(m))
                     .ExecuteAsync();
 
                 var numberOfEmailsReceived = 0;
@@ -439,8 +508,7 @@ namespace MsOfficeTracker.Helpers
                     numberOfEmailsReceived += mailResults.Count;
 
                     groups = await groups.GetNextPageAsync();
-                }
-                while (groups != null && groups.MorePagesAvailable);
+                } while (groups != null && groups.MorePagesAvailable);
 
                 return numberOfEmailsReceived;
             }
@@ -552,5 +620,144 @@ namespace MsOfficeTracker.Helpers
         }
 
         #endregion
+
+        #region Chat and Call Queries
+
+        /// <summary>
+        /// Returns a list of chats which were sent on a given date
+        /// Caches the result 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public async Task<Tuple<int, int, int, int>> GetNumberOfChatsAndCallsSentOrReceived(DateTimeOffset date)
+        {
+            if (!await TrySilentAuthentication() || _authResult == null)
+                return new Tuple<int, int, int, int>(-1, -1, -1, -1);
+
+            try
+            {
+                var dtStart = date.Date.ToUniversalTime();
+                var dtEnd = date.Date.AddDays(1).ToUniversalTime();
+
+                var mailFolders = await _client.Me.MailFolders
+                    .Take(20)
+                    .ExecuteAsync();
+
+				// find Conversation History Folder ID
+                var myFolder = "";
+                do
+                {
+                    foreach (var mailFolder in mailFolders.CurrentPage)
+                    {
+                        if (mailFolder.DisplayName == "Conversation History")
+                            myFolder = mailFolder.Id;
+                    }
+                    mailFolders = await mailFolders.GetNextPageAsync();
+                } while (mailFolders != null && mailFolders.MorePagesAvailable);
+
+                if (myFolder == "")
+                {
+                    Console.WriteLine("Oh No! Conversation Folder failed!");
+                    return new Tuple<int, int, int, int>(-1, -1, -1, -1);
+                }
+
+				// grab all messages
+                var groups = await _client.Me.MailFolders.GetById(myFolder).Messages
+                    .Where(m => m.SentDateTime.Value >= dtStart && m.SentDateTime.Value <= dtEnd)
+                    .Take(20)
+                    .ExecuteAsync();
+
+                var messageList = new List<IMessage>();
+                do
+                {
+                    var mailResults = groups.CurrentPage.ToList();
+                    messageList.AddRange(mailResults);
+                    groups = await groups.GetNextPageAsync(); // next page
+                } while (groups != null && groups.MorePagesAvailable);
+
+                // remove duplicate messages
+                var cleanList = messageList.ToList();
+                foreach (var outerMessage in messageList)
+                {
+                    foreach (var innerMessage in messageList)
+                    {
+                        if (outerMessage.Equals(innerMessage)) continue;
+
+                        if (outerMessage.Body.Content.StartsWith(innerMessage.Body.Content))
+                        {
+                            cleanList.Remove(innerMessage);
+                        }
+                    }
+                }
+
+                // determine sent or received chats
+                var numberChatsSent = 0;
+                var numberChatsReceived = 0;
+                var numberCallsSent = 0;
+                var numberCallsReceived = 0;
+
+                // regex matches this format: "<display_name> <hour:minute> <am||pm>:"
+                var user = await _client.Me.ExecuteAsync();
+                var nameSize = user.DisplayName.Length + 4;  //accounts for random newlines
+                var regex = new Regex("(.{" + nameSize.ToString() + "}\\d\\d?:\\d\\d (am|pm):)", RegexOptions.Singleline);
+                foreach (var message in cleanList)
+                {
+                    var content = HtmlToPlainText(message.Body.Content).ToLower();
+                    if (!message.Subject.ToLower().Contains("call"))
+                    {
+                        var mc = regex.Matches(content);
+                        foreach (Match match in mc)
+                        {
+                            if (match.Groups[0].Value.Contains(user.DisplayName.ToLower()))
+                                numberChatsSent++;
+                            else
+                                numberChatsReceived++;
+                        }
+                    }
+                    else
+                    {
+                        if (message.From.EmailAddress.Address.ToLower() == user.EmailAddress.ToLower())
+                            numberCallsSent++;
+                        else
+                            numberCallsReceived++;
+                    }               
+                }
+
+                return new Tuple<int, int, int, int>(numberChatsSent, numberChatsReceived, numberCallsSent,
+                    numberCallsReceived);
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return new Tuple<int, int, int, int>(-1, -1, -1, -1);
+            }
+        }
+
+		// crudely turns html into text
+        private string HtmlToPlainText(string html)
+        {
+            const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<";  //matches one or more (white space or line breaks) between '>' and '<'
+            const string stripFormatting = @"<[^>]*(>|$)";  //match any character between '<' and '>', even when end tag is missing
+            const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>";  //matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
+            var lineBreakRegex = new Regex(lineBreak, RegexOptions.None);
+            var stripFormattingRegex = new Regex(stripFormatting, RegexOptions.None);
+            var tagWhiteSpaceRegex = new Regex(tagWhiteSpace, RegexOptions.None);
+
+            var text = html;
+            
+            // decode html specific characters
+            text = System.Net.WebUtility.HtmlDecode(text);
+            // remove tag whitespace/line breaks
+            text = tagWhiteSpaceRegex.Replace(text, "><");
+            // replace <br /> with line breaks
+            text = lineBreakRegex.Replace(text, Environment.NewLine);
+            // strip formatting
+            text = stripFormattingRegex.Replace(text, string.Empty);
+            Console.WriteLine("BLAHHHH: " + text);
+            return text;
+        }
+
+        #endregion
+
     }
 }

@@ -13,6 +13,10 @@ namespace MsOfficeTracker
 
         public const string EmailsTable = "emails";
         public const string MeetingsTable = "meetings";
+        public const string CallsTable = "calls";
+        public const string ChatsTable = "chats";
+
+        public static bool DebugDB = true; // true if resetting db on start
 
         ////////////////////////////////////////////////////////////
         // constants for using the Office 365 API
