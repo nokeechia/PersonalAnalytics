@@ -22,7 +22,7 @@ namespace InteractionTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        internal static int GetLongestFocusInLastHour(DateTimeOffset date)
+        internal static int GetFocusTimeInLastHour(DateTimeOffset date)
         {
             try
             {
