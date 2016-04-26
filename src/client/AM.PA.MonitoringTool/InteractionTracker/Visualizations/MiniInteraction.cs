@@ -4,6 +4,7 @@
 // Licensed under the MIT License.
 
 using System;
+using InteractionTracker.Data;
 using Shared;
 
 namespace InteractionTracker.Visualizations
@@ -25,7 +26,10 @@ namespace InteractionTracker.Visualizations
 
         public override string GetHtml()
         {
-            return "<p>babedibubedi</p>";
+
+
+
+            return Math.Round(((double)Queries.GetLongestFocusInLastHour(_date) / 60), 0) + "min";
         }
     }
 }

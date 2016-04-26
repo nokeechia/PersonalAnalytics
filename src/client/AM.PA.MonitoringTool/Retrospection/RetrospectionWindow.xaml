@@ -34,7 +34,7 @@
             <TextBlock Grid.Column="0" x:Name="RetrospectionTitle" Text="Retrospection and insights" VerticalAlignment="Center" Foreground="White" FontSize="16" Margin="10 0 0 0" />
 
             <!-- Day/Week View -->
-            <StackPanel x:Name="DayControl" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel x:Name="DayControl" Grid.Column="1" Visibility="Collapsed" Orientation="Horizontal" HorizontalAlignment="Right">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
                         <Setter Property="Foreground" Value="White" />

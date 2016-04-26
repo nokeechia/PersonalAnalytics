@@ -11,8 +11,8 @@ namespace Shared
 {
     public static class Settings
     {
-        public const bool IsFeedbackEnabled = true;
-        public const bool IsUploadEnabled = true;
+        public const bool IsFeedbackEnabled = false;
+        public const bool IsUploadEnabled = false;
 
         public const bool AnonymizeSensitiveData = false;
         public const bool PrintQueriesToConsole = false;
