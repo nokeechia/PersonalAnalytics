@@ -77,6 +77,9 @@ namespace PersonalAnalytics
             ITracker t3 = new MsOfficeTracker.Daemon();
             TrackerManager.GetInstance().Register(t3);
 
+            ITracker t5 = new InteractionTracker.Daemon();
+            TrackerManager.GetInstance().Register(t5);
+
             //ITracker t6 = new TimeSpentVisualizer.Visualizers.ArtifactVisualizer();
             ////TrackerManager.GetInstance().Register(t6);
 

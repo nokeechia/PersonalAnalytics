@@ -221,6 +221,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\InteractionTracker\InteractionTracker.csproj">
+      <Project>{6316d954-dc94-4593-856a-496c7022cf4e}</Project>
+      <Name>InteractionTracker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TimeSpentVisualizer\TimeSpentVisualizer.csproj">
       <Project>{8eba3b95-be0e-4498-9eac-20d417176a00}</Project>
       <Name>TimeSpentVisualizer</Name>

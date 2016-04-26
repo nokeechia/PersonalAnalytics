@@ -8,8 +8,8 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Personal Analytics: Retrospection &amp; Insights" 
-        Loaded="WindowLoaded"
-        Height="1000" Width="1310" MinHeight="500" MinWidth="890"> <!-- width was: 1310 -->
+        Loaded="WindowLoaded" ResizeMode="NoResize"
+        Height="500" Width="890"> <!-- width was: 1310 -->
 
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
