@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Shared;
 using Shared.Data;
 
@@ -38,8 +27,8 @@ namespace Retrospection
         /// <returns></returns>
         public new bool? ShowDialog()
         {
-            const int windowWidth = 510; //this.ActualWidth;
-            const int windowHeight = 295; //this.ActualHeight;
+            const int windowWidth = 460; //this.ActualWidth;
+            const int windowHeight = 280; //this.ActualHeight;
 
             this.Topmost = true;
             this.ShowActivated = false;

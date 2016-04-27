@@ -43,7 +43,8 @@
     <Compile Include="Daemon.cs" />
     <Compile Include="Data\Queries.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Visualizations\MiniInteraction.cs" />
+    <Compile Include="Visualizations\MiniThisDayInteraction.cs" />
+    <Compile Include="Visualizations\MiniLastHourInteraction.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

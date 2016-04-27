@@ -15,7 +15,6 @@ namespace InteractionTracker
 {
     public class Daemon : BaseTracker, ITracker
     {
-
         #region ITracker Stuff
 
         public Daemon()
@@ -62,11 +61,9 @@ namespace InteractionTracker
 
         public override List<IVisualization> GetVisualizationsMini(DateTimeOffset date)
         {
-            var vis = new MiniInteraction(date);
-            //var vis2 = new DayMeetingsAttended(date);
-            //var vis3 = new DayChatsReceivedAndSent(date);
-            //var vis4 = new DayCallsReceivedAndSent(date);
-            return new List<IVisualization> { vis }; // vis1, vis2, vis3, vis4 };
+            var vis1 = new MiniLastHourInteraction(date);
+            var vis2 = new MiniThisDayInteraction(date);
+            return new List<IVisualization> { vis1, vis2 };
         }
 
         #endregion

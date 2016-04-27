@@ -9,17 +9,17 @@ using Shared;
 
 namespace InteractionTracker.Visualizations
 {
-    internal class MiniInteraction : BaseVisualization, IVisualization
+    internal class MiniLastHourInteraction : BaseVisualization, IVisualization
     {
         private readonly DateTimeOffset _date;
 
-        public MiniInteraction(DateTimeOffset date)
+        public MiniLastHourInteraction(DateTimeOffset date)
         {
             this._date = date;
 
-            Title = "Interaction Summary";
+            Title = "Interactions: Your last hour";
             IsEnabled = true; //todo: handle by user
-            Order = 1; //todo: handle by user
+            Order = 2; //todo: handle by user
             Size = VisSize.Small;
             Type = VisType.Mini;
         }
@@ -30,15 +30,16 @@ namespace InteractionTracker.Visualizations
 
             // focused time last hour
             var focusedTimeLastHour = Queries.GetFocusTimeInLastHour();
-
+            var focusedTimeLastHourInMins = Math.Round((double)focusedTimeLastHour/60, 0);
 
             // context switches
             var noInteractionSwitches = Queries.GetNoInteractionSwitches();
             var noMeetingSwitches = Queries.GetMeetingsForLastHour();
 
+            var html = focusedTimeLastHourInMins + " mins focused<br />"
+                       + (noInteractionSwitches + noMeetingSwitches) + " switches";
 
-            return "work in proress";
-            //return Math.Round(((double)Queries.GetFocusTimeInLastHour(_date) / 60), 0) + "min";
+            return html;
         }
     }
 }

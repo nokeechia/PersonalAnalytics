@@ -12,7 +12,7 @@
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Mini-Retrospection"
-        Height="245" Width="500">
+        Height="230" Width="450">
     <Grid>
         <WindowsFormsHost Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <WindowsFormsHost.Child>
