@@ -11,14 +11,24 @@
         xmlns:local="clr-namespace:Retrospection"
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
-        WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Mini-Retrospection"
-        Height="230" Width="450">
+        WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Interacions Overview"
+        Height="250" Width="450">
     <Grid>
-        <WindowsFormsHost Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+           </Grid.RowDefinitions>
+        
+        <WindowsFormsHost Grid.Row="0" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <WindowsFormsHost.Child>
                 <forms:WebBrowser  />
             </WindowsFormsHost.Child>
         </WindowsFormsHost>
-        
+
+        <Grid Grid.Row="1" Background="White">
+            <Button Content="See Details" Click="SeeDetails_Clicked" VerticalAlignment="Center" 
+                    Foreground="#007acc" Background="White" Width="80" BorderBrush="White" Padding="5 0 5 0" />
+        </Grid>
+
     </Grid>
 </Window>

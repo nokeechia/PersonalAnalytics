@@ -28,7 +28,7 @@ namespace Retrospection
         public new bool? ShowDialog()
         {
             const int windowWidth = 460; //this.ActualWidth;
-            const int windowHeight = 280; //this.ActualHeight;
+            const int windowHeight = 300; //this.ActualHeight;
 
             this.Topmost = true;
             this.ShowActivated = false;
@@ -108,6 +108,12 @@ namespace Retrospection
                 _webBrowser.Navigate(url);
                 Database.GetInstance().LogInfo("Mini-Retrospection, navigated to: " + url);
             }
+        }
+
+        private void SeeDetails_Clicked(object sender, RoutedEventArgs e)
+        {
+            Handler.GetInstance().OpenRetrospection();
+            Close();
         }
     }
 }
