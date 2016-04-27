@@ -26,11 +26,19 @@ namespace InteractionTracker.Visualizations
 
         public override string GetHtml()
         {
-            var focusedTimeLastHour = Queries.GetFocusTimeInLastHour(_date);
+            // todo: handle -1
+
+            // focused time last hour
+            var focusedTimeLastHour = Queries.GetFocusTimeInLastHour();
 
 
+            // context switches
+            var noInteractionSwitches = Queries.GetNoInteractionSwitches();
+            var noMeetingSwitches = 2*0;
 
-            return Math.Round(((double)Queries.GetFocusTimeInLastHour(_date) / 60), 0) + "min";
+
+            return "work in proress";
+            //return Math.Round(((double)Queries.GetFocusTimeInLastHour(_date) / 60), 0) + "min";
         }
     }
 }

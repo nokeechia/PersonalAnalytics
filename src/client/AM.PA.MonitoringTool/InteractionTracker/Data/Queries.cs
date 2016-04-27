@@ -22,16 +22,18 @@ namespace InteractionTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        internal static int GetFocusTimeInLastHour(DateTimeOffset date)
+        internal static int GetFocusTimeInLastHour()
         {
             try
             {
-                var query = "SELECT 3600 - SUM(difference) as 'difference'"
+                var today = DateTime.Now;
+
+                var query = "SELECT (3600 - SUM(difference)) as 'difference'"
                           + "FROM ( "
                           + "SELECT (strftime('%s', t2.time) - strftime('%s', t1.time)) as 'difference' " 
                           + "FROM " + Settings.WindowsActivityTable + " t1 LEFT JOIN " + Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
-                          + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "t2.time") + " "
-                          + "AND TIME(t2.time) between TIME('" + DateTime.Now.AddHours(-1).ToString("HH:mm") + "') and TIME('"+DateTime.Now.ToString("HH:mm") +"') "
+                          + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t2.time") + " "
+                          + "AND TIME(t2.time) between TIME('" + today.AddHours(-1).ToString("HH:mm") + "') and TIME('" + today.ToString("HH:mm") +"') "
                           + "AND ( LOWER(t1.process) == 'outlook' or LOWER(t1.process) == 'skype' or LOWER(t1.process) == 'lync')"
                           + "GROUP BY t1.id, t1.time "
                           + "ORDER BY difference DESC)";
@@ -42,6 +44,48 @@ namespace InteractionTracker.Data
                 {
                     var row = table.Rows[0];
                     var difference = Convert.ToInt32(row["difference"], CultureInfo.InvariantCulture);
+
+                    table.Dispose();
+                    return difference;
+                }
+                else
+                {
+                    table.Dispose();
+                    return -1;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return -1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of switches to Outlook, Skype, Skype for business
+        /// for the last hour (times 2, because there is the switch back to work)
+        /// within the last hour
+        /// </summary>
+        /// <returns></returns>
+        internal static int GetNoInteractionSwitches()
+        {
+            try
+            {
+                var today = DateTime.Now;
+
+                var query = "SELECT (2 * COUNT(*)) as 'totalSwitches'"
+                              + "FROM " + Settings.WindowsActivityTable + " t1 LEFT JOIN " + Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
+                              + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t2.time") + " "
+                              + "AND TIME(t2.time) between TIME('" + today.AddHours(-1).ToString("HH:mm") + "') and TIME('" + today.ToString("HH:mm") + "') "
+                              + "AND ( LOWER(t1.process) == 'outlook' or LOWER(t1.process) == 'skype' or LOWER(t1.process) == 'lync')"
+                              + "AND (strftime('%s', t2.time) - strftime('%s', t1.time)) > 3;";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                if (table != null && table.Rows.Count == 1)
+                {
+                    var row = table.Rows[0];
+                    var difference = Convert.ToInt32(row["totalSwitches"], CultureInfo.InvariantCulture);
 
                     table.Dispose();
                     return difference;
