@@ -390,8 +390,22 @@ namespace MsOfficeTracker.Data
         /// <summary>
         /// Saves the timestamp, service, sent items count, received items count into the database
         /// </summary>
+        /// <param name="date"></param>
+        /// <param name="sent"></param>
+        /// <param name="received"></param>
+        internal static void SaveCallsSnapshot(DateTime date, int sent, int received)
+        {
+            SaveCallsSnapshot(date, sent, received, false);
+        }
+
+        /// <summary>
+        /// Saves the timestamp, service, sent items count, received items count into the database
+        /// </summary>
         /// <param name="window"></param>
         /// <param name="process"></param>
+        /// <param name="date"></param>
+        /// <param name="sent"></param>
+        /// <param name="received"></param>
         internal static void SaveCallsSnapshot(DateTime date, int sent, int received, bool isFromTimer)
         {
             Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.CallsTable + " (timestamp, time, service, sent, received, isFromTimer) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +

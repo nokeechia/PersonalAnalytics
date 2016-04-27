@@ -169,36 +169,64 @@ namespace InteractionTracker.Data
         /// <summary>
         /// The emails sent or received
         /// </summary>
+        /// <returns>Tuple item1: sent, item2: received</returns>
+        /// <summary>
+        /// The emails sent or received
+        /// </summary>
         /// <param name="date"></param>
         /// <param name="sentOrReceived"></param>
         /// <returns>Tuple item1: sent, item2: received</returns>
-        internal static List<Tuple<DateTime, int>> GetSentOrReceivedEmails(DateTimeOffset date, string sentOrReceived)
+        internal static int GetSentOrReceivedEmails(DateTimeOffset date, string sentOrReceived)
         {
-            var emails = new List<Tuple<DateTime, int>>();
-
             try
             {
                 var query = "SELECT time, " + sentOrReceived + " FROM " + Settings.EmailsTable + " "
                             + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + " "
-                            + "ORDER BY time DESC";
+                            + "ORDER BY time DESC "
+                            + "LIMIT 1;";
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
 
-                foreach (DataRow row in table.Rows)
+                if (table != null && table.Rows.Count == 1)
                 {
-                    var timeStart = DateTime.Parse((string)row["time"], CultureInfo.InvariantCulture);
-                    var noSentOrReceived = Convert.ToInt32(row[sentOrReceived], CultureInfo.InvariantCulture);
-
-                    var t = new Tuple<DateTime, int>(timeStart, noSentOrReceived);
-                    emails.Add(t);
+                    var row = table.Rows[0];
+                    var answer = Convert.ToInt32(row[sentOrReceived], CultureInfo.InvariantCulture);
+                   
+                    table.Dispose();
+                    return answer;
+                }
+                else
+                {
+                    table.Dispose();
+                    return -1;
                 }
             }
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
+                return -1;
             }
+        }
 
-            return emails;
+        /// <summary>
+        /// The calls sent or received
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns>Tuple item1: sent, item2: received</returns>
+        internal static int GetCallsOrChats(DateTimeOffset date, string tableName)
+        {
+            try
+            {
+                var answer = "SELECT COUNT(*) FROM " + tableName + " WHERE " +
+                             Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, DateTime.Now.Date) + " AND (sent == 1 or received == 1);";
+                var count = Database.GetInstance().ExecuteScalar(answer);
+                return count;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return 0;
+            }
         }
     }
 }

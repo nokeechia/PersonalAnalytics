@@ -20,7 +20,7 @@ namespace InteractionTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Interactions: This Day";
+            Title = "Today's Interactions";
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Small;
@@ -37,51 +37,51 @@ namespace InteractionTracker.Visualizations
             // EMAILS SENT averages per hour
             var startTime = Database.GetInstance().GetUserWorkStart(_date);
 
-            var noEmailsReceived = GetAvgEmailsPerHour(_date, startTime, "received");
-            var noEmailsSent = GetAvgEmailsPerHour(_date, startTime, "sent");
-            var noChats = 0;
-
-
+            var numEmailsReceived = Queries.GetSentOrReceivedEmails(_date, "received");
+            var numEmailsSent = Queries.GetSentOrReceivedEmails(_date, "sent");
+            var numChats = Queries.GetCallsOrChats(_date, Settings.ChatsTable);
+            var numCalls = Queries.GetCallsOrChats(_date, Settings.CallsTable);
 
             var html = noMeetings + " meetings today<br />"
-                       + noEmailsReceived + " emails received<br />"
-                       + noEmailsSent + " emails sent<br />"
-                       + noChats + " chats";
+                       + numEmailsReceived + " emails received<br />"
+                       + numEmailsSent + " emails sent<br />"
+                       + numChats + " chats<br />"
+                       + numCalls + " calls";
 
             return html;
         }
 
-        private static int GetAvgEmailsPerHour(DateTimeOffset date, DateTime startTime, string sentOrReceived)
-        {
-            var hourDict = new Dictionary<DateTimeOffset, int>();
+        //private static int GetAvgEmailsPerHour(DateTimeOffset date, DateTime startTime, string sentOrReceived)
+        //{
+        //    var hourDict = new Dictionary<DateTimeOffset, int>();
 
-            // fill dictionary
-            var tempTime = startTime;
-            do
-            {
-                hourDict.Add(tempTime, 0);
-                tempTime = tempTime.AddHours(1);
-            }
-            while (tempTime < DateTime.Now);
+        //    // fill dictionary
+        //    var tempTime = startTime;
+        //    do
+        //    {
+        //        hourDict.Add(tempTime, 0);
+        //        tempTime = tempTime.AddHours(1);
+        //    }
+        //    while (tempTime < DateTime.Now);
 
-            // emails per hour
-            var emailsSent = Queries.GetSentOrReceivedEmails(date, sentOrReceived);
+        //    // emails per hour
+        //    var emailsSent = Queries.GetSentOrReceivedEmails(date, sentOrReceived);
 
-            foreach (var email in emailsSent)
-            {
-                foreach (var hourKey in hourDict.Keys.ToList())
-                {
-                    if (email.Item1 > hourKey && email.Item1 < hourKey.AddHours(1))
-                    {
-                        hourDict[hourKey] += email.Item2;
-                    }
-                }
-            }
+        //    foreach (var email in emailsSent)
+        //    {
+        //        foreach (var hourKey in hourDict.Keys.ToList())
+        //        {
+        //            if (email.Item1 > hourKey && email.Item1 < hourKey.AddHours(1))
+        //            {
+        //                hourDict[hourKey] += email.Item2;
+        //            }
+        //        }
+        //    }
 
-            // calculate average
-            var avg = hourDict.Values.Average();
+        //    // calculate average
+        //    var avg = hourDict.Values.Average();
 
-            return (int)Math.Round(avg, 0);
-        }
+        //    return (int)Math.Round(avg, 0);
+        //}
     }
 }
