@@ -753,7 +753,7 @@ namespace MsOfficeTracker.Helpers
             text = lineBreakRegex.Replace(text, Environment.NewLine);
             // strip formatting
             text = stripFormattingRegex.Replace(text, string.Empty);
-            Console.WriteLine("BLAHHHH: " + text);
+        
             return text;
         }
 

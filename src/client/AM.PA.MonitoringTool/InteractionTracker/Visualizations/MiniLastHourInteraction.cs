@@ -19,7 +19,7 @@ namespace InteractionTracker.Visualizations
 
             Title = "Interactions: Your last hour";
             IsEnabled = true; //todo: handle by user
-            Order = 2; //todo: handle by user
+            Order = 1; //todo: handle by user
             Size = VisSize.Small;
             Type = VisType.Mini;
         }

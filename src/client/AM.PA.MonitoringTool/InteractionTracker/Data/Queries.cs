@@ -21,7 +21,6 @@ namespace InteractionTracker.Data
         /// Returns the focused time for the last hour
         /// (which is 60min - time spent in Outlook, Skype, Lync)
         /// </summary>
-        /// <param name="date"></param>
         /// <returns></returns>
         internal static int GetFocusTimeInLastHour()
         {
@@ -146,6 +145,60 @@ namespace InteractionTracker.Data
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// Counts the number of meetings for today
+        /// </summary>
+        /// <returns>returns the number of meetings for today</returns>
+        internal static int GetMeetingsForDate()
+        {
+            try
+            {
+                var answer = "SELECT COUNT(*) FROM " + Settings.MeetingsTable + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, DateTime.Now.Date) + ";";
+                var count = Database.GetInstance().ExecuteScalar(answer);
+                return count;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// The emails sent or received
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="sentOrReceived"></param>
+        /// <returns>Tuple item1: sent, item2: received</returns>
+        internal static List<Tuple<DateTime, int>> GetSentOrReceivedEmails(DateTimeOffset date, string sentOrReceived)
+        {
+            var emails = new List<Tuple<DateTime, int>>();
+
+            try
+            {
+                var query = "SELECT time, " + sentOrReceived + " FROM " + Settings.EmailsTable + " "
+                            + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + " "
+                            + "ORDER BY time DESC";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    var timeStart = DateTime.Parse((string)row["time"], CultureInfo.InvariantCulture);
+                    var noSentOrReceived = Convert.ToInt32(row[sentOrReceived], CultureInfo.InvariantCulture);
+
+                    var t = new Tuple<DateTime, int>(timeStart, noSentOrReceived);
+                    emails.Add(t);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return emails;
         }
     }
 }
