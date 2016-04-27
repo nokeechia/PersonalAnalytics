@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -99,9 +100,52 @@ namespace InteractionTracker.Data
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
-
                 return -1;
             }
+        }
+
+        /// <summary>
+        /// Counts the number of meetings for today
+        /// </summary>
+        /// <returns>returns the number of meetings for today</returns>
+        internal static int GetMeetingsForLastHour()
+        {
+            // get the meetings
+            var meetings = new List<Tuple<DateTime, DateTime>>();
+            try
+            {
+                var query = "SELECT time, durationInMins FROM " + Shared.Settings.MeetingsTable + " "
+                            + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, DateTime.Now.Date) + ";";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    var timeStart = DateTime.Parse((string)row["time"], CultureInfo.InvariantCulture);
+                    var duration = Convert.ToInt32(row["durationInMins"], CultureInfo.InvariantCulture);
+                    var timeEnd = timeStart.AddMinutes(duration);
+
+                    var t = new Tuple<DateTime, DateTime>(timeStart, timeEnd);
+                    meetings.Add(t);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            // count up the meetings in the last hour
+            var count = 0;
+            var startTs = DateTime.Now.AddHours(-1);
+            var endTs = DateTime.Now;
+            foreach (var meeting in meetings)
+            {
+                if (meeting.Item1 > startTs && meeting.Item2 < endTs) count += 2; // meeting occurs only during the hour
+                else if (meeting.Item1 < startTs && meeting.Item2 < endTs) count++; // meeting starts before the hour and ends during the hour
+                else if (meeting.Item1 > startTs && meeting.Item2 > endTs) count++; // meeting starts during the hour and ends after the hour
+            }
+
+            return count;
         }
     }
 }

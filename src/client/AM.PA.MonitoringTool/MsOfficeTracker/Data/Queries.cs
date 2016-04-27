@@ -20,14 +20,6 @@ namespace MsOfficeTracker.Data
         {
             try
             {
-                if (Settings.DebugDB)
-                {
-                    Database.GetInstance().ExecuteDefaultQuery("DROP TABLE " + Settings.EmailsTable);
-                    Database.GetInstance().ExecuteDefaultQuery("DROP TABLE " + Settings.MeetingsTable);
-                    Database.GetInstance().ExecuteDefaultQuery("DROP TABLE " + Settings.ChatsTable);
-                    Database.GetInstance().ExecuteDefaultQuery("DROP TABLE " + Settings.CallsTable);
-                }
-
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.EmailsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, inbox INTEGER, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.MeetingsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, subject TEXT, durationInMins INTEGER)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.ChatsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
@@ -35,7 +27,7 @@ namespace MsOfficeTracker.Data
             }
             catch (Exception e)
             {
-                Shared.Logger.WriteToLogFile(e);
+                Logger.WriteToLogFile(e);
             }
         }
 
@@ -198,9 +190,17 @@ namespace MsOfficeTracker.Data
         /// <returns>returns the number of meetings for today</returns>
         internal static int GetMeetingsForDate(DateTimeOffset date)
         {
-            var answer = "SELECT COUNT(*) FROM " + Settings.MeetingsTable + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + ";";
-            var count = Database.GetInstance().ExecuteScalar(answer);
-            return count;
+            try
+            {
+                var answer = "SELECT COUNT(*) FROM " + Settings.MeetingsTable + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + ";";
+                var count = Database.GetInstance().ExecuteScalar(answer);
+                return count;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+                return 0;
+            }
         }
 
         /// <summary>

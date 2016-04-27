@@ -34,7 +34,7 @@ namespace InteractionTracker.Visualizations
 
             // context switches
             var noInteractionSwitches = Queries.GetNoInteractionSwitches();
-            var noMeetingSwitches = 2*0;
+            var noMeetingSwitches = Queries.GetMeetingsForLastHour();
 
 
             return "work in proress";
