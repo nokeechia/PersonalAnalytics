@@ -61,9 +61,15 @@ namespace InteractionTracker
 
         public override List<IVisualization> GetVisualizationsMini(DateTimeOffset date)
         {
-            var vis1 = new MiniLastHourInteraction(date);
+            var vis1 = new MiniLastHourInteraction();
             var vis2 = new MiniThisDayInteraction(date);
             return new List<IVisualization> { vis1, vis2 };
+        }
+
+        public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
+        {
+            var vis = new DayInteractionTimeline();
+            return new List<IVisualization> { vis };
         }
 
         #endregion

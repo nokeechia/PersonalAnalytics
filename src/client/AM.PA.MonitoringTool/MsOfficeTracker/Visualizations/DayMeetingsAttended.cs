@@ -19,7 +19,7 @@ namespace MsOfficeTracker.Visualizations
             _date = date;
 
             Title = "Total Meetings";
-            IsEnabled = true;
+            IsEnabled = false;
             Order = 5;
             Size = VisSize.Small;
             Type = VisType.Day;

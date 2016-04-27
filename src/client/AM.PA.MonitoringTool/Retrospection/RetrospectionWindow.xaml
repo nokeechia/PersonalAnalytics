@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         Title="Personal Analytics: Retrospection &amp; Insights" 
         Loaded="WindowLoaded" ResizeMode="NoResize"
-        Height="500" Width="890"> <!-- width was: 1310 -->
+        Height="470" Width="870"> <!-- width was: 1310 -->
 
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />

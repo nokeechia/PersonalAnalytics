@@ -18,7 +18,7 @@ namespace TimeSpentVisualizer.Visualizers
 {
     public class TimeSpentVisualizer : BaseVisualizer
     {
-        private bool _isEnabled = true;
+        private bool _isEnabled = false;
 
         public TimeSpentVisualizer()
         {

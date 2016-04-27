@@ -11,12 +11,8 @@ namespace InteractionTracker.Visualizations
 {
     internal class MiniLastHourInteraction : BaseVisualization, IVisualization
     {
-        private readonly DateTimeOffset _date;
-
-        public MiniLastHourInteraction(DateTimeOffset date)
+        public MiniLastHourInteraction()
         {
-            this._date = date;
-
             Title = "Interactions: Your last hour";
             IsEnabled = true; //todo: handle by user
             Order = 1; //todo: handle by user

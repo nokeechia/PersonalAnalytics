@@ -23,7 +23,7 @@ namespace WindowsActivityTracker.Visualizations
             this._date = date;
 
             Title = "Top Programs Used"; //hint; overwritten below
-            IsEnabled = true; //todo: handle by user
+            IsEnabled = false; //todo: handle by user
             Order = 1; //todo: handle by user
             Size = VisSize.Square;
             Type = VisType.Day;

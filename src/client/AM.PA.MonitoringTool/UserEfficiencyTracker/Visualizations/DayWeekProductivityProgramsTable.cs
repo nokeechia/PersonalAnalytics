@@ -26,7 +26,7 @@ namespace UserEfficiencyTracker.Visualizations
             this._type = type;
 
             Title = "Top Programs Used during (Un-)Productive Times";
-            IsEnabled = true; //todo: handle by user
+            IsEnabled = false; //todo: handle by user
             Order = (type == VisType.Day) ? 7 : 1; //todo: handle by user
             Size = VisSize.Square;
             Type = type;

@@ -22,7 +22,7 @@ namespace UserEfficiencyTracker.Visualizations
             this._date = date;
 
             Title = "Perceived Productivity over the Day";
-            IsEnabled = true; //todo: handle by user
+            IsEnabled = false; //todo: handle by user
             Order = 8; //todo: handle by user
             Size = VisSize.Square;
             Type = VisType.Day;

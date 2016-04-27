@@ -22,7 +22,7 @@ namespace UserInputTracker.Visualizations
             this._date = date;
 
             Title = "Active Times";
-            IsEnabled = true; //todo: handle by user
+            IsEnabled = false; //todo: handle by user
             Order = 6; //todo: handle by user
             Size = VisSize.Square;
             Type = VisType.Day;

@@ -22,7 +22,7 @@ namespace UserEfficiencyTracker.Visualizations
             this._date = date;
 
             Title = "Average Perceived Productivity during the Week";
-            IsEnabled = true; //todo: handle by user
+            IsEnabled = false; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Square;
             Type = VisType.Week;

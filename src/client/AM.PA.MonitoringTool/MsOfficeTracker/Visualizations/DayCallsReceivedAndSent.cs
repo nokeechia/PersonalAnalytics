@@ -20,7 +20,7 @@ namespace MsOfficeTracker.Visualizations
             this._date = date;
 
             Title = "Received Calls vs.<br />Number Calls Sent";
-            IsEnabled = true; //todo: handle by user
+            IsEnabled = false; //todo: handle by user
             Order = 4; //todo: handle by user
             Size = VisSize.Small;
             Type = VisType.Day;
