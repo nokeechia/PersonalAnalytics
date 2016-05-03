@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Windows.Threading;
 using Shared.Helpers;
 using System.Globalization;
+using System.Threading;
 
 namespace Retrospection
 {
@@ -119,8 +120,10 @@ namespace Retrospection
 
         public void OpenMiniRetrospection()
         {
+           // StartFadeTimer();
             _miniRetrospection = new MiniRetrospectionWindow();
             _miniRetrospection.ShowDialog();
+            _miniRetrospection.Close();
         }
 
         /// <summary>
@@ -129,6 +132,19 @@ namespace Retrospection
         public void OpenRetrospectionInBrowser()
         {
             Process.Start(GetDashboardHome());
+        }
+
+        //public void StartFadeTimer()
+        //{
+        //    Timer closeMiniTimer = new Timer(new TimerCallback(TimerTick), // callback
+        //                    null,  // no idea
+        //                    10000, // start immediately after 10 seconds
+        //                    0); // interval
+        //}
+
+        private void TimerTick(object state)
+        {
+            CloseMiniRetrospection();
         }
 
         public void CloseRetrospection()
@@ -188,6 +204,16 @@ namespace Retrospection
             () =>
             {
                 var window = new AboutWindow(_publishedAppVersion);
+                window.Show();
+            }));
+        }
+
+        public void OpenHelp()
+        {
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
+            () =>
+            {
+                var window = new HelpWindow(_publishedAppVersion);
                 window.Show();
             }));
         }

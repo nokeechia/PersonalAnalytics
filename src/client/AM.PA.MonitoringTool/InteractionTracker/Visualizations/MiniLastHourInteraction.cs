@@ -13,7 +13,7 @@ namespace InteractionTracker.Visualizations
     {
         public MiniLastHourInteraction()
         {
-            Title = "Interactions: Your last hour";
+            Title = "Last hour";
             IsEnabled = true; //todo: handle by user
             Order = 1; //todo: handle by user
             Size = VisSize.Small;

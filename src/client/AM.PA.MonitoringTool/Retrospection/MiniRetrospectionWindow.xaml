@@ -11,7 +11,7 @@
         xmlns:local="clr-namespace:Retrospection"
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
-        WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Interacions Overview"
+        WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Today's Interactions Overview"
         Height="250" Width="450">
     <Grid>
         <Grid.RowDefinitions>
@@ -26,9 +26,8 @@
         </WindowsFormsHost>
 
         <Grid Grid.Row="1" Background="White">
-            <Button Content="See Details" Click="SeeDetails_Clicked" VerticalAlignment="Center" 
-                    Foreground="#007acc" Background="White" Width="80" BorderBrush="White" Padding="5 0 5 0" />
+            <Button Content="See Details" Click="SeeDetails_Clicked" VerticalAlignment="Bottom" 
+                    Foreground="#007acc" Background="White" Width="80" BorderBrush="White" Padding="5 0 5 0" Margin="332,-3,30,3" />
         </Grid>
-
     </Grid>
 </Window>

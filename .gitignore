@@ -14,3 +14,6 @@ Debug/
 /src/client/AM.PA.MonitoringTool/MsOfficeTracker/DaemonOLD.cs
 /src/client/AM.PA.MonitoringTool/MsOfficeTracker/Helpers/Office365ApiOLD.cs
 /src/client/AM.PA.MonitoringTool/MsOfficeTracker/Data/QueriesOLD.cs
+/src/client/AM.PA.MonitoringTool/InteractionTracker/Images/greenAward.png
+/src/client/AM.PA.MonitoringTool/InteractionTracker/Images/redAward.png
+/src/client/AM.PA.MonitoringTool/InteractionTracker/Images/yellowAward.png
