@@ -3,6 +3,10 @@ using System.Globalization;
 using System.Windows;
 using Shared;
 using Shared.Data;
+using System.Threading;
+using System.Windows.Forms;
+using Application = System.Windows.Application;
+using Timer = System.Threading.Timer;
 
 namespace Retrospection
 {
@@ -13,6 +17,8 @@ namespace Retrospection
     {
         private readonly System.Windows.Forms.WebBrowser _webBrowser;
         private string _currentPage;
+        private Timer _closeMiniRetrospectionTimer;
+
 
         public MiniRetrospectionWindow()
         {
@@ -51,6 +57,7 @@ namespace Retrospection
             }
 
             this.Top = top;
+            StartFadeTimer();
             return base.ShowDialog();
         }
 
@@ -90,6 +97,29 @@ namespace Retrospection
 
             // load default page
             WebBrowserNavigateTo(Handler.GetInstance().GetMiniDashboard());
+        }
+
+        public void StartFadeTimer()
+        {
+            _closeMiniRetrospectionTimer = new Timer(new TimerCallback(TimerTick), // callback
+                            null,  // no idea
+                            10000, // start immediately after 10 seconds
+                            Timeout.Infinite); // interval
+        }
+
+        private void TimerTick(object state)
+        {
+            this.Dispatcher.Invoke((MethodInvoker) delegate
+            {
+                //close the form on the forms thread
+                this.Close();
+            });
+                
+            if (_closeMiniRetrospectionTimer != null)
+            {
+                _closeMiniRetrospectionTimer.Dispose();
+                _closeMiniRetrospectionTimer = null;
+            }
         }
 
         /// <summary>

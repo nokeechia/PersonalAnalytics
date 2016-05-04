@@ -22,6 +22,17 @@
             <TextBlock Grid.Row="0" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Text="Help" Foreground="White" />
         </Grid>
 
+        <StackPanel Margin="10" Grid.Row="1">
+            <TextBlock TextWrapping="Wrap">
+                Thank you for installing the Interactions Dashboard. Here is a short overview of the tool:
+                <LineBreak  /><LineBreak  />
+                <Span Foreground="White" Background="{StaticResource RetrospectionColor}" FontWeight="Bold">Monitoring Component:</Span> The tool can collect information about how you spend your time on your computer (e.g. the programs you use), how active you are (based on your keyboard and mouse use), the meetings you attend, the emails you send/receive, and more. Use the tool settings to chose what data you want to be collected.
+                <LineBreak /><LineBreak />
+                <Span Foreground="White" Background="{StaticResource RetrospectionColor}" FontWeight="Bold">Retrospection:</Span> This is the heart of the tool. It visualized the collected data in a daily and weekly retrospection. If you use it regularly, you can learn more about your work patterns and get valuable insights into your productivity.
+                <LineBreak /><LineBreak />
+                <Span Foreground="White" Background="{StaticResource RetrospectionColor}" FontWeight="Bold">The Icon:</Span> In your task bar on the bottom right, you will find the Personal Analytics icon (), whenever the tool is running. Right click on the icon to access all features, such as opening the Retrospection, pausing/continuing the monitoring component, or looking at the collected data.
+            </TextBlock>
+        </StackPanel>
         <Grid Background="#E8E8E8" Grid.Row="2">
             <Grid.Resources>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
