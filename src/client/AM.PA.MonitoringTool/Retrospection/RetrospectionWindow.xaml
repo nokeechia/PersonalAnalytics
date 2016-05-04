@@ -44,8 +44,8 @@
                     </Style>
                 </StackPanel.Resources>
 
-                <Button x:Name="SwitchToWeekButton" Content="Switch to Weekly Retrospection" Click="SwitchToWeek_Clicked" VerticalAlignment="Center" />
-                <Button x:Name="SwitchToDayButton" Content="Switch to Daily Retrospection" Click="SwitchToDay_Clicked" VerticalAlignment="Center" />
+                <Button x:Name="SwitchToWeekButton" Content="Switch to Weekly Retrospection" Cursor="Hand" Click="SwitchToWeek_Clicked" VerticalAlignment="Center" />
+                <Button x:Name="SwitchToDayButton" Content="Switch to Daily Retrospection" Cursor="Hand"  Click="SwitchToDay_Clicked" VerticalAlignment="Center" />
                 
                 <Line Stroke="White" X1="0" Y1="31" X2="0" Y2="9" Margin="10 0 10 0" />
                 
@@ -87,11 +87,11 @@
             <TextBlock Grid.Column="0" Text="" />
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Content="Refresh" Click="Refresh_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
-                <Button Content="Feedback" Click="Feedback_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
+                <Button Content="Refresh" Cursor="Hand" Click="Refresh_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
+                <Button Content="Feedback" Cursor="Hand" Click="Feedback_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
                 <!--<Button Content="Settings" Click="Settings_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />-->
-                <Button Content="Help" Click="Help_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
-                <Button Content="About" Click="About_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
+                <Button Content="Help" Cursor="Hand" Click="Help_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
+                <Button Content="About" Cursor="Hand" Click="About_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
             </StackPanel>
         </Grid>
 

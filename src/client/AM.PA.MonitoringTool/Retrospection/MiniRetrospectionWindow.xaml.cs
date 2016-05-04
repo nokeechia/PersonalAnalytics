@@ -57,6 +57,7 @@ namespace Retrospection
             }
 
             this.Top = top;
+
             StartFadeTimer();
             return base.ShowDialog();
         }
@@ -84,13 +85,15 @@ namespace Retrospection
                 _webBrowser.Document.Window.Error += (w, we) =>
                 {
                     we.Handled = true;
-                    Logger.WriteToConsole(string.Format(CultureInfo.InvariantCulture, "# URL:{1}, LN: {0}, ERROR: {2}", we.LineNumber, we.Url, we.Description));
+                    Logger.WriteToConsole(string.Format(CultureInfo.InvariantCulture, "# URL:{1}, LN: {0}, ERROR: {2}",
+                        we.LineNumber, we.Url, we.Description));
                 };
 #endif
             };
 
             _webBrowser.IsWebBrowserContextMenuEnabled = false;
-            _webBrowser.ObjectForScripting = new ObjectForScriptingHelper(); // allows to use javascript to call functions in this class
+            _webBrowser.ObjectForScripting = new ObjectForScriptingHelper();
+                // allows to use javascript to call functions in this class
             _webBrowser.WebBrowserShortcutsEnabled = false;
             _webBrowser.AllowWebBrowserDrop = false;
 

@@ -25,9 +25,10 @@
             </WindowsFormsHost.Child>
         </WindowsFormsHost>
 
+
         <Grid Grid.Row="1" Background="White">
-            <Button Content="See Details" Click="SeeDetails_Clicked" VerticalAlignment="Bottom" 
-                    Foreground="#007acc" Background="White" Width="80" BorderBrush="White" Padding="5 0 5 0" Margin="332,-3,30,3" />
+            <Button Content="See Details" Click="SeeDetails_Clicked" VerticalAlignment="Bottom"  Cursor="Hand" 
+                    Foreground="#007acc"  Width="80"  Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Margin="332,-3,30,3" />
         </Grid>
     </Grid>
 </Window>

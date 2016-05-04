@@ -47,7 +47,7 @@ namespace InteractionTracker.Visualizations
             }
 
             var html = "<br><div style=\"float: left; width: 20 %; \"><img src=\"" + awardImageToShow + ".png\" width=\"50\" height=\"80\"></div><div style=\"float: right; width: 80 %; \">" + focusedTimeLastHourInMins + " mins focused<br />"
-                       + (numInteractionSwitches + numMeetingSwitches) + " switches</div>"; 
+                       + (numInteractionSwitches + numMeetingSwitches) + " task switches</div>"; 
             return html;
         }
     }
