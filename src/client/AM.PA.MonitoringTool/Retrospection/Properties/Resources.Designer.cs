@@ -103,6 +103,16 @@ namespace Retrospection.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] greenAward_png {
+            get {
+                object obj = ResourceManager.GetObject("greenAward_png", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] jquery_1_11_3_min_js {
             get {
                 object obj = ResourceManager.GetObject("jquery_1_11_3_min_js", resourceCulture);
@@ -137,11 +147,21 @@ namespace Retrospection.Properties {
         ///&lt;meta http-equiv=&quot;pragma&quot; content=&quot;no-cache&quot;/&gt; 
         ///&lt;meta http-equiv=&quot;expires&quot; content=&quot;-1&quot;/&gt; 
         ///
-        ///&lt;meta http-equiv=&quot;X [rest of string was truncated]&quot;;.
+        ///&lt;me [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string personalanalytics_html {
             get {
                 return ResourceManager.GetString("personalanalytics_html", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] redAward_png {
+            get {
+                object obj = ResourceManager.GetObject("redAward_png", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -211,6 +231,16 @@ namespace Retrospection.Properties {
         internal static byte[] thumbUpGray_png {
             get {
                 object obj = ResourceManager.GetObject("thumbUpGray_png", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] yellowAward_png {
+            get {
+                object obj = ResourceManager.GetObject("yellowAward_png", resourceCulture);
                 return ((byte[])(obj));
             }
         }

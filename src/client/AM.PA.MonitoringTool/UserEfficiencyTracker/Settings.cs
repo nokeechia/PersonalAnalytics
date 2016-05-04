@@ -10,7 +10,7 @@ namespace UserEfficiencyTracker
 {
     public static class Settings
     {
-        public static bool DefaultPopUpIsEnabled = true;
+        public static bool DefaultPopUpIsEnabled = false;
         public const int DefaultPopUpInterval = 60; // in minutes
 
         //public static bool IsEnabled = MiniSurveysEnabled;

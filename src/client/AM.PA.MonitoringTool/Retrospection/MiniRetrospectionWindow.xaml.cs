@@ -103,7 +103,7 @@ namespace Retrospection
         {
             _closeMiniRetrospectionTimer = new Timer(new TimerCallback(TimerTick), // callback
                             null,  // no idea
-                            10000, // start immediately after 10 seconds
+                            20000, // start immediately after 10 seconds
                             Timeout.Infinite); // interval
         }
 

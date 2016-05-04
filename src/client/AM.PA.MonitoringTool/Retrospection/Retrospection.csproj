@@ -153,8 +153,10 @@
     <None Include="Properties\c3_min_js" />
     <None Include="Properties\d3_min_js" />
     <None Include="Properties\d3_timeline_js" />
+    <None Include="Properties\greenAward_png" />
     <None Include="Properties\jquery_1_11_3_min_js" />
     <None Include="Properties\masonry_pkgd_min_js" />
+    <None Include="Properties\redAward_png" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -167,6 +169,7 @@
     <None Include="Properties\thumbDownGray_png" />
     <None Include="Properties\thumbUpBlue_png" />
     <None Include="Properties\thumbUpGray_png" />
+    <None Include="Properties\yellowAward_png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

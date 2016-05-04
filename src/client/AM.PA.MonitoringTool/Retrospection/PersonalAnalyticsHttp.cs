@@ -1,6 +1,7 @@
 ﻿// Created by André Meyer (ameyer@ifi.uzh.ch) from the University of Zurich
 // Created: 2015-10-20
 // 
+// Modified by Paige Rodeghero (ABB)
 // Licensed under the MIT License.
 using System;
 using System.Resources;
@@ -41,6 +42,9 @@ namespace Retrospection
             _server.AddHandler("thumbUpGray.png", OnResource); // load image
             _server.AddHandler("thumbDownBlue.png", OnResource); // load image
             _server.AddHandler("styles.css", OnStylesheets); // load css
+            _server.AddHandler("greenAward.png", OnResource); //load image
+            _server.AddHandler("yellowAward.png", OnResource); //load image
+            _server.AddHandler("redAward.png", OnResource); //load image
 
             try
             {

@@ -24,17 +24,30 @@ namespace InteractionTracker.Visualizations
         {
             // todo: handle -1
 
+            string awardImageToShow ="";
+
             // focused time last hour
             var focusedTimeLastHour = Queries.GetFocusTimeInLastHour();
             var focusedTimeLastHourInMins = Math.Round((double)focusedTimeLastHour/60, 0);
 
             // context switches
-            var noInteractionSwitches = Queries.GetNoInteractionSwitches();
-            var noMeetingSwitches = Queries.GetMeetingsForLastHour();
+            var numInteractionSwitches = Queries.GetNoInteractionSwitches();
+            var numMeetingSwitches = Queries.GetMeetingsForLastHour();
 
-            var html = focusedTimeLastHourInMins + " mins focused<br />"
-                       + (noInteractionSwitches + noMeetingSwitches) + " switches";
+            if (numInteractionSwitches > 10)
+            {
+                awardImageToShow = "redAward";
+            }else if (numInteractionSwitches > 5)
+            {
+                awardImageToShow = "yellowAward";
+            }
+            else
+            {
+                awardImageToShow = "greenAward";
+            }
 
+            var html = "<br><div style=\"float: left; width: 20 %; \"><img src=\"" + awardImageToShow + ".png\" width=\"50\" height=\"80\"></div><div style=\"float: right; width: 80 %; \">" + focusedTimeLastHourInMins + " mins focused<br />"
+                       + (numInteractionSwitches + numMeetingSwitches) + " switches</div>"; 
             return html;
         }
     }

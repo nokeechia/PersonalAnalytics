@@ -44,7 +44,7 @@
     <Compile Include="Data\Queries.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Visualizations\DayInteractionTimeline.cs" />
-    <Compile Include="Visualizations\MiniThisDayInteraction.cs" />
+    <Compile Include="MiniThisDayInteraction.cs" />
     <Compile Include="Visualizations\MiniLastHourInteraction.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -56,12 +56,6 @@
       <Project>{2bbdfa6d-20dd-4a7b-893e-43c388382c9a}</Project>
       <Name>Shared</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Images\greenAward.png" />
-    <Content Include="Images\redAward.png" />
-    <Content Include="Images\yellowAward.png" />
-    <Content Include="redAward.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
