@@ -20,7 +20,16 @@ namespace InteractionTracker.Visualizations
 
         public override string GetHtml()
         {
-            return "here we are";
+            var html = string.Empty;
+            html += "<p style='text-align: center;'>Today's Interactions</p>";
+
+
+            return html;
+        }
+
+        private void PrepareDataForVisualization()
+        {
+            
         }
     }
 }

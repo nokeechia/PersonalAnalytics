@@ -5,7 +5,9 @@ using Shared;
 using Shared.Data;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Media;
 using Application = System.Windows.Application;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Timer = System.Threading.Timer;
 
 namespace Retrospection
@@ -145,6 +147,7 @@ namespace Retrospection
 
         private void SeeDetails_Clicked(object sender, RoutedEventArgs e)
         {
+            //DetailsButton.Background=Brushes.Transparent;
             Handler.GetInstance().OpenRetrospection();
             Close();
         }
