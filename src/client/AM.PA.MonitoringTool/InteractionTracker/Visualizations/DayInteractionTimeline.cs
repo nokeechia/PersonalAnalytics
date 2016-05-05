@@ -27,6 +27,8 @@ namespace InteractionTracker.Visualizations
             return html;
         }
 
+        //todo: add data preparations
+        //todo: make queries first 
         private void PrepareDataForVisualization()
         {
             

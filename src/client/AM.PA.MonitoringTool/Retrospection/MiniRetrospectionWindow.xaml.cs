@@ -90,6 +90,7 @@ namespace Retrospection
                     Logger.WriteToConsole(string.Format(CultureInfo.InvariantCulture, "# URL:{1}, LN: {0}, ERROR: {2}",
                         we.LineNumber, we.Url, we.Description));
                 };
+
 #endif
             };
 
