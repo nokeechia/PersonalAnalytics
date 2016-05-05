@@ -54,8 +54,8 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10">
-            <Button Content="Save" x:Name="BtnSave" Click="SaveClicked" Foreground="White" Background="{StaticResource RetrospectionColor}" BorderBrush="{StaticResource RetrospectionColor}" Padding="5 0 5 0" Margin="20 0 0 0" />
-            <Button Content="Cancel" x:Name="BtnCancel" Click="CancelClicked" Foreground="Gray" Background="{StaticResource GrayColor}" BorderBrush="{StaticResource GrayColor}" Padding="5 0 5 0" Margin="10 0 0 0"  />
+            <Button Content="Save" x:Name="BtnSave" Click="SaveClicked" Cursor="Hand" Foreground="White" Background="{StaticResource RetrospectionColor}" BorderBrush="{StaticResource RetrospectionColor}" Padding="5 0 5 0" Margin="20 0 0 0" />
+            <Button Content="Cancel" x:Name="BtnCancel" Click="CancelClicked" Cursor="Hand" Foreground="Gray" Background="{StaticResource GrayColor}" BorderBrush="{StaticResource GrayColor}" Padding="5 0 5 0" Margin="10 0 0 0"  />
         </StackPanel>
 
         <Grid Background="#E8E8E8" Grid.Row="3">
@@ -73,7 +73,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" x:Name="TbVersion" Margin="10 0 0 0" Foreground="Gray" />
-            <Button Grid.Column="1" Content="Feedback" Click="Feedback_Clicked" VerticalAlignment="Center" Margin="0 0 5 0" />
+            <Button Grid.Column="1" Content="Feedback" Click="Feedback_Clicked" Cursor="Hand" VerticalAlignment="Center" Margin="0 0 5 0" />
         </Grid>
     </Grid>
 </Window>

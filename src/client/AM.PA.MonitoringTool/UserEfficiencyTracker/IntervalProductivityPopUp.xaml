@@ -21,12 +21,12 @@
                 <TextBlock x:Name="LastTimeFilledOut" Foreground="#007acc" Text="" />
 
                 <StackPanel Margin="-2 30 -2 5" HorizontalAlignment="Left" Orientation="Horizontal">
-                    <Button Content="1" Width="30" Height="30" Margin="15 0 40 0" Click="Productivity1_Checked" />
-                    <Button Content="2" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity2_Checked" />
-                    <Button Content="3" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity3_Checked" />
-                    <Button Content="4" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity4_Checked" />
-                    <Button Content="5" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity5_Checked" />
-                    <Button Content="6" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity6_Checked" />
+                    <Button Content="1" Width="30" Height="30" Margin="15 0 40 0" Click="Productivity1_Checked" Cursor="Hand" />
+                    <Button Content="2" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity2_Checked" Cursor="Hand" />
+                    <Button Content="3" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity3_Checked" Cursor="Hand" />
+                    <Button Content="4" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity4_Checked" Cursor="Hand" />
+                    <Button Content="5" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity5_Checked" Cursor="Hand" />
+                    <Button Content="6" Width="30" Height="30" Margin="0 0 40 0" Click="Productivity6_Checked" Cursor="Hand" />
                     <Button Content="7" Width="30" Height="30" Click="Productivity7_Checked" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
@@ -43,10 +43,10 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Content="I didn't work" Background="LightGray" Height="20" Margin="0 0 5 0" Click="Postpone0Clicked"  />
-                    <Button Grid.Column="1" Content="Postpone for 5mins" Background="LightGray" Height="20" Margin="0 0 5 0" Click="Postpone1Clicked" />
-                    <Button Grid.Column="2" Content="Postpone for 1hr" Background="LightGray" Height="20" Margin="0 0 5 0" Click="Postpone2Clicked" />
-                    <Button Grid.Column="3" Content="Postpone for 6hrs" Background="LightGray" Height="20" Click="Postpone3Clicked"  />
+                    <Button Grid.Column="0" Content="I didn't work" Background="LightGray" Height="20" Margin="0 0 5 0" Click="Postpone0Clicked" Cursor="Hand"  />
+                    <Button Grid.Column="1" Content="Postpone for 5mins" Background="LightGray" Height="20" Margin="0 0 5 0" Click="Postpone1Clicked" Cursor="Hand" />
+                    <Button Grid.Column="2" Content="Postpone for 1hr" Background="LightGray" Height="20" Margin="0 0 5 0" Click="Postpone2Clicked" Cursor="Hand" />
+                    <Button Grid.Column="3" Content="Postpone for 6hrs" Background="LightGray" Height="20" Click="Postpone3Clicked" Cursor="Hand"  />
                 </Grid>
             </StackPanel>
         </Border>
