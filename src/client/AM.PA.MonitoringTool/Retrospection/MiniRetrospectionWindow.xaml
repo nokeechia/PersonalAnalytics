@@ -14,7 +14,7 @@
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Today's Interactions Overview"
         Height="250" Width="450">
     <Window.Resources>
-        <Style x:Key="StartMenuButtons" TargetType="Button">
+        <Style x:Key="ShowDetailsButton" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
             <Setter Property="Margin" Value="5"/>
             <Setter Property = "Foreground" Value = "#007acc" />
@@ -52,7 +52,7 @@
         </WindowsFormsHost>
 
         <Grid Grid.Row="1" Background="White">
-            <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Content="See Details" Width="80" Background="Transparent" BorderBrush="Transparent" Style = "{StaticResource StartMenuButtons}" >
+            <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Content="See Details" Width="80" Style = "{StaticResource ShowDetailsButton}" >
               
             </Button>
             <!--<Image Source="Images/barGraphIcon.png" /> -->
