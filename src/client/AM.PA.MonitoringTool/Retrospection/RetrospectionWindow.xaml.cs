@@ -42,7 +42,7 @@ namespace Retrospection
                 _webBrowser.Document.Window.Error += (w, we) =>
                 {
                     we.Handled = true;
-                    Logger.WriteToConsole(string.Format(CultureInfo.InvariantCulture, "# URL:{1}, LN: {0}, ERROR: {2}", we.LineNumber, we.Url, we.Description));
+                    Logger.WriteToConsole(string.Format(CultureInfo.InvariantCulture, "# URL: {1}, LN: {0}, ERROR: {2}", we.LineNumber, we.Url, we.Description));
                 };    
 #endif
             };
@@ -57,6 +57,11 @@ namespace Retrospection
             WebBrowserNavigateTo(Handler.GetInstance().GetDashboardHome());
             SwitchToWeekButton.Visibility = Visibility.Visible;
             SwitchToDayButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Database.GetInstance().LogInfo("Retrospection closed");
         }
 
         /// <summary>
@@ -232,6 +237,6 @@ namespace Retrospection
             Handler.GetInstance().OpenHelp();
         }
 
-        #endregion     
+        #endregion
     }
 }

@@ -103,6 +103,11 @@ namespace Retrospection
             WebBrowserNavigateTo(Handler.GetInstance().GetMiniDashboard());
         }
 
+        private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Database.GetInstance().LogInfo("Mini-Retrospection closed");
+        }
+
         /// <summary>
         /// Shows a loading sign overlaying the webbrowser control
         /// </summary>
