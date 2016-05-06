@@ -13,13 +13,14 @@
         mc:Ignorable="d"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Today's Interactions Overview"
         Height="250" Width="451">
+    
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
         <Style x:Key="ShowDetailsButton" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
             <Setter Property="Margin" Value="5"/>
-            <Setter Property = "Foreground" Value = "White" />
-            <Setter Property = "FontSize" Value = "14" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -40,8 +41,8 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid>
 
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
@@ -51,39 +52,27 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
+        <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
             <Grid Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Content="See Details" Width="80" Style = "{StaticResource ShowDetailsButton}" >
                     <Button.Effect>
-                        <DropShadowEffect
-                        ShadowDepth="2"
-                        Direction="330"
-                        Color="Black"
-                        Opacity="0.3"
-                        BlurRadius="2"/>
+                        <DropShadowEffect ShadowDepth="2" Direction="330" Color="Black" Opacity="0.3" BlurRadius="2"/>
                     </Button.Effect>
                 </Button>
             </Grid>
         </Grid>
 
-            <WindowsFormsHost Grid.Row="1" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
+        <WindowsFormsHost Grid.Row="1" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
             <WindowsFormsHost.Child>
                 <forms:WebBrowser  />
             </WindowsFormsHost.Child>
         </WindowsFormsHost>
 
-        <!--<Image Source="Images/barGraphIcon.png" /> -->
-       <!-- <Grid Grid.Row="2" Background="White">
-            <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Content="See Details" Width="80" Style = "{StaticResource ShowDetailsButton}" >
-                <Button.Effect>
-                    <DropShadowEffect
-                        ShadowDepth="2"
-                        Direction="330"
-                        Color="Black"
-                        Opacity="0.3"
-                        BlurRadius="2"/>
-                </Button.Effect>
-            </Button>
-        </Grid>-->
+        <Border x:Name="LoadingSign" Background="White" Grid.Row="1">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock HorizontalAlignment="Center" Text="Preparing your Mini-Retrospection ..." Foreground="{StaticResource RetrospectionColor}" FontSize="14" />
+                <!--<TextBlock HorizontalAlignment="Center" Text="This might take a few moments. It will be worth the wait :)" Margin="0 5 0 0" />-->
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

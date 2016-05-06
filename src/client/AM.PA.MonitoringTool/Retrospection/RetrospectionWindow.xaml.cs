@@ -59,6 +59,11 @@ namespace Retrospection
             SwitchToDayButton.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Shows a loading sign overlaying the webbrowser control
+        /// (disables buttons)
+        /// </summary>
+        /// <param name="isLoading"></param>
         private void ShowLoading(bool isLoading)
         {
             if (isLoading)

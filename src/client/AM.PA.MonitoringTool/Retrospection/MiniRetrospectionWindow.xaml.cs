@@ -5,9 +5,7 @@ using Shared;
 using Shared.Data;
 using System.Threading;
 using System.Windows.Forms;
-using System.Windows.Media;
 using Application = System.Windows.Application;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Timer = System.Threading.Timer;
 
 namespace Retrospection
@@ -17,7 +15,7 @@ namespace Retrospection
     /// </summary>
     public partial class MiniRetrospectionWindow : Window
     {
-        private readonly System.Windows.Forms.WebBrowser _webBrowser;
+        private readonly WebBrowser _webBrowser;
         private string _currentPage;
         private Timer _closeMiniRetrospectionTimer;
 
@@ -25,7 +23,7 @@ namespace Retrospection
         public MiniRetrospectionWindow()
         {
             InitializeComponent();
-            _webBrowser = (wbWinForms.Child as System.Windows.Forms.WebBrowser);
+            _webBrowser = (wbWinForms.Child as WebBrowser);
         }
 
         /// <summary>
@@ -74,14 +72,14 @@ namespace Retrospection
     webBrowser.ScriptErrorsSuppressed = true;
 #endif
 
-            //_webBrowser.Navigating += (o, ex) =>
-            //{
-            //    ShowLoading(true);
-            //};
+            _webBrowser.Navigating += (o, ex) =>
+            {
+                ShowLoading(true);
+            };
 
             _webBrowser.Navigated += (o, ex) =>
             {
-                //ShowLoading(false);
+                ShowLoading(false);
 
 #if DEBUG
                 _webBrowser.Document.Window.Error += (w, we) =>
@@ -95,8 +93,7 @@ namespace Retrospection
             };
 
             _webBrowser.IsWebBrowserContextMenuEnabled = false;
-            _webBrowser.ObjectForScripting = new ObjectForScriptingHelper();
-                // allows to use javascript to call functions in this class
+            _webBrowser.ObjectForScripting = new ObjectForScriptingHelper(); // allows to use javascript to call functions in this class
             _webBrowser.WebBrowserShortcutsEnabled = false;
             _webBrowser.AllowWebBrowserDrop = false;
 
@@ -105,11 +102,29 @@ namespace Retrospection
             WebBrowserNavigateTo(Handler.GetInstance().GetMiniDashboard());
         }
 
+        /// <summary>
+        /// Shows a loading sign overlaying the webbrowser control
+        /// </summary>
+        /// <param name="isLoading"></param>
+        private void ShowLoading(bool isLoading)
+        {
+            if (isLoading)
+            {
+                wbWinForms.Visibility = Visibility.Collapsed;
+                LoadingSign.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                LoadingSign.Visibility = Visibility.Collapsed;
+                wbWinForms.Visibility = Visibility.Visible;
+            }
+        }
+
         public void StartFadeTimer()
         {
             _closeMiniRetrospectionTimer = new Timer(new TimerCallback(TimerTick), // callback
-                            null,  // no idea
-                            20000, // start immediately after 10 seconds
+                            null,
+                            20000, // start immediately after 20 seconds
                             Timeout.Infinite); // interval
         }
 
