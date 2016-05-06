@@ -103,6 +103,11 @@ namespace Retrospection
             WebBrowserNavigateTo(Handler.GetInstance().GetMiniDashboard());
         }
 
+        private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Database.GetInstance().LogInfo("Mini-Retrospection closed");
+        }
+
         /// <summary>
         /// Shows a loading sign overlaying the webbrowser control
         /// </summary>
@@ -178,8 +183,6 @@ namespace Retrospection
         /// <param name="e"></param>
         private void OnWindowHover(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Logger.WriteToConsole("here");
-
             if (_closeMiniRetrospectionTimer != null)
             {
                 Database.GetInstance().LogInfo("Mini-Retrospection, user hovered over window.");
