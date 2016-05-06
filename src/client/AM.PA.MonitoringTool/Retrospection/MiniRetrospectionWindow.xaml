@@ -12,7 +12,7 @@
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Today's Interactions Overview"
-        Height="250" Width="451">
+        Height="270" Width="451">
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
         <Style x:Key="ShowDetailsButton" TargetType="Button">
@@ -43,25 +43,22 @@
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-      <!--  <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions> -->
+        <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
+        </Grid>
 
-            <WindowsFormsHost Grid.Row="0" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <WindowsFormsHost Grid.Row="1" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
             <WindowsFormsHost.Child>
                 <forms:WebBrowser  />
             </WindowsFormsHost.Child>
         </WindowsFormsHost>
 
         <!--<Image Source="Images/barGraphIcon.png" /> -->
-        <Grid Grid.Row="1" Background="White">
+        <Grid Grid.Row="2" Background="White">
             <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Content="See Details" Width="80" Style = "{StaticResource ShowDetailsButton}" >
 
             </Button>
