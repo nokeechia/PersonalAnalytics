@@ -18,6 +18,7 @@ namespace Retrospection
         private readonly WebBrowser _webBrowser;
         private string _currentPage;
         private Timer _closeMiniRetrospectionTimer;
+        private int _secondsUntilMiniRetrospectionCloses = 20;
 
 
         public MiniRetrospectionWindow()
@@ -33,8 +34,8 @@ namespace Retrospection
         /// <returns></returns>
         public new bool? ShowDialog()
         {
-            const int windowWidth = 460; //this.ActualWidth;
-            const int windowHeight = 300; //this.ActualHeight;
+            const int windowWidth = 470; //this.ActualWidth;
+            const int windowHeight = 305; //this.ActualHeight;
 
             this.Topmost = true;
             this.ShowActivated = false;
@@ -69,7 +70,7 @@ namespace Retrospection
             //webBrowser.NavigateToString(stream);
 
 #if !DEBUG
-    webBrowser.ScriptErrorsSuppressed = true;
+            _webBrowser.ScriptErrorsSuppressed = true;
 #endif
 
             _webBrowser.Navigating += (o, ex) =>
@@ -124,7 +125,7 @@ namespace Retrospection
         {
             _closeMiniRetrospectionTimer = new Timer(new TimerCallback(TimerTick), // callback
                             null,
-                            20000, // start immediately after 20 seconds
+                            1000 * _secondsUntilMiniRetrospectionCloses, // 'tick' (i.e. close window)
                             Timeout.Infinite); // interval
         }
 
@@ -135,7 +136,7 @@ namespace Retrospection
                 //close the form on the forms thread
                 this.Close();
             });
-                
+
             if (_closeMiniRetrospectionTimer != null)
             {
                 _closeMiniRetrospectionTimer.Dispose();
@@ -166,6 +167,25 @@ namespace Retrospection
             //DetailsButton.Background=Brushes.Transparent;
             Handler.GetInstance().OpenRetrospection();
             Close();
+        }
+
+        /// <summary>
+        /// Disable the closeminiretrospection timer when the 
+        /// user hovers over the window (as he is reading the contents)
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnWindowHover(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Logger.WriteToConsole("here");
+
+            if (_closeMiniRetrospectionTimer != null)
+            {
+                Database.GetInstance().LogInfo("Mini-Retrospection, user hovered over window.");
+                _closeMiniRetrospectionTimer.Dispose();
+                _closeMiniRetrospectionTimer = null;
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Retrospection
             //webBrowser.NavigateToString(stream);
 
 #if !DEBUG
-    webBrowser.ScriptErrorsSuppressed = true;
+            _webBrowser.ScriptErrorsSuppressed = true;
 #endif
 
             _webBrowser.Navigating += (o, ex) =>

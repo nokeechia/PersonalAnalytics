@@ -11,8 +11,9 @@
         xmlns:local="clr-namespace:Retrospection"
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
+        MouseEnter="OnWindowHover"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Today's Interactions Overview"
-        Height="250" Width="451">
+        Height="255" Width="461">
     
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
@@ -62,7 +63,7 @@
             </Grid>
         </Grid>
 
-        <WindowsFormsHost Grid.Row="1" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
+        <WindowsFormsHost Grid.Row="1" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" Margin="5 0 5 5">
             <WindowsFormsHost.Child>
                 <forms:WebBrowser  />
             </WindowsFormsHost.Child>
