@@ -12,13 +12,13 @@
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Title="Today's Interactions Overview"
-        Height="250" Width="450">
+        Height="250" Width="451">
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
         <Style x:Key="ShowDetailsButton" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
             <Setter Property="Margin" Value="5"/>
-            <Setter Property = "Foreground" Value = "White" />
+            <Setter Property = "Foreground" Value = "#007acc" />
             <Setter Property = "FontSize" Value = "14" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -30,7 +30,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <!--<Setter Property = "Foreground" Value = "Green" />-->
+                                <Setter Property = "Foreground" Value = "Green" />
                                 <Setter Property = "BorderBrush" Value = "Transparent" />
                                 <Setter Property="FontStyle" Value="Italic" />
                             </Trigger>
@@ -47,33 +47,25 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
+      <!--  <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-        
-       
--->
+            </Grid.ColumnDefinitions> -->
 
-        <WindowsFormsHost Grid.Row="0" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <WindowsFormsHost Grid.Row="0" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <WindowsFormsHost.Child>
                 <forms:WebBrowser  />
             </WindowsFormsHost.Child>
         </WindowsFormsHost>
 
         <!--<Image Source="Images/barGraphIcon.png" /> -->
-        <Grid Grid.Row="1" Background="#007acc">
+        <Grid Grid.Row="1" Background="White">
             <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Content="See Details" Width="80" Style = "{StaticResource ShowDetailsButton}" >
 
             </Button>
 
         </Grid>
-        <Line Grid.Row="0" Grid.RowSpan="2" 
-        	X1="222" Y1="0"
-        	X2="222" Y2="200"
-        	Stroke="#007acc"
-        	StrokeThickness="4" />
     </Grid>
 </Window>

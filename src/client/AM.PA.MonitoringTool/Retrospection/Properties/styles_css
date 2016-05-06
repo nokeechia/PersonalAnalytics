@@ -15,6 +15,7 @@ img { border: 0; }
 .item.Square { width:25em; height:21.25em; }
 .item.Wide { width:51.25em; height:21.25em; }
 
+.verticalLine { border-left: thick solid #007acc; height:11em; background-color: #ffffff; float: left; overflow:hidden; }
 
 .thumbsOverlay { display:block; margin-left:-1.7em; float:right; z-index:1; margin-right:0; margin-top:0.325em; }
 .thumb {width:1.1em; height:1.1em;}

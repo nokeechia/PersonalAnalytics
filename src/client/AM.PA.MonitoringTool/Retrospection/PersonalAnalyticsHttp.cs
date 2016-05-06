@@ -191,12 +191,25 @@ namespace Retrospection
 
             // add visualizations in right order
             var html = string.Empty;
-            foreach (var vis in visualizations.OrderBy(v => v.Order))
+
+            if (type == VisType.Mini)
             {
-                html += CreateDashboardItem(vis, date);
+                foreach (var vis in visualizations.OrderBy(v => v.Order))
+                {
+                    html += "<div class=\"verticalLine\"></div>" + CreateDashboardItem(vis, date);
+                }
+
+                html = html.Remove(0, ("<div class=\"verticalLine\"></div>").Length);
+            }
+            else
+            {
+                foreach (var vis in visualizations.OrderBy(v => v.Order))
+                {
+                    html += CreateDashboardItem(vis, date);
+                }
             }
 
-            return html;
+        return html;
         }
 
         private string CreateDashboardItem(IVisualization vis, DateTimeOffset date)
