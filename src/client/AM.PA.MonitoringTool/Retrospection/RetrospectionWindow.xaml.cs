@@ -26,7 +26,7 @@ namespace Retrospection
             //webBrowser.NavigateToString(stream);
 
 #if !DEBUG
-    webBrowser.ScriptErrorsSuppressed = true;
+            _webBrowser.ScriptErrorsSuppressed = true;
 #endif
 
             _webBrowser.Navigating += (o, ex) =>
@@ -59,6 +59,11 @@ namespace Retrospection
             SwitchToDayButton.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Shows a loading sign overlaying the webbrowser control
+        /// (disables buttons)
+        /// </summary>
+        /// <param name="isLoading"></param>
         private void ShowLoading(bool isLoading)
         {
             if (isLoading)

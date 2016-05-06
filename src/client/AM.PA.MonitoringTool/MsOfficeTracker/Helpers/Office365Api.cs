@@ -657,7 +657,7 @@ namespace MsOfficeTracker.Helpers
 
                 if (myFolder == "")
                 {
-                    Console.WriteLine("Oh No! Conversation Folder failed!");
+                    Logger.WriteToConsole("Oh No! Conversation Folder failed!");
                     return new Tuple<int, int, int, int>(-1, -1, -1, -1);
                 }
 

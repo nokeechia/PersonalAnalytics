@@ -1,4 +1,9 @@
-﻿<Window x:Class="Retrospection.RetrospectionWindow"
+﻿<!--    Created by André Meyer from the University of Zurich
+        Created: 2014-10-03
+        
+        Licensed under the MIT License. -->
+    
+    <Window x:Class="Retrospection.RetrospectionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
