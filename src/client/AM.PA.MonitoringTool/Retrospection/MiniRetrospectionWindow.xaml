@@ -32,7 +32,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property = "Foreground" Value = "Green" />
+                                <Setter Property = "Foreground" Value = "Yellow" />
                                 <Setter Property = "BorderBrush" Value = "Transparent" />
                                 <Setter Property="FontStyle" Value="Italic" />
                             </Trigger>
