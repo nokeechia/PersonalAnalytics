@@ -191,28 +191,15 @@ namespace Retrospection
 
             // add visualizations in right order
             var html = string.Empty;
-
-            if (type == VisType.Mini)
+            foreach (var vis in visualizations.OrderBy(v => v.Order))
             {
-                foreach (var vis in visualizations.OrderBy(v => v.Order))
-                {
-                    html += "<div class=\"verticalLine\"></div>" + CreateDashboardItem(vis, date);
-                }
-
-                html = html.Remove(0, ("<div class=\"verticalLine\"></div>").Length);
-            }
-            else
-            {
-                foreach (var vis in visualizations.OrderBy(v => v.Order))
-                {
-                    html += CreateDashboardItem(vis, date);
-                }
+                html += CreateDashboardItem(html, vis, date);
             }
 
-        return html;
+            return html;
         }
 
-        private string CreateDashboardItem(IVisualization vis, DateTimeOffset date)
+        private string CreateDashboardItem(string existingHtml, IVisualization vis, DateTimeOffset date)
         {
             try
             {
@@ -220,8 +207,11 @@ namespace Retrospection
                 var chartTitle = VisHelper.FormatChartTitle(vis.Title);
                 var html = vis.GetHtml();
 
-                var itemTemplate = "<div class='item {3}'>{0}{1}{2}</div>";
-                return string.Format(CultureInfo.InvariantCulture, itemTemplate, feedbackButtons, chartTitle, html, vis.Size);
+                // add a vertical line if it's a mini-item (not for the first one)
+                var verticalLine = (vis.Type == VisType.Mini && ! string.IsNullOrWhiteSpace(existingHtml)) ? "<div class=\"verticalLine\"></div>" : "";
+
+                var itemTemplate = "{4}<div class='item {3}'>{0}{1}{2}</div>";
+                return string.Format(CultureInfo.InvariantCulture, itemTemplate, feedbackButtons, chartTitle, html, vis.Size, verticalLine);
             }
             catch(Exception e)
             {
