@@ -178,8 +178,6 @@ namespace Retrospection
         /// <param name="e"></param>
         private void OnWindowHover(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Logger.WriteToConsole("here");
-
             if (_closeMiniRetrospectionTimer != null)
             {
                 Database.GetInstance().LogInfo("Mini-Retrospection, user hovered over window.");
