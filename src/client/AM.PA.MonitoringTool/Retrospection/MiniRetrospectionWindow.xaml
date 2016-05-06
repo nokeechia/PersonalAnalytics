@@ -60,9 +60,15 @@
         <!--<Image Source="Images/barGraphIcon.png" /> -->
         <Grid Grid.Row="2" Background="White">
             <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Content="See Details" Width="80" Style = "{StaticResource ShowDetailsButton}" >
-
+                <Button.Effect>
+                    <DropShadowEffect
+                        ShadowDepth="2"
+                        Direction="330"
+                        Color="Black"
+                        Opacity="0.3"
+                        BlurRadius="2"/>
+                </Button.Effect>
             </Button>
-
         </Grid>
     </Grid>
 </Window>
