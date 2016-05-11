@@ -17,13 +17,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retrospection", "Retrospect
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSpentVisualizer", "TimeSpentVisualizer\TimeSpentVisualizer.csproj", "{8EBA3B95-BE0E-4498-9EAC-20D417176A00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSpentVisualizerTests", "VisualizerTest\TimeSpentVisualizerTests.csproj", "{D5B8E8C4-DEF0-4225-9BF0-1C85FAC535B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSpentVisualizerTests", "TimeSpentVisualizerTest\TimeSpentVisualizerTests.csproj", "{D5B8E8C4-DEF0-4225-9BF0-1C85FAC535B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsOfficeTracker", "MsOfficeTracker\MsOfficeTracker.csproj", "{82ED616D-1508-41C5-A72A-B6A4F7C9B7E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeopleVisualizer", "PeopleVisualizer\PeopleVisualizer.csproj", "{E1767D02-A50F-4447-9C9C-EBEB91D4D581}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteractionTracker", "InteractionTracker\InteractionTracker.csproj", "{6316D954-DC94-4593-856A-496C7022CF4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteractionTrackerTests", "InteractionTrackerTests\InteractionTrackerTests.csproj", "{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +123,14 @@ Global
 		{6316D954-DC94-4593-856A-496C7022CF4E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6316D954-DC94-4593-856A-496C7022CF4E}.Release|x86.ActiveCfg = Release|Any CPU
 		{6316D954-DC94-4593-856A-496C7022CF4E}.Release|x86.Build.0 = Release|Any CPU
+		{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}.Debug|x86.Build.0 = Debug|Any CPU
+		{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}.Release|x86.ActiveCfg = Release|Any CPU
+		{F53265A8-2126-4F4C-9974-A7C3CE58AFCE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
