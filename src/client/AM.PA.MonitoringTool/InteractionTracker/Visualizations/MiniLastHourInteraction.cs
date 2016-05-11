@@ -32,7 +32,7 @@ namespace InteractionTracker.Visualizations
 
             // context switches
             var numInteractionSwitches = Queries.GetNumInteractionSwitches();
-            var numMeetingSwitches = Queries.GetMeetingsForLastHour();
+            var numMeetingSwitches = Queries.GetNumMeetingsForLastHour();
 
             if (numInteractionSwitches > 10)
             {

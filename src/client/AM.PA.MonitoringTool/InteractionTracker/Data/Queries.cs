@@ -67,28 +67,28 @@ namespace InteractionTracker.Data
         /// within the last hour
         /// </summary>
         /// <returns></returns>
-        internal static int GetNumInteractionSwitches()
+        public static int GetNumInteractionSwitches()
         {
             try
             {
                 var today = DateTime.Now;
 
-                var query = "SELECT (2 * COUNT(*)) as 'totalSwitches'"
+                var query = "SELECT (2 * COUNT(*)) as 'numSwitches'"
                               + "FROM " + Settings.WindowsActivityTable + " t1 LEFT JOIN " + Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
                               + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t2.time") + " "
                               + "AND TIME(t2.time) between TIME('" + today.AddHours(-1).ToString("HH:mm") + "') and TIME('" + today.ToString("HH:mm") + "') "
                               + "AND ( LOWER(t1.process) == 'outlook' or LOWER(t1.process) == 'skype' or LOWER(t1.process) == 'lync')"
-                              + "AND (strftime('%s', t2.time) - strftime('%s', t1.time)) > 3;";
+                              + "AND (strftime('%s', t2.time) - strftime('%s', t1.time)) > 3;"; // longer than three seconds
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
 
                 if (table != null && table.Rows.Count == 1)
                 {
                     var row = table.Rows[0];
-                    var difference = Convert.ToInt32(row["totalSwitches"], CultureInfo.InvariantCulture);
+                    var numSwitches = Convert.ToInt32(row["numSwitches"], CultureInfo.InvariantCulture);
 
                     table.Dispose();
-                    return difference;
+                    return numSwitches;
                 }
                 else
                 {
@@ -107,7 +107,7 @@ namespace InteractionTracker.Data
         /// Counts the number of meetings for today
         /// </summary>
         /// <returns>returns the number of meetings for today</returns>
-        internal static int GetMeetingsForLastHour()
+        public static int GetNumMeetingsForLastHour()
         {
             // get the meetings
             var meetings = new List<Tuple<DateTime, DateTime>>();
@@ -209,16 +209,17 @@ namespace InteractionTracker.Data
         }
 
         /// <summary>
-        /// The calls sent or received
+        /// The calls sent or received for a given date
         /// </summary>
         /// <param name="date"></param>
-        /// <returns>Tuple item1: sent, item2: received</returns>
-        internal static int GetCallsOrChats(DateTimeOffset date, string tableName)
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        public static int GetNumCallsOrChats(DateTimeOffset date, string tableName)
         {
             try
             {
                 var answer = "SELECT COUNT(*) FROM " + tableName + " WHERE " +
-                             Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, DateTime.Now.Date) + " AND (sent == 1 or received == 1);";
+                             Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date.Date) + " AND (sent == 1 or received == 1);";
                 var count = Database.GetInstance().ExecuteScalar(answer);
                 return count;
             }
