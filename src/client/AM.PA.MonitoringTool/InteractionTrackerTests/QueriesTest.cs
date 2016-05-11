@@ -158,7 +158,7 @@ namespace InteractionTrackerTests
 
             // delete testing database
             var testDbFile = Database.GetTestingDatabaseSavePath();
-            //if (File.Exists(testDbFile)) File.Delete(testDbFile); //TODO: re-enable
+            if (File.Exists(testDbFile)) File.Delete(testDbFile);
 
             Debug.WriteLine("# TestSuite QueriesTest completed.");
         }
