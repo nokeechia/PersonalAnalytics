@@ -55,6 +55,8 @@ namespace InteractionTrackerTests
 
             // run tests
 
+            // clean-up
+            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.MeetingsTable + ";");
         }
 
         [TestMethod]
@@ -63,8 +65,30 @@ namespace InteractionTrackerTests
             // add table & dummy data
             _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.MeetingsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, subject TEXT, durationInMins INTEGER)");
 
-            // run tests
+            var meetings = new List<Tuple<DateTime, string>>();
+            meetings.Add(new Tuple<DateTime, string>(DateTime.Now, "Meeting 1"));
+            meetings.Add(new Tuple<DateTime, string>(DateTime.Now.AddSeconds(-10), "Meeting 2"));
+            meetings.Add(new Tuple<DateTime, string>(DateTime.Now.AddDays(-20), "Meeting 3"));
+            meetings.Add(new Tuple<DateTime, string>(DateTime.Now.AddDays(2), "Meeting 4"));
+            meetings.Add(new Tuple<DateTime, string>(DateTime.Now.AddDays(1), "Meeting 5"));
 
+            foreach (var email in meetings)
+            {
+                _database.ExecuteDefaultQuery("INSERT INTO " + Settings.MeetingsTable + " (timestamp, time, subject) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
+                    _database.QTime(email.Item1) + ", " + _database.Q(email.Item2) + ");");
+            }
+
+            // run tests
+            var totalNumMeetingsYesterday = Queries.GetNumMeetingsForDate(DateTime.Now.AddDays(-1));
+            var totalNumMeetingsToday = Queries.GetNumMeetingsForDate(DateTime.Now);
+            var totalNumMeetingsTomorrow = Queries.GetNumMeetingsForDate(DateTime.Now.AddDays(1));
+
+            Assert.AreEqual(0, totalNumMeetingsYesterday);
+            Assert.AreEqual(2, totalNumMeetingsToday);
+            Assert.AreEqual(1, totalNumMeetingsTomorrow);
+
+            // clean-up
+            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.MeetingsTable + ";");
         }
 
         [TestMethod]
@@ -79,6 +103,10 @@ namespace InteractionTrackerTests
             emails.Add(new Tuple<DateTime, int, int>(DateTime.Now.AddDays(-20), 30, 3));
             emails.Add(new Tuple<DateTime, int, int>(DateTime.Now.AddDays(2), 40, 4));
             emails.Add(new Tuple<DateTime, int, int>(DateTime.Now.AddSeconds(-10), 50, 5));
+            emails.Add(new Tuple<DateTime, int, int>(DateTime.Now.AddDays(-1), 60, 6));
+            emails.Add(new Tuple<DateTime, int, int>(DateTime.Now.AddDays(-1).AddSeconds(20), 70, 7));
+            emails.Add(new Tuple<DateTime, int, int>(DateTime.Now.AddDays(-1).AddMinutes(-10), 10, 1));
+
 
             foreach (var email in emails)
             {
@@ -87,11 +115,24 @@ namespace InteractionTrackerTests
             }
 
             // run tests
-            var totalEmailsSent = Queries.GetSentOrReceivedEmails(DateTime.Now.Date, "sent");
-            var totalEmailsReceived = Queries.GetSentOrReceivedEmails(DateTime.Now.Date, "received");
+            var totalEmailsSentToday = Queries.GetSentOrReceivedEmails(DateTime.Now.Date, "sent");
+            var totalEmailsReceivedToday = Queries.GetSentOrReceivedEmails(DateTime.Now.Date, "received");
+            Assert.AreEqual(10, totalEmailsSentToday);
+            Assert.AreEqual(1, totalEmailsReceivedToday);
 
-            Assert.AreEqual(10, totalEmailsSent);
-            Assert.AreEqual(1, totalEmailsReceived);
+            var totalEmailsSentYesterday = Queries.GetSentOrReceivedEmails(DateTime.Now.Date.AddDays(-1), "sent");
+            var totalEmailsReceivedYesterday = Queries.GetSentOrReceivedEmails(DateTime.Now.Date.AddDays(-1), "received");
+            Assert.AreEqual(70, totalEmailsSentYesterday);
+            Assert.AreEqual(7, totalEmailsReceivedYesterday);
+
+            var totalEmailsSentOtherDay = Queries.GetSentOrReceivedEmails(DateTime.Now.Date.AddDays(-100), "sent");
+            var totalEmailsReceivedOtherDay = Queries.GetSentOrReceivedEmails(DateTime.Now.Date.AddDays(-100), "received");
+            Assert.AreEqual(-1, totalEmailsSentOtherDay);
+            Assert.AreEqual(-1, totalEmailsReceivedOtherDay);
+
+
+            // clean-up
+            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.EmailsTable + ";");
         }
 
         [TestMethod]
@@ -103,6 +144,9 @@ namespace InteractionTrackerTests
 
             // run tests
 
+            // clean-up
+            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.ChatsTable + ";");
+            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.CallsTable + ";");
         }
 
         [TestCleanup]

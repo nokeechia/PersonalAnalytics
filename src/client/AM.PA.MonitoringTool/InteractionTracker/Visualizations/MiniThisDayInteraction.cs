@@ -35,7 +35,7 @@ namespace InteractionTracker.Visualizations
             //var startTime = Database.GetInstance().GetUserWorkStart(_date);
 
             // get data
-            var numMeetings = Queries.GetMeetingsForDate(DateTime.Now.Date);
+            var numMeetings = Queries.GetNumMeetingsForDate(DateTime.Now.Date);
             var numEmailsReceived = Queries.GetSentOrReceivedEmails(_date, "received");
             var numEmailsSent = Queries.GetSentOrReceivedEmails(_date, "sent");
             var numChats = Queries.GetCallsOrChats(_date, Settings.ChatsTable);

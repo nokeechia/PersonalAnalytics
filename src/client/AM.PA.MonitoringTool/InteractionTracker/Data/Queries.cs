@@ -134,7 +134,7 @@ namespace InteractionTracker.Data
             }
 
             // count up the meetings in the last hour
-            var count = 0;
+            var count = -1;
             var startTs = DateTime.Now.AddHours(-1);
             var endTs = DateTime.Now;
             foreach (var meeting in meetings)
@@ -151,7 +151,7 @@ namespace InteractionTracker.Data
         /// Counts the number of meetings for today
         /// </summary>
         /// <returns>returns the number of meetings for today</returns>
-        internal static int GetMeetingsForDate(DateTimeOffset date)
+        public static int GetNumMeetingsForDate(DateTimeOffset date)
         {
             try
             {
@@ -162,7 +162,7 @@ namespace InteractionTracker.Data
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
-                return 0;
+                return -1;
             }
         }
 
@@ -225,7 +225,7 @@ namespace InteractionTracker.Data
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
-                return 0;
+                return -1;
             }
         }
     }
