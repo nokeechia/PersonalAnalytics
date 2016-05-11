@@ -176,7 +176,7 @@ namespace InteractionTracker.Data
         /// <param name="date"></param>
         /// <param name="sentOrReceived"></param>
         /// <returns>Tuple item1: sent, item2: received</returns>
-        internal static int GetSentOrReceivedEmails(DateTimeOffset date, string sentOrReceived)
+        public static int GetSentOrReceivedEmails(DateTimeOffset date, string sentOrReceived)
         {
             try
             {
