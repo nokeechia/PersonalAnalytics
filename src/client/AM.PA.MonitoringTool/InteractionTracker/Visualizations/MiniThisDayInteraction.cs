@@ -32,24 +32,22 @@ namespace InteractionTracker.Visualizations
 
         public override string GetHtml()
         {
-            // todo: handle -1
+            //var startTime = Database.GetInstance().GetUserWorkStart(_date);
 
-            // total meetings
-            var numMeetings = Queries.GetMeetingsForDate();
-
-            // EMAILS SENT averages per hour
-            var startTime = Database.GetInstance().GetUserWorkStart(_date);
-
+            // get data
+            var numMeetings = Queries.GetMeetingsForDate(DateTime.Now.Date);
             var numEmailsReceived = Queries.GetSentOrReceivedEmails(_date, "received");
             var numEmailsSent = Queries.GetSentOrReceivedEmails(_date, "sent");
             var numChats = Queries.GetCallsOrChats(_date, Settings.ChatsTable);
             var numCalls = Queries.GetCallsOrChats(_date, Settings.CallsTable);
 
-            var html = numMeetings + " total meetings<br />"
-                       + numEmailsReceived + " emails received<br />"
-                       + numEmailsSent + " emails sent<br />"
-                       + numChats + " chats<br />"
-                       + numCalls + " calls";
+            // generate html where queries were successful
+            var html = string.Empty;
+            if (numMeetings > -1) html += numMeetings + " total meetings<br />";
+            if (numEmailsReceived > -1) html += numEmailsReceived + " emails received<br />";
+            if (numEmailsSent > -1) html += numEmailsSent + " emails sent<br />";
+            if (numChats > -1) html += numChats + " chats<br />";
+            if (numCalls > -1) html += numCalls + " calls";
 
             return html;
         }

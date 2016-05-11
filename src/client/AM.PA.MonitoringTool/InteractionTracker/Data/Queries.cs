@@ -151,11 +151,11 @@ namespace InteractionTracker.Data
         /// Counts the number of meetings for today
         /// </summary>
         /// <returns>returns the number of meetings for today</returns>
-        internal static int GetMeetingsForDate()
+        internal static int GetMeetingsForDate(DateTimeOffset date)
         {
             try
             {
-                var answer = "SELECT COUNT(*) FROM " + Settings.MeetingsTable + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, DateTime.Now.Date) + ";";
+                var answer = "SELECT COUNT(*) FROM " + Settings.MeetingsTable + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date.Date) + ";";
                 var count = Database.GetInstance().ExecuteScalar(answer);
                 return count;
             }
