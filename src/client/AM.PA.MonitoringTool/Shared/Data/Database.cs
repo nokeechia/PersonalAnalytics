@@ -11,6 +11,7 @@ namespace Shared.Data
     {
         private static DatabaseImplementation _localDb;
         //private static DatabaseImplementation _remoteDb;
+        private static DatabaseImplementation _testDb;
 
         /// <summary>
         /// Singleton. Returns the instance of the local database.
@@ -37,22 +38,13 @@ namespace Shared.Data
         //}
 
         /// <summary>
-        /// Singleton. Returns the instance of the settings database.
+        /// Singleton.Returns the instance of the testing database.
         /// </summary>
         /// <returns></returns>
-        //public static DatabaseImplementation GetInstanceSettings()
-        //{
-        //    return _localDb ?? (_localDb = new DatabaseImplementation(GetLocalDatabaseSavePath()));
-
-        //    //if (_settingsDb == null)
-        //    //{
-        //    //    _settingsDb = new DatabaseImplementation(GetSettingsDatabaseSavePath());
-        //    //    _settingsDb.Connect();
-        //    //    _settingsDb.CreateSettingsTable();
-        //    //}
-
-        //    //return _settingsDb;
-        //}
+        public static DatabaseImplementation GetInstanceTesting()
+        {
+            return _localDb ?? (_localDb = new DatabaseImplementation(GetTestingDatabaseSavePath()));
+        }
 
         /// <summary>
         /// Returns the path the (SQLight) database file should be stored on the users
@@ -76,12 +68,12 @@ namespace Shared.Data
         //}
 
         /// <summary>
-        /// Returns the path of the database file that stores the settings.
+        /// Returns the path of the database file that is used for testing.
         /// </summary>
         /// <returns></returns>
-        public static string GetSettingsDatabaseSavePath()
+        public static string GetTestingDatabaseSavePath()
         {
-            return GetSettingsSavePath(Settings.ExportFilePath);
+            return GetTestingSavePath(Settings.ExportFilePath);
         }
 
         /// <summary>
@@ -98,10 +90,9 @@ namespace Shared.Data
             //var dbPath = string.Format(CultureInfo.InvariantCulture,"{0}pa_{1}_{2}.dat", exportPath, DateTime.Now.Year, Helpers.GetIso8601WeekOfYear(DateTime.Now));
         }
 
-        private static string GetSettingsSavePath(string exportPath)
+        private static string GetTestingSavePath(string exportPath)
         {
-            return Path.Combine(exportPath, "pa.dat"); // current version: also store settings in normal file
-            //return Path.Combine(exportPath, "pa_settings.dat");
+            return Path.Combine(exportPath, "pa_test.dat"); // current version: also store settings in normal file
         }
     }
 }

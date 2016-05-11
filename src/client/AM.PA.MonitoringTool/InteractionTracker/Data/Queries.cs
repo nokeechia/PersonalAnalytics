@@ -67,7 +67,7 @@ namespace InteractionTracker.Data
         /// within the last hour
         /// </summary>
         /// <returns></returns>
-        internal static int GetNoInteractionSwitches()
+        internal static int GetNumInteractionSwitches()
         {
             try
             {

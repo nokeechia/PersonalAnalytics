@@ -31,7 +31,7 @@ namespace InteractionTracker.Visualizations
             var focusedTimeLastHourInMins = Math.Round((double)focusedTimeLastHour/60, 0);
 
             // context switches
-            var numInteractionSwitches = Queries.GetNoInteractionSwitches();
+            var numInteractionSwitches = Queries.GetNumInteractionSwitches();
             var numMeetingSwitches = Queries.GetMeetingsForLastHour();
 
             if (numInteractionSwitches > 10)
