@@ -47,7 +47,7 @@ namespace InteractionTracker.Visualizations
             if (numEmailsReceived > -1) html += numEmailsReceived + " emails received<br />";
             if (numEmailsSent > -1) html += numEmailsSent + " emails sent<br />";
             if (numChats > -1) html += numChats + " chats<br />";
-            //if (numCalls > -1) html += numCalls + " calls"; // implementation is not finished yet
+            if (numCalls > -1) html += numCalls + " calls";
 
             return html;
         }

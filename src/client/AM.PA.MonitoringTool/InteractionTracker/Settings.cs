@@ -14,6 +14,7 @@ namespace InteractionTracker
         public const string MeetingsTable = "meetings";
         public const string CallsTable = "calls";
         public const string ChatsTable = "chats";
+        public const string InteractionsTable = "interactions";
         public const string WindowsActivityTable = "windows_activity";
         //todo: thresholds
     }

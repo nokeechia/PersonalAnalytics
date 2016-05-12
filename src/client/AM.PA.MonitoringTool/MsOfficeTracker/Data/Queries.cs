@@ -11,6 +11,7 @@ using Shared.Data;
 using System;
 using System.Globalization;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 namespace MsOfficeTracker.Data
 {
@@ -24,6 +25,7 @@ namespace MsOfficeTracker.Data
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.MeetingsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, subject TEXT, durationInMins INTEGER)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.ChatsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.CallsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
+                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.InteractionsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, interactionType TEXT, sentType TEXT)");
             }
             catch (Exception e)
             {
@@ -104,12 +106,12 @@ namespace MsOfficeTracker.Data
                 }
 
                 // get emails sent count
-                var emailsSentResult = Office365Api.GetInstance().GetNumberOfEmailsSent(date.Date);
+                var emailsSentResult = Office365Api.GetInstance().GetEmailsSent(date.Date);
                 emailsSentResult.Wait();
                 var emailsSent = emailsSentResult.Result;
 
                 // get emails received count
-                var emailsReceivedResult = Office365Api.GetInstance().GetNumberOfEmailsReceived(date.Date);
+                var emailsReceivedResult = Office365Api.GetInstance().GetEmailsReceived(date.Date);
                 emailsReceivedResult.Wait();
                 var emailsReceived = emailsReceivedResult.Result;
 
@@ -117,7 +119,7 @@ namespace MsOfficeTracker.Data
                 SaveEmailsSnapshot(date, inboxSize, emailsSent, emailsReceived, isFromTimer);
 
                 // return for immediate use
-                return new Tuple<int, int>(emailsSent, emailsReceived);
+                return new Tuple<int, int>(emailsSent.Count, emailsReceived.Count);
             }
             catch (Exception e)
             {
@@ -132,10 +134,26 @@ namespace MsOfficeTracker.Data
         /// </summary>
         /// <param name="window"></param>
         /// <param name="process"></param>
-        internal static void SaveEmailsSnapshot(DateTime date, long inbox, int sent, int received, bool isFromTimer)
+        internal static void SaveEmailsSnapshot(DateTime date, long inbox, List<DateTime> sent, List<DateTime> received, bool isFromTimer)
         {
             Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.EmailsTable + " (timestamp, time, inbox, sent, received, isFromTimer) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
-                Database.GetInstance().QTime(date) + ", " + Database.GetInstance().Q(inbox) + ", " + Database.GetInstance().Q(sent) + ", " + Database.GetInstance().Q(received) + ", " + Database.GetInstance().Q(isFromTimer) + ");");
+                Database.GetInstance().QTime(date) + ", " + Database.GetInstance().Q(inbox) + ", " + Database.GetInstance().Q(sent.Count) + ", " + Database.GetInstance().Q(received.Count) + ", " + Database.GetInstance().Q(isFromTimer) + ");");
+
+            foreach (var sentTime in sent)
+            {
+                Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.InteractionsTable + " (timestamp, time, interactionType, sentType) SELECT strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " + Database.GetInstance().QTime(sentTime) + ", 'email', 'sent' "
+                    + "WHERE NOT EXISTS ("
+                            + "SELECT 1 FROM " + Settings.InteractionsTable + " WHERE time = " + Database.GetInstance().QTime(sentTime) + " AND interactionType = 'email' AND sentType = 'sent'"
+                        + ");");
+            }
+
+            foreach (var receivedTime in received)
+            {
+                Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.InteractionsTable + " (timestamp, time, interactionType, sentType) SELECT strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " + Database.GetInstance().QTime(receivedTime) + ", 'email', 'received' "
+                    + "WHERE NOT EXISTS ("
+                            + "SELECT 1 FROM " + Settings.InteractionsTable + " WHERE time = " + Database.GetInstance().QTime(receivedTime) + " AND interactionType = 'email' AND sentType = 'received'"
+                        + ");");
+            }
         }
 
         /// <summary>
@@ -288,7 +306,7 @@ namespace MsOfficeTracker.Data
             try
             {
                 // get chats and calls sent and received count
-                var numbersResult = Office365Api.GetInstance().GetNumberOfChatsAndCallsSentOrReceived(date.Date);
+                var numbersResult = Office365Api.GetInstance().GetChatsAndCallsSentOrReceived(date.Date);
                 numbersResult.Wait();
                 var numbers = numbersResult.Result;
 
@@ -304,7 +322,7 @@ namespace MsOfficeTracker.Data
                 SaveCallsSnapshot(date, callsSent, callsReceived, isFromTimer);
 
                 // return for immediate use
-                return new Tuple<int, int, int, int>(chatsSent, chatsReceived, callsSent, callsReceived);
+                return new Tuple<int, int, int, int>(chatsSent.Count, chatsReceived.Count, callsSent.Count, callsReceived.Count);
             }
             catch (Exception e)
             {
@@ -318,10 +336,26 @@ namespace MsOfficeTracker.Data
         /// </summary>
         /// <param name="window"></param>
         /// <param name="process"></param>
-        internal static void SaveChatsSnapshot(DateTime date, int sent, int received, bool isFromTimer)
+        internal static void SaveChatsSnapshot(DateTime date, List<DateTime> sent, List<DateTime> received, bool isFromTimer)
         {
             Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.ChatsTable + " (timestamp, time, service, sent, received, isFromTimer) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
-                Database.GetInstance().QTime(date) + ", " + "'skype'" + ", " + Database.GetInstance().Q(sent) + ", " + Database.GetInstance().Q(received) + ", " + Database.GetInstance().Q(isFromTimer) + ");");
+                Database.GetInstance().QTime(date) + ", " + "'skype'" + ", " + Database.GetInstance().Q(sent.Count) + ", " + Database.GetInstance().Q(received.Count) + ", " + Database.GetInstance().Q(isFromTimer) + ");");
+
+            foreach (var sentTime in sent)
+            {
+                Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.InteractionsTable + " (timestamp, time, interactionType, sentType) SELECT strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " + Database.GetInstance().QTime(sentTime) + ", 'chat', 'sent' "
+                    + "WHERE NOT EXISTS ("
+                            + "SELECT 1 FROM " + Settings.InteractionsTable + " WHERE time = " + Database.GetInstance().QTime(sentTime) + " AND interactionType = 'chat' AND sentType = 'sent'"
+                        + ");");
+            }
+
+            foreach (var receivedTime in received)
+            {
+                Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.InteractionsTable + " (timestamp, time, interactionType, sentType) SELECT strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " + Database.GetInstance().QTime(receivedTime) + ", 'chat', 'received' "
+                    + "WHERE NOT EXISTS ("
+                            + "SELECT 1 FROM " + Settings.InteractionsTable + " WHERE time = " + Database.GetInstance().QTime(receivedTime) + " AND interactionType = 'chat' AND sentType = 'received'"
+                        + ");");
+            }
         }
 
         /// <summary>
@@ -393,7 +427,7 @@ namespace MsOfficeTracker.Data
         /// <param name="date"></param>
         /// <param name="sent"></param>
         /// <param name="received"></param>
-        internal static void SaveCallsSnapshot(DateTime date, int sent, int received)
+        internal static void SaveCallsSnapshot(DateTime date, List<DateTime> sent, List<DateTime> received)
         {
             SaveCallsSnapshot(date, sent, received, false);
         }
@@ -406,10 +440,26 @@ namespace MsOfficeTracker.Data
         /// <param name="date"></param>
         /// <param name="sent"></param>
         /// <param name="received"></param>
-        internal static void SaveCallsSnapshot(DateTime date, int sent, int received, bool isFromTimer)
+        internal static void SaveCallsSnapshot(DateTime date, List<DateTime> sent, List<DateTime> received, bool isFromTimer)
         {
             Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.CallsTable + " (timestamp, time, service, sent, received, isFromTimer) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
-                Database.GetInstance().QTime(date) + ", " + "'skype'" + ", " + Database.GetInstance().Q(sent) + ", " + Database.GetInstance().Q(received) + ", " + Database.GetInstance().Q(isFromTimer) + ");");
+                Database.GetInstance().QTime(date) + ", " + "'skype'" + ", " + Database.GetInstance().Q(sent.Count) + ", " + Database.GetInstance().Q(received.Count) + ", " + Database.GetInstance().Q(isFromTimer) + ");");
+
+            foreach (var sentTime in sent)
+            {
+                Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.InteractionsTable + " (timestamp, time, interactionType, sentType) SELECT strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " + Database.GetInstance().QTime(sentTime) + ", 'call', 'sent' "
+                    + "WHERE NOT EXISTS ("
+                            + "SELECT 1 FROM " + Settings.InteractionsTable + " WHERE time = " + Database.GetInstance().QTime(sentTime) + " AND interactionType = 'call' AND sentType = 'sent'"
+                        + ");");
+            }
+
+            foreach (var receivedTime in received)
+            {
+                Database.GetInstance().ExecuteDefaultQuery("INSERT INTO " + Settings.InteractionsTable + " (timestamp, time, interactionType, sentType) SELECT strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " + Database.GetInstance().QTime(receivedTime) + ", 'call', 'received' "
+                    + "WHERE NOT EXISTS ("
+                            + "SELECT 1 FROM " + Settings.InteractionsTable + " WHERE time = " + Database.GetInstance().QTime(receivedTime) + " AND interactionType = 'call' AND sentType = 'received'"
+                        + ");");
+            }
         }
 
         /// <summary>

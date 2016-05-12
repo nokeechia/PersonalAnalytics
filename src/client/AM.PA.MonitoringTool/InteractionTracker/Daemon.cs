@@ -68,7 +68,7 @@ namespace InteractionTracker
 
         public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
         {
-            var vis = new DayInteractionTimeline();
+            var vis = new DayInteractionStepChart();
             return new List<IVisualization> { vis };
         }
 

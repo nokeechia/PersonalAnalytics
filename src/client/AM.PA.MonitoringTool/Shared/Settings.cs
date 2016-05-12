@@ -25,6 +25,9 @@ namespace Shared
         public const string UserEfficiencySurveyTable = "user_efficiency_survey"; // used for the retrospection
         public const string EmailsTable = "emails"; // used for the retrospection
         public const string MeetingsTable = "meetings";  // used for the retrospection
+        public const string CallsTable = "calls"; // used for the retrospection
+        public const string ChatsTable = "chats"; // used for the retrospection
+        public const string InteractionsTable = "interactions"; // used for the retrospection
 
         public static TimeSpan CheckForToolUpdatesInterval = TimeSpan.FromHours(3); // every 3 hours
         public static TimeSpan TooltipIconUpdateInterval = TimeSpan.FromSeconds(10); // every 10 seconds

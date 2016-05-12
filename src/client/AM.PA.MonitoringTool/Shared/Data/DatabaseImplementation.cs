@@ -141,8 +141,9 @@ namespace Shared.Data
                 da.Fill(ds);
                 return ds.Tables[0];
             }
-            catch
+            catch (Exception e)
             {
+                Logger.WriteToLogFile(e);
                 return null;
             }
             finally

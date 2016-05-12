@@ -446,9 +446,9 @@ namespace MsOfficeTracker.Helpers
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<int> GetNumberOfEmailsSent(DateTimeOffset date)
+        public async Task<List<DateTime>> GetEmailsSent(DateTimeOffset date)
         {
-            if (!await TrySilentAuthentication() || _authResult == null) return -1;
+            if (!await TrySilentAuthentication() || _authResult == null) return new List<DateTime>();
 
             try
             {
@@ -458,23 +458,26 @@ namespace MsOfficeTracker.Helpers
                 var groups = await _client.Me.MailFolders.GetById("SentItems").Messages
                     .Where(m => m.SentDateTime.Value >= dtStart && m.SentDateTime.Value <= dtEnd)
                     .Take(20)
-                    .Select(m => new {m.From}) //new DisplayEmail(m))
                     .ExecuteAsync();
 
-                var numberEmailsSent = 0;
+                var timesEmailsSent = new List<DateTime>();
                 do
                 {
                     var mailResults = groups.CurrentPage.ToList();
-                    numberEmailsSent += mailResults.Count;
+                    foreach (var message in mailResults)
+                    {
+                        timesEmailsSent.Add(message.SentDateTime.Value.DateTime.ToLocalTime());
+                    }
+
                     groups = await groups.GetNextPageAsync(); // next page
                 } while (groups != null && groups.MorePagesAvailable);
 
-                return numberEmailsSent;
+                return timesEmailsSent;
             }
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
-                return -1;
+                return new List<DateTime>();
             }
         }
 
@@ -484,9 +487,9 @@ namespace MsOfficeTracker.Helpers
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<int> GetNumberOfEmailsReceived(DateTimeOffset date)
+        public async Task<List<DateTime>> GetEmailsReceived(DateTimeOffset date)
         {
-            if (!await TrySilentAuthentication() || _authResult == null) return -1;
+            if (!await TrySilentAuthentication() || _authResult == null) return new List<DateTime>();
 
             try
             {
@@ -498,24 +501,26 @@ namespace MsOfficeTracker.Helpers
                     .Where(m => m.ReceivedDateTime.Value >= dtStart && m.ReceivedDateTime.Value <= dtEnd)
                     //todo: get other user folders (maybe with ParentFolderId)
                     .Take(20)
-                    .Select(m => new {m.From}) // new DisplayEmail(m))
                     .ExecuteAsync();
 
-                var numberOfEmailsReceived = 0;
+                var timesEmailsReceived = new List<DateTime>();
                 do
                 {
                     var mailResults = groups.CurrentPage.ToList();
-                    numberOfEmailsReceived += mailResults.Count;
+                    foreach (var message in mailResults)
+                    {
+                        timesEmailsReceived.Add(message.ReceivedDateTime.Value.DateTime.ToLocalTime());
+                    }
 
                     groups = await groups.GetNextPageAsync();
                 } while (groups != null && groups.MorePagesAvailable);
 
-                return numberOfEmailsReceived;
+                return timesEmailsReceived;
             }
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
-                return -1;
+                return new List<DateTime>();
             }
         }
 
@@ -629,10 +634,10 @@ namespace MsOfficeTracker.Helpers
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<Tuple<int, int, int, int>> GetNumberOfChatsAndCallsSentOrReceived(DateTimeOffset date)
+        public async Task<Tuple<List<DateTime>, List<DateTime>, List<DateTime>, List<DateTime>>> GetChatsAndCallsSentOrReceived(DateTimeOffset date)
         {
             if (!await TrySilentAuthentication() || _authResult == null)
-                return new Tuple<int, int, int, int>(-1, -1, -1, -1);
+                return new Tuple<List<DateTime>, List<DateTime>, List<DateTime>, List<DateTime>>(new List<DateTime>(), new List<DateTime>(), new List<DateTime>(), new List<DateTime>());
 
             try
             {
@@ -658,7 +663,7 @@ namespace MsOfficeTracker.Helpers
                 if (myFolder == "")
                 {
                     Logger.WriteToConsole("Oh No! Conversation Folder failed!");
-                    return new Tuple<int, int, int, int>(-1, -1, -1, -1);
+                    return new Tuple<List<DateTime>, List<DateTime>, List<DateTime>, List<DateTime>>(new List<DateTime>(), new List<DateTime>(), new List<DateTime>(), new List<DateTime>());
                 }
 
 				// grab all messages
@@ -691,70 +696,45 @@ namespace MsOfficeTracker.Helpers
                 }
 
                 // determine sent or received chats
-                var numberChatsSent = 0;
-                var numberChatsReceived = 0;
-                var numberCallsSent = 0;
-                var numberCallsReceived = 0;
+                var chatsSent = new List<DateTime>();
+                var chatsReceived = new List<DateTime>();
+                var callsSent = new List<DateTime>();
+                var callsReceived = new List<DateTime>();
 
-                // regex matches this format: "<display_name> <hour:minute> <am||pm>:"
+                // regex match groups: [0] -> Entire Match , [1] -> Message Sender Display Name , [2] -> Message Timestamp"
                 var user = await _client.Me.ExecuteAsync();
-                var nameSize = user.DisplayName.Length + 4;  //accounts for random newlines
-                var regex = new Regex("(.{" + nameSize.ToString() + "}\\d\\d?:\\d\\d (am|pm):)", RegexOptions.Singleline);
+                var regex = new Regex(@"(<span class=\""im_sender\"">(.*)</span> <span class=\""message_timestamp\"">\r\n(.*): </span>)", RegexOptions.Multiline);
                 foreach (var message in cleanList)
                 {
-                    var content = HtmlToPlainText(message.Body.Content).ToLower();
-                    if (!message.Subject.ToLower().Contains("call"))
+                    var content = message.Body.Content;
+                    if (!content.Contains(@"class=\""footer_line\"""))
                     {
                         var mc = regex.Matches(content);
                         foreach (Match match in mc)
                         {
-                            if (match.Groups[0].Value.Contains(user.DisplayName.ToLower()))
-                                numberChatsSent++;
+                            if (match.Groups[2].Value.Contains(user.DisplayName))
+                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value));
                             else
-                                numberChatsReceived++;
+                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value));
                         }
                     }
                     else
                     {
                         if (message.From.EmailAddress.Address.ToLower() == user.EmailAddress.ToLower())
-                            numberCallsSent++;
+                            callsSent.Add(message.ReceivedDateTime.Value.DateTime);
                         else
-                            numberCallsReceived++;
+                            callsReceived.Add(message.ReceivedDateTime.Value.DateTime);
                     }               
                 }
 
-                return new Tuple<int, int, int, int>(numberChatsSent, numberChatsReceived, numberCallsSent,
-                    numberCallsReceived);
+                return new Tuple<List<DateTime>, List<DateTime>, List<DateTime>, List<DateTime>>(chatsSent, chatsReceived, callsSent,
+                    callsReceived);
             }
             catch (Exception e)
             {
                 Logger.WriteToLogFile(e);
-                return new Tuple<int, int, int, int>(-1, -1, -1, -1);
+                return new Tuple<List<DateTime>, List<DateTime>, List<DateTime>, List<DateTime>>(new List<DateTime>(), new List<DateTime>(), new List<DateTime>(), new List<DateTime>());
             }
-        }
-
-		// crudely turns html into text
-        private string HtmlToPlainText(string html)
-        {
-            const string tagWhiteSpace = @"(>|$)(\W|\n|\r)+<";  //matches one or more (white space or line breaks) between '>' and '<'
-            const string stripFormatting = @"<[^>]*(>|$)";  //match any character between '<' and '>', even when end tag is missing
-            const string lineBreak = @"<(br|BR)\s{0,1}\/{0,1}>";  //matches: <br>,<br/>,<br />,<BR>,<BR/>,<BR />
-            var lineBreakRegex = new Regex(lineBreak, RegexOptions.None);
-            var stripFormattingRegex = new Regex(stripFormatting, RegexOptions.None);
-            var tagWhiteSpaceRegex = new Regex(tagWhiteSpace, RegexOptions.None);
-
-            var text = html;
-            
-            // decode html specific characters
-            text = System.Net.WebUtility.HtmlDecode(text);
-            // remove tag whitespace/line breaks
-            text = tagWhiteSpaceRegex.Replace(text, "><");
-            // replace <br /> with line breaks
-            text = lineBreakRegex.Replace(text, Environment.NewLine);
-            // strip formatting
-            text = stripFormattingRegex.Replace(text, string.Empty);
-        
-            return text;
         }
 
         #endregion

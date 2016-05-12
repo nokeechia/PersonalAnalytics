@@ -15,6 +15,7 @@ namespace MsOfficeTracker
         public const string MeetingsTable = "meetings";
         public const string CallsTable = "calls";
         public const string ChatsTable = "chats";
+        public const string InteractionsTable = "interactions";
 
         ////////////////////////////////////////////////////////////
         // constants for using the Office 365 API
