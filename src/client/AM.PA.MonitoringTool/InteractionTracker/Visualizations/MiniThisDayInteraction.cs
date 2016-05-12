@@ -44,9 +44,9 @@ namespace InteractionTracker.Visualizations
             // generate html where queries were successful
             var html = string.Empty;
             if (numMeetings > -1) html += numMeetings + " total meetings<br />";
-            if (numEmailsReceived > -1) html += numEmailsReceived + " emails received<br />";
-            if (numEmailsSent > -1) html += numEmailsSent + " emails sent<br />";
             if (numChats > -1) html += numChats + " chats<br />";
+            if (numEmailsSent > -1) html += numEmailsSent + " emails sent<br />";
+            if (numEmailsReceived > -1) html += numEmailsReceived + " emails received<br />";
             if (numCalls > -1) html += numCalls + " calls";
 
             return html;
