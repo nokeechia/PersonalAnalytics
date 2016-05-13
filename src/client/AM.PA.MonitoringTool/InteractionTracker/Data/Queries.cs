@@ -356,7 +356,7 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns chats that have occurred since 6 am until now</returns>
-        public static List<DateTime> GetChatsSentOrReceivedFromSixAm(string sentOrReceived)
+        public static List<DateTime> GetChatsSentOrReceivedFromSixAm()//(string sentOrReceived)
         {
             var endTs = DateTime.Now;
             var startTs = endTs.Date.AddHours(6); // 6 am today
@@ -368,7 +368,7 @@ namespace InteractionTracker.Data
                 var query = "SELECT * FROM " + Settings.InteractionsTable
                             + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date) // DateTime.Now.Date
                             + "AND interactionType = 'chat'"
-                            + " AND sentType = '" + sentOrReceived + "';";
+                            + ";";
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
 
@@ -442,14 +442,12 @@ namespace InteractionTracker.Data
         {
             var activityDictionary = new Dictionary<string, List<int>>();
 
-            var chatsReceivedList = new List<int>();
-            var chatsSentList = new List<int>();
+            var chatsList = new List<int>();
             var emailsReceivedList = new List<int>();
             var emailsSentList = new List<int>();
             var meetingsAttendedList = new List<int>();
 
-            var chatsSent = GetChatsSentOrReceivedFromSixAm("sent");
-            var chatsReceived = GetChatsSentOrReceivedFromSixAm("received");
+            var chats = GetChatsSentOrReceivedFromSixAm();
             var emailsSent = GetEmailsSentOrReceivedFromSixAm("sent");
             var emailsReceived = GetEmailsSentOrReceivedFromSixAm("received");
             var meetings = GetMeetingsFromSixAm();
@@ -465,12 +463,11 @@ namespace InteractionTracker.Data
 
             for (int i = 0; i < minutes; i++)
             {
-                // For Chats Sent
-                foreach (var chat in chatsSent)
+                foreach (var chat in chats)
                 {
                     if ((chat.AddSeconds(-30) <= earlier) && (chat.AddSeconds(30) >= earlier))
                     {
-                        chatsSentList.Add(1);
+                        chatsList.Add(1);
                         didHappen = true;
                         break;
                     }
@@ -478,24 +475,7 @@ namespace InteractionTracker.Data
 
                 if (!didHappen)
                 {
-                    chatsSentList.Add(0);
-                }
-                didHappen = false;
-
-                // For Chats Received
-                foreach (var chat in chatsReceived)
-                {
-                    if ((chat.AddSeconds(-30) <= earlier) && (chat.AddSeconds(30) >= earlier))
-                    {
-                        chatsReceivedList.Add(1);
-                        didHappen = true;
-                        break;
-                    }
-                }
-
-                if (!didHappen)
-                {
-                    chatsReceivedList.Add(0);
+                    chatsList.Add(0);
                 }
                 didHappen = false;
 
@@ -554,8 +534,7 @@ namespace InteractionTracker.Data
             }
 
             activityDictionary.Add("Meetings Attended", meetingsAttendedList);
-            activityDictionary.Add("Chats Received", chatsReceivedList);
-            activityDictionary.Add("Chats Sent", chatsSentList);
+            activityDictionary.Add("Chats", chatsList);
             activityDictionary.Add("Emails Sent", emailsSentList);
             activityDictionary.Add("Emails Received", emailsReceivedList);
             //activityDictionary.Add("Today's Overall Focus", totalFocusList);
