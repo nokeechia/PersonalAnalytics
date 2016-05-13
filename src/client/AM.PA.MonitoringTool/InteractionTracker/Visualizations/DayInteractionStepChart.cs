@@ -4,13 +4,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Shared;
 using Shared.Helpers;
 using InteractionTracker.Data;
 using System.Globalization;
-using System.Runtime.InteropServices;
 
 namespace InteractionTracker.Visualizations
 {
@@ -25,10 +22,6 @@ namespace InteractionTracker.Visualizations
             Type = VisType.Day;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         public override string GetHtml()
         {
             var html = string.Empty;
@@ -56,7 +49,7 @@ namespace InteractionTracker.Visualizations
 
                 xList += hourMinute;
 
-                if (earlier.Minute % 15 == 0)
+                if (earlier.Minute % 30 == 0)
                 {
                     smallXList += hourMinute;
                 }
@@ -81,15 +74,14 @@ namespace InteractionTracker.Visualizations
 
             html += "<script type='text/javascript'>";
             html +=
-                "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'step'},axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}});";
+                "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Emails Received']);";
+            html += "</script>";
+
+            html += "<script type='text/javascript'>";
+            html += VisHelper.CreateChartHtmlTitle(Title) + ".unselect(['Emails Received']);";
             html += "</script>";
 
             return html;
         }
     }
 }
-/*
- *  "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', columns:[['x', " + xList + ",['data1', 1, 1, 1, 0, 0, 1],['data2',1,1,1,0,0,0],['data3',1,0,1,0,0,1],['data4',0,0,0,0,0,0]," + columns + "],names: {data1: 'Chats Received', data2: 'Chats Sent', data3: 'Emails Received', data4: 'Emails Sent', data5: 'Meetings'},types:{data1:'step',data2:'step',data3:'step',data4:'step',data5:'step'}},axis:{x:{show:true, tick:{count: 24, culling: {max: 25}},type:'category'},y:{show:false}},tooltip:{show:false}});";
- */
-
-//count: 24,

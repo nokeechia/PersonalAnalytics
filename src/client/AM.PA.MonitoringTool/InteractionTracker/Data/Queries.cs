@@ -553,11 +553,12 @@ namespace InteractionTracker.Data
                 earlier = earlier.AddMinutes(1);
             }
 
+            activityDictionary.Add("Meetings Attended", meetingsAttendedList);
             activityDictionary.Add("Chats Received", chatsReceivedList);
             activityDictionary.Add("Chats Sent", chatsSentList);
-            activityDictionary.Add("Emails Received", emailsReceivedList);
             activityDictionary.Add("Emails Sent", emailsSentList);
-            activityDictionary.Add("Meetings Attended", meetingsAttendedList);
+            activityDictionary.Add("Emails Received", emailsReceivedList);
+            //activityDictionary.Add("Today's Overall Focus", totalFocusList);
             return activityDictionary;
         }
     }
