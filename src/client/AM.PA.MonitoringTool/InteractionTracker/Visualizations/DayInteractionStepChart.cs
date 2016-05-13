@@ -77,10 +77,6 @@ namespace InteractionTracker.Visualizations
                 "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Emails Received']);";
             html += "</script>";
 
-            html += "<script type='text/javascript'>";
-            html += VisHelper.CreateChartHtmlTitle(Title) + ".unselect(['Emails Received']);";
-            html += "</script>";
-
             return html;
         }
     }
