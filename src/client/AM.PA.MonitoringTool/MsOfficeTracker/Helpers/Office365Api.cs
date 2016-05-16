@@ -654,15 +654,36 @@ namespace MsOfficeTracker.Helpers
                 {
                     foreach (var mailFolder in mailFolders.CurrentPage)
                     {
-                        if (mailFolder.DisplayName == "Conversation History")
-                            myFolder = mailFolder.Id;
+                        /*if (mailFolder.DisplayName == "Conversation History")
+                            myFolder = mailFolder.Id;*/ // old way
+
+                        // grab one message and test // new way
+                        var group = await _client.Me.MailFolders.GetById(mailFolder.Id).Messages
+                            .Take(5)
+                            .ExecuteAsync();
+
+                        if (group != null)
+                        { 
+                            var mailResults = group.CurrentPage.ToList();
+
+                            foreach (var message in mailResults)
+                            {
+                                if (message.Body.Content.Contains(@".im_sender") && message.Body.Content.Contains(@".message_timestamp"))
+                                    myFolder = mailFolder.Id;
+                            }
+                        }
+                        if (myFolder != "")
+                        {
+                            Logger.WriteToConsole("Conversation Folder Found! Display Name: " + mailFolder.DisplayName);
+                            break;
+                        }
                     }
                     mailFolders = await mailFolders.GetNextPageAsync();
-                } while (mailFolders != null && mailFolders.MorePagesAvailable);
+                } while (mailFolders != null && mailFolders.MorePagesAvailable && myFolder == "");
 
                 if (myFolder == "")
                 {
-                    Logger.WriteToConsole("Oh No! Conversation Folder failed!");
+                    Logger.WriteToConsole("Oh No! Conversation Folder Failed!");
                     return new Tuple<List<DateTime>, List<DateTime>, List<DateTime>, List<DateTime>>(new List<DateTime>(), new List<DateTime>(), new List<DateTime>(), new List<DateTime>());
                 }
 
@@ -703,7 +724,7 @@ namespace MsOfficeTracker.Helpers
 
                 // regex match groups: [0] -> Entire Match , [1] -> Message Sender Display Name , [2] -> Message Timestamp"
                 var user = await _client.Me.ExecuteAsync();
-                var regex = new Regex(@"(<span class=\""im_sender\"">(.*)</span> <span class=\""message_timestamp\"">\r\n(.*): </span>)", RegexOptions.Multiline);
+                var regex = new Regex(@"(<span class=\""im_sender\"">(.*)</span> <span class=\""message_timestamp\"">(.*): </span>)", RegexOptions.Multiline);
                 foreach (var message in cleanList)
                 {
                     var content = message.Body.Content;
@@ -713,9 +734,9 @@ namespace MsOfficeTracker.Helpers
                         foreach (Match match in mc)
                         {
                             if (match.Groups[2].Value.Contains(user.DisplayName))
-                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value));
+                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim()));
                             else
-                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value));
+                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim()));
                         }
                     }
                     else
