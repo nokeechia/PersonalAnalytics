@@ -7,9 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Shared;
 using Shared.Data;
 
@@ -19,7 +16,7 @@ namespace InteractionTracker.Data
     {
         /// <summary>
         /// Returns the focused time for the last hour
-        /// (which is 60min - time spent in Outlook, Skype, Lync)
+        /// (which is 60 mins - time spent in Outlook, Skype, Lync)
         /// </summary>
         /// <returns></returns>
         internal static int GetFocusTimeInLastHour()
@@ -446,6 +443,7 @@ namespace InteractionTracker.Data
             var emailsReceivedList = new List<int>();
             var emailsSentList = new List<int>();
             var meetingsAttendedList = new List<int>();
+            var overallFocusList = new List<int>();
 
             var chats = GetChatsSentOrReceivedFromSixAm();
             var emailsSent = GetEmailsSentOrReceivedFromSixAm("sent");
@@ -461,6 +459,8 @@ namespace InteractionTracker.Data
 
             int minutes = (int)Math.Floor(span.TotalMinutes);
 
+            var notFocused = 0;
+
             for (int i = 0; i < minutes; i++)
             {
                 foreach (var chat in chats)
@@ -469,6 +469,12 @@ namespace InteractionTracker.Data
                     {
                         chatsList.Add(1);
                         didHappen = true;
+
+                        if (notFocused == 0)
+                        {
+                            overallFocusList.Add(1);
+                        }
+
                         break;
                     }
                 }
@@ -486,6 +492,11 @@ namespace InteractionTracker.Data
                     {
                         emailsSentList.Add(1);
                         didHappen = true;
+
+                        if (notFocused == 0)
+                        {
+                            overallFocusList.Add(1);
+                        }
                         break;
                     }
                 }
@@ -503,6 +514,11 @@ namespace InteractionTracker.Data
                     {
                         emailsReceivedList.Add(1);
                         didHappen = true;
+
+                        if (notFocused == 0)
+                        {
+                            overallFocusList.Add(1);
+                        }
                         break;
                     }
                 }
@@ -520,6 +536,12 @@ namespace InteractionTracker.Data
                     {
                         meetingsAttendedList.Add(1);
                         didHappen = true;
+
+
+                        if (notFocused == 0)
+                        {
+                            overallFocusList.Add(1);
+                        }
                         break;
                     }
                 }
@@ -531,13 +553,21 @@ namespace InteractionTracker.Data
                 didHappen = false;
 
                 earlier = earlier.AddMinutes(1);
+
+
+                if (notFocused == 0)
+                {
+                    overallFocusList.Add(0);
+                }
+
+                notFocused = 0;
             }
 
             activityDictionary.Add("Meetings Attended", meetingsAttendedList);
             activityDictionary.Add("Chats", chatsList);
             activityDictionary.Add("Emails Sent", emailsSentList);
             activityDictionary.Add("Emails Received", emailsReceivedList);
-            //activityDictionary.Add("Today's Overall Focus", totalFocusList);
+            activityDictionary.Add("Overall Focus", overallFocusList);
             return activityDictionary;
         }
     }
