@@ -176,9 +176,9 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns meetings that have occurred since 6 am until now</returns>
-        public static List<Tuple<DateTime, DateTime>> GetMeetingsFromSixAm()
+        public static List<Tuple<DateTime, DateTime>> GetMeetingsFromSixAm(DateTime later)
         {
-            var endTs = DateTime.Now;
+            var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today
             var current = new List<Tuple<DateTime, DateTime>>();
             var meetings = new List<Tuple<DateTime, DateTime>>();
@@ -272,9 +272,9 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns emails that have occurred since 6 am until now</returns>
-        public static List<DateTime> GetEmailsSentOrReceivedFromSixAm(string sentOrReceived)
+        public static List<DateTime> GetEmailsSentOrReceivedFromSixAm(DateTime later, string sentOrReceived)
         {
-            var endTs = DateTime.Now;
+            var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today
             var current = new List<DateTime>();
             var emails = new List<DateTime>();
@@ -353,9 +353,9 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns chats that have occurred since 6 am until now</returns>
-        public static List<DateTime> GetChatsSentOrReceivedFromSixAm()//(string sentOrReceived)
+        public static List<DateTime> GetChatsSentOrReceivedFromSixAm(DateTime later)//(string sentOrReceived)
         {
-            var endTs = DateTime.Now;
+            var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today
             var current = new List<DateTime>();
             var chats = new List<DateTime>();
@@ -394,9 +394,9 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns calls that have occurred since 6 am until now</returns>
-        public static List<DateTime> GeCallsSentOrReceivedFromSixAm(string sentOrReceived)
+        public static List<DateTime> GeCallsSentOrReceivedFromSixAm(DateTime later, string sentOrReceived)
         {
-            var endTs = DateTime.Now;
+            var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today
             var current = new List<DateTime>();
             var calls = new List<DateTime>();
@@ -435,7 +435,7 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>A dictionary that contains the meetings and their chart values</returns>
-        internal static Dictionary<string, List<int>> GetActivityStepChartData()
+        internal static Dictionary<string, List<int>> GetActivityStepChartData(DateTime earlier, DateTime later)
         {
             var activityDictionary = new Dictionary<string, List<int>>();
 
@@ -445,18 +445,14 @@ namespace InteractionTracker.Data
             var meetingsAttendedList = new List<int>();
             var overallFocusList = new List<int>();
 
-            var chats = GetChatsSentOrReceivedFromSixAm();
-            var emailsSent = GetEmailsSentOrReceivedFromSixAm("sent");
-            var emailsReceived = GetEmailsSentOrReceivedFromSixAm("received");
-            var meetings = GetMeetingsFromSixAm();
+            var chats = GetChatsSentOrReceivedFromSixAm(later);
+            var emailsSent = GetEmailsSentOrReceivedFromSixAm(later, "sent");
+            var emailsReceived = GetEmailsSentOrReceivedFromSixAm(later, "received");
+            var meetings = GetMeetingsFromSixAm(later);
 
             bool didHappen = false;
 
-            DateTime now = DateTime.Now;
-            DateTime earlier = now.Date.AddHours(6);
-
-            TimeSpan span = now.Subtract(earlier);
-
+            TimeSpan span = later.Subtract(earlier);
             int minutes = (int)Math.Floor(span.TotalMinutes);
 
             var notFocused = 0;
@@ -468,13 +464,8 @@ namespace InteractionTracker.Data
                     if ((chat.AddSeconds(-30) <= earlier) && (chat.AddSeconds(30) >= earlier))
                     {
                         chatsList.Add(1);
+                        notFocused = 1;
                         didHappen = true;
-
-                        if (notFocused == 0)
-                        {
-                            overallFocusList.Add(1);
-                        }
-
                         break;
                     }
                 }
@@ -491,12 +482,8 @@ namespace InteractionTracker.Data
                     if ((email.AddSeconds(-30) <= earlier) && (email.AddSeconds(30) >= earlier))
                     {
                         emailsSentList.Add(1);
+                        notFocused = 1;
                         didHappen = true;
-
-                        if (notFocused == 0)
-                        {
-                            overallFocusList.Add(1);
-                        }
                         break;
                     }
                 }
@@ -513,12 +500,8 @@ namespace InteractionTracker.Data
                     if ((email.AddSeconds(-30) <= earlier) && (email.AddSeconds(30) >= earlier))
                     {
                         emailsReceivedList.Add(1);
+                        notFocused = 1;
                         didHappen = true;
-
-                        if (notFocused == 0)
-                        {
-                            overallFocusList.Add(1);
-                        }
                         break;
                     }
                 }
@@ -535,13 +518,8 @@ namespace InteractionTracker.Data
                     if ((meeting.Item1 <= earlier) && (meeting.Item2 >= earlier))
                     {
                         meetingsAttendedList.Add(1);
+                        notFocused = 1;
                         didHappen = true;
-
-
-                        if (notFocused == 0)
-                        {
-                            overallFocusList.Add(1);
-                        }
                         break;
                     }
                 }
@@ -552,15 +530,10 @@ namespace InteractionTracker.Data
                 }
                 didHappen = false;
 
-                earlier = earlier.AddMinutes(1);
-
-
-                if (notFocused == 0)
-                {
-                    overallFocusList.Add(0);
-                }
-
+                overallFocusList.Add(notFocused);
                 notFocused = 0;
+
+                earlier = earlier.AddMinutes(1);
             }
 
             activityDictionary.Add("Meetings Attended", meetingsAttendedList);

@@ -25,7 +25,10 @@ namespace InteractionTracker.Visualizations
         public override string GetHtml()
         {
             var html = string.Empty;
-            var chartQueryResultsLocal = Queries.GetActivityStepChartData();
+            
+            var earlier = DateTime.Now.Date.AddHours(6);
+            var later = DateTime.Now.Date.AddHours(18);
+            var chartQueryResultsLocal = Queries.GetActivityStepChartData(earlier, later);
 
             if (chartQueryResultsLocal.Count == 0)
             {
@@ -36,11 +39,9 @@ namespace InteractionTracker.Visualizations
             var hourMinute = string.Empty;
             var xList = string.Empty;
             var smallXList = string.Empty;
-            var now = DateTime.Now;
-            var earlier = now.Date.AddHours(6);
             var columns = string.Empty;
 
-            for (; earlier <= now;)
+            for (; earlier <= later;)
             {
                 if (earlier.Minute > 9)
                     hourMinute = String.Format(CultureInfo.InvariantCulture, "'{0}:{1}', ", earlier.Hour, earlier.Minute);
