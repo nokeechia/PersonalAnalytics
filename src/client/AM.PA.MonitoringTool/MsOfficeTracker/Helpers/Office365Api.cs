@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using Shared.Data;
 using MsOfficeTracker.Models;
+using System.Runtime.InteropServices;
 
 namespace MsOfficeTracker.Helpers
 {
@@ -23,7 +24,7 @@ namespace MsOfficeTracker.Helpers
         private Uri redirectUri = new Uri(Settings.RedirectUriString);
 
         private string _authority = string.Format(CultureInfo.InvariantCulture, Settings.AadInstance, "common");
-        // use microsoft.onmicrosoft.com for just this tenand, use "common" if used for everyone
+        // use microsoft.onmicrosoft.com for just this tenant, use "common" if used for everyone
 
         private AuthenticationContext _authContext;
         private AuthenticationResult _authResult;
@@ -213,7 +214,7 @@ namespace MsOfficeTracker.Helpers
         /// <returns></returns>
         public bool IsAuthenticated()
         {
-            //if (!await TrySilentAuthentication() || _authResult == null) return false;
+            //if (!IsInternetAvailable() || !await TrySilentAuthentication() || _authResult == null) return false;
             if (_authResult == null) return false;
             return true;
         }
@@ -272,6 +273,15 @@ namespace MsOfficeTracker.Helpers
             return jwt.preferred_username;
         }
 
+        [DllImport("wininet.dll")]  
+        private extern static bool InternetGetConnectedState(out int description, int reservedValue);  
+
+        private static bool IsInternetAvailable()
+        {  
+            int description;  
+            return InternetGetConnectedState(out description, 0);  
+        }
+
         #endregion
 
         #region Meeting Queries
@@ -279,7 +289,7 @@ namespace MsOfficeTracker.Helpers
         public async Task<List<DisplayEvent>> LoadMeetings(DateTimeOffset date)
         {
             var meetings = new List<DisplayEvent>();
-            if (!await TrySilentAuthentication() || _authResult == null) return meetings;
+            if (!IsInternetAvailable() || !await TrySilentAuthentication() || _authResult == null) return meetings;
 
             try
             {
@@ -355,7 +365,7 @@ namespace MsOfficeTracker.Helpers
 
         //internal async void LoadEvents()
         //{
-        //    if (!await TrySilentAuthentication()) return;
+        //    if (!IsInternetAvailable() || !await TrySilentAuthentication()) return;
 
         //    try
         //    {
@@ -412,7 +422,7 @@ namespace MsOfficeTracker.Helpers
         /// <returns>number of items, -1 in case of an error</returns>
         public async Task<long> GetNumberOfEmailsInInbox()
         {
-            if (!await TrySilentAuthentication() || _authResult == null) return -1;
+            if (!IsInternetAvailable() || !await TrySilentAuthentication() || _authResult == null) return -1;
 
             try
             {
@@ -448,7 +458,7 @@ namespace MsOfficeTracker.Helpers
         /// <returns></returns>
         public async Task<List<DateTime>> GetEmailsSent(DateTimeOffset date)
         {
-            if (!await TrySilentAuthentication() || _authResult == null) return new List<DateTime>();
+            if (!IsInternetAvailable() || !await TrySilentAuthentication() || _authResult == null) return new List<DateTime>();
 
             try
             {
@@ -489,7 +499,7 @@ namespace MsOfficeTracker.Helpers
         /// <returns></returns>
         public async Task<List<DateTime>> GetEmailsReceived(DateTimeOffset date)
         {
-            if (!await TrySilentAuthentication() || _authResult == null) return new List<DateTime>();
+            if (!IsInternetAvailable() || !await TrySilentAuthentication() || _authResult == null) return new List<DateTime>();
 
             try
             {
@@ -528,7 +538,7 @@ namespace MsOfficeTracker.Helpers
         //{
         //    var attendees = new List<ContactItem>();
 
-        //    if (!await TrySilentAuthentication() || _authResult == null) return attendees;
+        //    if (!IsInternetAvailable() || !await TrySilentAuthentication() || _authResult == null) return attendees;
 
         //    try
         //    {
@@ -603,7 +613,7 @@ namespace MsOfficeTracker.Helpers
 
         public async Task<string> GetPhotoForUser(string email)
         {
-            if (!await TrySilentAuthentication() || _authResult == null) return string.Empty;
+            if (!IsInternetAvailable() || !await TrySilentAuthentication() || _authResult == null) return string.Empty;
 
             try
             {
@@ -636,7 +646,7 @@ namespace MsOfficeTracker.Helpers
         /// <returns></returns>
         public async Task<Tuple<List<DateTime>, List<DateTime>, List<DateTime>, List<DateTime>>> GetChatsAndCallsSentOrReceived(DateTimeOffset date)
         {
-            if (!await TrySilentAuthentication() || _authResult == null)
+            if (!IsInternetAvailable() || !await TrySilentAuthentication() || _authResult == null)
                 return new Tuple<List<DateTime>, List<DateTime>, List<DateTime>, List<DateTime>>(new List<DateTime>(), new List<DateTime>(), new List<DateTime>(), new List<DateTime>());
 
             try

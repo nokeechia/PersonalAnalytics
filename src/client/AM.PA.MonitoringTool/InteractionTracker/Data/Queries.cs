@@ -58,6 +58,11 @@ namespace InteractionTracker.Data
             }
         }
 
+        /// <summary>
+        /// TODO: Delete?
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
         internal static Dictionary<string, double> GetActivityStepChartData(DateTimeOffset date)
         {
             var dto = new Dictionary<string, double>();
@@ -176,7 +181,7 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns meetings that have occurred since 6 am until now</returns>
-        public static List<Tuple<DateTime, DateTime>> GetMeetingsFromSixAm(DateTime later)
+        internal static List<Tuple<DateTime, DateTime>> GetMeetingsFromSixAm(DateTime later)
         {
             var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today
@@ -272,7 +277,7 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns emails that have occurred since 6 am until now</returns>
-        public static List<DateTime> GetEmailsSentOrReceivedFromSixAm(DateTime later, string sentOrReceived)
+        internal static List<DateTime> GetEmailsSentOrReceivedFromSixAm(DateTime later, string sentOrReceived)
         {
             var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today
@@ -353,7 +358,7 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns chats that have occurred since 6 am until now</returns>
-        public static List<DateTime> GetChatsSentOrReceivedFromSixAm(DateTime later)//(string sentOrReceived)
+        internal static List<DateTime> GetChatsSentOrReceivedFromSixAm(DateTime later)//(string sentOrReceived)
         {
             var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today
@@ -394,7 +399,7 @@ namespace InteractionTracker.Data
         /// 
         /// </summary>
         /// <returns>Returns calls that have occurred since 6 am until now</returns>
-        public static List<DateTime> GeCallsSentOrReceivedFromSixAm(DateTime later, string sentOrReceived)
+        internal static List<DateTime> GeCallsSentOrReceivedFromSixAm(DateTime later, string sentOrReceived)
         {
             var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today

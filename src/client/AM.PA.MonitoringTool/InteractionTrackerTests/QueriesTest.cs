@@ -190,20 +190,20 @@ namespace InteractionTrackerTests
             _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.ChatsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
             //_database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.CallsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
 
-            var chats = new List<Tuple<DateTime>>();
-            chats.Add(new Tuple<DateTime>(DateTime.Now.AddMinutes(20)));
-            chats.Add(new Tuple<DateTime>(DateTime.Now.AddSeconds(-10)));
-            chats.Add(new Tuple<DateTime>(DateTime.Now.AddDays(-20)));
-            chats.Add(new Tuple<DateTime>(DateTime.Now.AddDays(2)));
-            chats.Add(new Tuple<DateTime>(DateTime.Now.AddDays(-1)));
-            chats.Add(new Tuple<DateTime>(DateTime.Now.AddDays(-1).AddSeconds(33)));
-            chats.Add(new Tuple<DateTime>(DateTime.Now.AddDays(-1)));
-            chats.Add(new Tuple<DateTime>(DateTime.Now.AddMinutes(-59)));
+            var chats = new List<Tuple<DateTime, int>>();
+            chats.Add(new Tuple<DateTime, int>(DateTime.Now.AddMinutes(20), 3));
+            chats.Add(new Tuple<DateTime, int>(DateTime.Now.AddSeconds(-10), 3));
+            chats.Add(new Tuple<DateTime, int>(DateTime.Now.AddDays(-20), 2));
+            chats.Add(new Tuple<DateTime, int>(DateTime.Now.AddDays(2), 3));
+            chats.Add(new Tuple<DateTime, int>(DateTime.Now.AddDays(-1), 2));
+            chats.Add(new Tuple<DateTime, int>(DateTime.Now.AddDays(-1).AddSeconds(33), 3));
+            chats.Add(new Tuple<DateTime, int>(DateTime.Now.AddDays(-1), 1));
+            chats.Add(new Tuple<DateTime, int>(DateTime.Now.AddMinutes(-59), 0));
 
             foreach (var chat in chats)
             {
-                _database.ExecuteDefaultQuery("INSERT INTO " + Settings.ChatsTable + " (timestamp, time, sent) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
-                    _database.QTime(chat.Item1) + "," + 1 + ");");
+                _database.ExecuteDefaultQuery("INSERT INTO " + Settings.ChatsTable + " (timestamp, time, sent, received) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
+                    _database.QTime(chat.Item1) + ", " + chat.Item2 + ", 0);");
             }
 
             // run tests
@@ -213,7 +213,7 @@ namespace InteractionTrackerTests
 
             Assert.AreEqual(3, numChatsToday);
             Assert.AreEqual(3, numChatsYesterday);
-            Assert.AreEqual(0, numChatsOtherDay);
+            Assert.AreEqual(-1, numChatsOtherDay); // -1 means: we don't know, we have no entries
 
             // clean-up
             _database.ExecuteDefaultQuery("DROP TABLE " + Settings.ChatsTable + ";");
