@@ -734,11 +734,11 @@ namespace MsOfficeTracker.Helpers
 
                 // regex match groups: [0] -> Entire Match , [1] -> Message Sender Display Name , [2] -> Message Timestamp"
                 var user = await _client.Me.ExecuteAsync();
-                var regex = new Regex(@"(<span class=\""im_sender\"">(.*)</span> <span class=\""message_timestamp\"">(.*): </span>)", RegexOptions.Multiline);
+                var regex = new Regex(@"(<span\s*class=""im_sender"">\s*(.*)\s*</span>\s*<span\s*class=""message_timestamp"">\s*(.*)\s*:\s*</span>)", RegexOptions.Multiline);
                 foreach (var message in cleanList)
                 {
                     var content = message.Body.Content;
-                    if (!content.Contains(@"class=\""footer_line\"""))
+                    if (!content.Contains(@"class=""footer_line"""))
                     {
                         var mc = regex.Matches(content);
                         foreach (Match match in mc)

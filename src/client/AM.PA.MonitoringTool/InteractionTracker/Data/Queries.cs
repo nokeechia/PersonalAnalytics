@@ -387,7 +387,7 @@ namespace InteractionTracker.Data
 
             foreach (var chat in chats)
             {
-                if (chat >= startTs)
+                if (chat >= startTs && !current.Contains(chat))
                 {
                     current.Add(chat);
                 }
@@ -428,7 +428,7 @@ namespace InteractionTracker.Data
 
             foreach (var call in calls)
             {
-                if (call >= startTs)
+                if (call >= startTs && !current.Contains(call))
                 {
                     current.Add(call);
                 }
@@ -545,7 +545,7 @@ namespace InteractionTracker.Data
             activityDictionary.Add("Chats", chatsList);
             activityDictionary.Add("Emails Sent", emailsSentList);
             activityDictionary.Add("Emails Received", emailsReceivedList);
-            activityDictionary.Add("Overall Focus", overallFocusList);
+            activityDictionary.Add("Overall Interactions", overallFocusList);
             return activityDictionary;
         }
     }

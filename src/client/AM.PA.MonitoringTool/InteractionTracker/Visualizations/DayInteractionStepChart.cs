@@ -25,9 +25,10 @@ namespace InteractionTracker.Visualizations
         public override string GetHtml()
         {
             var html = string.Empty;
-            
-            var earlier = DateTime.Now.Date.AddHours(6);
-            var later = DateTime.Now.Date.AddHours(18);
+
+            var now = DateTime.Now;
+            var earlier = now.Date.AddHours(6);
+            var later = now.Date.AddHours(18);
             var chartQueryResultsLocal = Queries.GetActivityStepChartData(earlier, later);
 
             if (chartQueryResultsLocal.Count == 0)
