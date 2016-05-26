@@ -542,7 +542,7 @@ namespace InteractionTracker.Data
             }
 
             activityDictionary.Add("Meetings Attended", meetingsAttendedList);
-            activityDictionary.Add("Chats", chatsList);
+            activityDictionary.Add("Chat Conversations", chatsList);
             activityDictionary.Add("Emails Sent", emailsSentList);
             activityDictionary.Add("Emails Received", emailsReceivedList);
             activityDictionary.Add("Overall Interactions", overallFocusList);

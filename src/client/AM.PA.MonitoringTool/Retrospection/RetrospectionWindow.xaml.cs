@@ -232,11 +232,6 @@ namespace Retrospection
             Handler.GetInstance().OpenAbout();
         }
 
-        private void Help_Clicked(object sender, RoutedEventArgs e)
-        {
-            Handler.GetInstance().OpenHelp();
-        }
-
         #endregion
     }
 }

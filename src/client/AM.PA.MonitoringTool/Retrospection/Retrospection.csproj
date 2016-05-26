@@ -87,7 +87,6 @@
     </Compile>
     <Compile Include="Feedback\FeedbackBox.cs" />
     <Compile Include="Handler.cs" />
-    <Compile Include="HelpWindow.xaml.cs" />
     <Compile Include="HttpInterface.cs" />
     <Compile Include="MiniRetrospectionWindow.xaml.cs">
       <DependentUpon>MiniRetrospectionWindow.xaml</DependentUpon>
@@ -104,10 +103,6 @@
     <Page Include="AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="HelpWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="MiniRetrospectionWindow.xaml">
       <SubType>Designer</SubType>

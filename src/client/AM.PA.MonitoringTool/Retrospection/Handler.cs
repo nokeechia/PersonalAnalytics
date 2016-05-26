@@ -192,16 +192,6 @@ namespace Retrospection
             }));
         }
 
-        public void OpenHelp()
-        {
-            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
-            () =>
-            {
-                var window = new HelpWindow(_publishedAppVersion);
-                window.Show();
-            }));
-        }
-
         private bool _openRetrospectionInFullScreen;
         public bool OpenRetrospectionInFullScreen
         {

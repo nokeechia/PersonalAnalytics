@@ -95,7 +95,6 @@
                 <Button Content="Refresh" Cursor="Hand" Click="Refresh_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
                 <Button Content="Feedback" Cursor="Hand" Click="Feedback_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
                 <!--<Button Content="Settings" Click="Settings_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />-->
-                <Button Content="Help" Cursor="Hand" Click="Help_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
                 <Button Content="About" Cursor="Hand" Click="About_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
             </StackPanel>
         </Grid>

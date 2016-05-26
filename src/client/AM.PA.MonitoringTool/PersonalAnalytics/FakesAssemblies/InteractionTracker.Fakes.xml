@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>InteractionTracker.Fakes</name>
+    </assembly>
+    <members>
+        <member name="T:InteractionTracker.Data.Fakes.ShimQueries">
+            <summary>Shim type of InteractionTracker.Data.Queries</summary>
+        </member>
+        <member name="M:InteractionTracker.Data.Fakes.ShimQueries.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:InteractionTracker.Data.Fakes.ShimQueries.#ctor(InteractionTracker.Data.Queries)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:InteractionTracker.Data.Fakes.ShimQueries.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="M:InteractionTracker.Data.Fakes.ShimQueries.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:InteractionTracker.Data.Fakes.ShimQueries.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.Constructor">
+            <summary>Sets the shim of Queries.Queries()</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GeCallsSentOrReceivedFromSixAmDateTimeString">
+            <summary>Sets the shim of Queries.GeCallsSentOrReceivedFromSixAm(DateTime later, String sentOrReceived)</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetActivityStepChartDataDateTimeDateTime">
+            <summary>Sets the shim of Queries.GetActivityStepChartData(DateTime earlier, DateTime later)</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetActivityStepChartDataDateTimeOffset">
+            <summary>Sets the shim of Queries.GetActivityStepChartData(DateTimeOffset date)</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetChatsSentOrReceivedFromSixAmDateTime">
+            <summary>Sets the shim of Queries.GetChatsSentOrReceivedFromSixAm(DateTime later)</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetEmailsSentOrReceivedFromSixAmDateTimeString">
+            <summary>Sets the shim of Queries.GetEmailsSentOrReceivedFromSixAm(DateTime later, String sentOrReceived)</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetFocusTimeInLastHour">
+            <summary>Sets the shim of Queries.GetFocusTimeInLastHour()</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetMeetingsFromSixAmDateTime">
+            <summary>Sets the shim of Queries.GetMeetingsFromSixAm(DateTime later)</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetNumCallsOrChatsDateTimeOffsetString">
+            <summary>Sets the shim of Queries.GetNumCallsOrChats(DateTimeOffset date, String tableName)</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetNumInteractionSwitches">
+            <summary>Sets the shim of Queries.GetNumInteractionSwitches()</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetNumMeetingsForDateDateTimeOffset">
+            <summary>Sets the shim of Queries.GetNumMeetingsForDate(DateTimeOffset date)</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetNumMeetingsForLastHour">
+            <summary>Sets the shim of Queries.GetNumMeetingsForLastHour()</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.ShimQueries.GetSentOrReceivedEmailsDateTimeOffsetString">
+            <summary>Sets the shim of Queries.GetSentOrReceivedEmails(DateTimeOffset date, String sentOrReceived)</summary>
+        </member>
+        <member name="T:InteractionTracker.Data.Fakes.StubQueries">
+            <summary>Stub type of InteractionTracker.Data.Queries</summary>
+        </member>
+        <member name="M:InteractionTracker.Data.Fakes.StubQueries.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.StubQueries.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="M:InteractionTracker.Data.Fakes.StubQueries.InitializeStub">
+            <summary>Initializes a new instance of type StubQueries</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.StubQueries.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:InteractionTracker.Data.Fakes.StubQueries.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:InteractionTracker.Fakes.ShimDaemon">
+            <summary>Shim type of InteractionTracker.Daemon</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.ShimDaemon.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.ShimDaemon.#ctor(InteractionTracker.Daemon)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:InteractionTracker.Fakes.ShimDaemon.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.AllInstances.CreateDatabaseTablesIfNotExist">
+            <summary>Sets the shim of Daemon.CreateDatabaseTablesIfNotExist()</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.AllInstances.GetVisualizationsDayDateTimeOffset">
+            <summary>Sets the shim of Daemon.GetVisualizationsDay(DateTimeOffset date)</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.AllInstances.GetVisualizationsMiniDateTimeOffset">
+            <summary>Sets the shim of Daemon.GetVisualizationsMini(DateTimeOffset date)</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.AllInstances.IsEnabled">
+            <summary>Sets the shim of Daemon.IsEnabled()</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.AllInstances.Start">
+            <summary>Sets the shim of Daemon.Start()</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.AllInstances.Stop">
+            <summary>Sets the shim of Daemon.Stop()</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.ShimDaemon.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.ShimDaemon.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.ShimDaemon.Bind(Shared.ITracker)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.Constructor">
+            <summary>Sets the shim of Daemon.Daemon()</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.CreateDatabaseTablesIfNotExist">
+            <summary>Sets the shim of Daemon.CreateDatabaseTablesIfNotExist()</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.GetVisualizationsDayDateTimeOffset">
+            <summary>Sets the shim of Daemon.GetVisualizationsDay(DateTimeOffset date)</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.GetVisualizationsMiniDateTimeOffset">
+            <summary>Sets the shim of Daemon.GetVisualizationsMini(DateTimeOffset date)</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.IsEnabled">
+            <summary>Sets the shim of Daemon.IsEnabled()</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.Start">
+            <summary>Sets the shim of Daemon.Start()</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimDaemon.Stop">
+            <summary>Sets the shim of Daemon.Stop()</summary>
+        </member>
+        <member name="T:InteractionTracker.Fakes.ShimSettings">
+            <summary>Shim type of InteractionTracker.Settings</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.ShimSettings.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.ShimSettings.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.ShimSettings.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.ShimSettings.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="T:InteractionTracker.Fakes.StubDaemon">
+            <summary>Stub type of InteractionTracker.Daemon</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.StubDaemon.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.CreateDatabaseTablesIfNotExist">
+            <summary>Sets the stub of Daemon.CreateDatabaseTablesIfNotExist()</summary>
+        </member>
+        <member name="F:InteractionTracker.Fakes.StubDaemon.CreateDatabaseTablesIfNotExist01">
+            <summary>Sets the stub of Daemon.CreateDatabaseTablesIfNotExist()</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.GetStatus">
+            <summary>Sets the stub of BaseTracker.GetStatus()</summary>
+        </member>
+        <member name="F:InteractionTracker.Fakes.StubDaemon.GetStatus01">
+            <summary>Sets the stub of BaseTracker.GetStatus()</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.GetVisualizationsDay(System.DateTimeOffset)">
+            <summary>Sets the stub of Daemon.GetVisualizationsDay(DateTimeOffset date)</summary>
+        </member>
+        <member name="F:InteractionTracker.Fakes.StubDaemon.GetVisualizationsDayDateTimeOffset">
+            <summary>Sets the stub of Daemon.GetVisualizationsDay(DateTimeOffset date)</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.GetVisualizationsMini(System.DateTimeOffset)">
+            <summary>Sets the stub of Daemon.GetVisualizationsMini(DateTimeOffset date)</summary>
+        </member>
+        <member name="F:InteractionTracker.Fakes.StubDaemon.GetVisualizationsMiniDateTimeOffset">
+            <summary>Sets the stub of Daemon.GetVisualizationsMini(DateTimeOffset date)</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.GetVisualizationsWeek(System.DateTimeOffset)">
+            <summary>Sets the stub of BaseTracker.GetVisualizationsWeek(DateTimeOffset date)</summary>
+        </member>
+        <member name="F:InteractionTracker.Fakes.StubDaemon.GetVisualizationsWeekDateTimeOffset">
+            <summary>Sets the stub of BaseTracker.GetVisualizationsWeek(DateTimeOffset date)</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.InitializeStub">
+            <summary>Initializes a new instance of type StubDaemon</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.StubDaemon.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:InteractionTracker.Fakes.StubDaemon.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.IsEnabled">
+            <summary>Sets the stub of Daemon.IsEnabled()</summary>
+        </member>
+        <member name="F:InteractionTracker.Fakes.StubDaemon.IsEnabled01">
+            <summary>Sets the stub of Daemon.IsEnabled()</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.Start">
+            <summary>Sets the stub of Daemon.Start()</summary>
+        </member>
+        <member name="F:InteractionTracker.Fakes.StubDaemon.Start01">
+            <summary>Sets the stub of Daemon.Start()</summary>
+        </member>
+        <member name="M:InteractionTracker.Fakes.StubDaemon.Stop">
+            <summary>Sets the stub of Daemon.Stop()</summary>
+        </member>
+        <member name="F:InteractionTracker.Fakes.StubDaemon.Stop01">
+            <summary>Sets the stub of Daemon.Stop()</summary>
+        </member>
+    </members>
+</doc>

@@ -4,13 +4,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Linq;
-using System.Timers;
 using InteractionTracker.Data;
 using Shared;
-using Shared.Data;
 
 
 namespace InteractionTracker.Visualizations
@@ -23,7 +18,7 @@ namespace InteractionTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Today's Interaction Summary";
+            Title = "Today - Previous Average";
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Small;
@@ -65,13 +60,19 @@ namespace InteractionTracker.Visualizations
             numEmailsSentPrevious /= ((j + 1) * -1);
             numChatsPrevious /= ((j + 1) * -1);
 
+            string meetingsIcon = "";
+            string emailsReceivedIcon = "";
+            string emailsSentIcon = "";
+            string chatsIcon = "";
+            string callsIcon = "";
+
             // generate html where queries were successful
             var html = string.Empty;
-            html += "Previous Average - Today's Total<br />";
-            html += numMeetingsPrevious + " - " + numMeetingsNow + "<br />";
-            html += numEmailsReceivedPrevious + " - " + numEmailsReceivedNow + "<br />";
-            html += numEmailsSentPrevious + " - " + numEmailsSentNow + "<br />";
-            html += numChatsPrevious + " - " + numChatsNow + "";
+           // html += "Today's Total - Previous Average<br />";
+            html += meetingsIcon + numMeetingsNow + "" + numMeetingsPrevious + "<br />";
+            html += emailsReceivedIcon + numEmailsReceivedNow + "" + numEmailsReceivedPrevious + "<br />";
+            html += emailsSentIcon + numEmailsSentNow + "" + numEmailsSentPrevious + "<br />";
+            html += chatsIcon + numChatsNow + "" + numChatsPrevious + "";
 
             return html;
         }

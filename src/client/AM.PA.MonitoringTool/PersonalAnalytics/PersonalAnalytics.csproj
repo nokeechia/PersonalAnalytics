@@ -120,6 +120,12 @@
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net45\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="InteractionTracker.Fakes">
+      <HintPath>FakesAssemblies\InteractionTracker.Fakes.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -192,6 +198,8 @@
     <None Include="bin\Release\tessdata\eng.unicharset" />
     <None Include="bin\Release\tessdata\eng.user-words" />
     <None Include="bin\Release\tessdata\eng.word-dawg" />
+    <Fakes Include="Fakes\InteractionTracker.fakes" />
+    <Fakes Include="Fakes\InteractionTrackerTests01.fakes" />
     <None Include="packages.config" />
     <None Include="PersonalAnalytics_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
@@ -221,6 +229,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\InteractionTrackerTests\InteractionTrackerTests.csproj">
+      <Project>{f53265a8-2126-4f4c-9974-a7c3ce58afce}</Project>
+      <Name>InteractionTrackerTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\InteractionTracker\InteractionTracker.csproj">
       <Project>{6316d954-dc94-4593-856a-496c7022cf4e}</Project>
       <Name>InteractionTracker</Name>
