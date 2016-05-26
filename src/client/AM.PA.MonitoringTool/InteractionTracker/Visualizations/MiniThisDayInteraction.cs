@@ -23,7 +23,7 @@ namespace InteractionTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Averages Per Day";
+            Title = "Today's Interaction Summary";
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Small;
@@ -34,21 +34,44 @@ namespace InteractionTracker.Visualizations
         {
             //var startTime = Database.GetInstance().GetUserWorkStart(_date);
 
-            // get data
-            var numMeetings = Queries.GetNumMeetingsForDate(_date);
-            var numEmailsReceived = Queries.GetSentOrReceivedEmails(_date, "received");
-            var numEmailsSent = Queries.GetSentOrReceivedEmails(_date, "sent");
-            var numChats = Queries.GetNumCallsOrChats(_date, Settings.ChatsTable);
-            var numCalls = Queries.GetNumCallsOrChats(_date, Settings.CallsTable);
+            // get now data
+            var now = _date.Date.AddHours(18);
+            var numMeetingsNow = Queries.GetMeetingsFromSixAm(now).Count;
+            var numEmailsReceivedNow = Queries.GetEmailsSentOrReceivedFromSixAm(now, "received").Count;
+            var numEmailsSentNow = Queries.GetEmailsSentOrReceivedFromSixAm(now, "sent").Count;
+            var numChatsNow = Queries.GetChatsSentOrReceivedFromSixAm(now).Count;
+
+            // get previous data
+            var numMeetingsPrevious = 0;
+            var numEmailsReceivedPrevious = 0;
+            var numEmailsSentPrevious = 0;
+            var numChatsPrevious = 0;
+            var j = -6;
+            for (var i = -1; i > j; i--)
+            {
+                var previous = now.AddDays(i);
+                if (previous.DayOfWeek == DayOfWeek.Saturday || previous.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    j--;
+                    continue;
+                }
+                numMeetingsPrevious += Queries.GetMeetingsFromSixAm(previous).Count;
+                numEmailsReceivedPrevious += Queries.GetEmailsSentOrReceivedFromSixAm(previous, "received").Count;
+                numEmailsSentPrevious += Queries.GetEmailsSentOrReceivedFromSixAm(previous, "sent").Count;
+                numChatsPrevious += Queries.GetChatsSentOrReceivedFromSixAm(previous).Count;
+            }
+            numMeetingsPrevious /= ((j + 1) * -1);
+            numEmailsReceivedPrevious /= ((j + 1) * -1);
+            numEmailsSentPrevious /= ((j + 1) * -1);
+            numChatsPrevious /= ((j + 1) * -1);
 
             // generate html where queries were successful
-            var change = 1.0;
             var html = string.Empty;
-            if (numMeetings > -1) html += (numMeetings / change).ToString("n2") + " meetings<br />";
-            if (numChats > -1) html += (numChats / change).ToString("n2") + " chats<br />";
-            if (numEmailsSent > -1) html += (numEmailsSent / change).ToString("n2") + " emails sent<br />";
-            if (numEmailsReceived > -1) html += (numEmailsReceived / change).ToString("n2") + " emails received<br />";
-            if (numCalls > -1) html += (numCalls / change).ToString("n2") + " calls";
+            html += "Previous Average - Today's Total<br />";
+            html += numMeetingsPrevious + " - " + numMeetingsNow + "<br />";
+            html += numEmailsReceivedPrevious + " - " + numEmailsReceivedNow + "<br />";
+            html += numEmailsSentPrevious + " - " + numEmailsSentNow + "<br />";
+            html += numChatsPrevious + " - " + numChatsNow + "";
 
             return html;
         }

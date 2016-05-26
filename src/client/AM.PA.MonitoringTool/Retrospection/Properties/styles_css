@@ -1,7 +1,7 @@
 /* =============================
    GENERAL
    ============================= */
-body { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; margin: 0; padding: 0; color: #000; /*background-color: #E8E8E8;*/ }
+body { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; margin: 0; padding: 0; color: #000; display: flex; align-items: center; justify-content: center; text-align: center; /*background-color: #E8E8E8;*/ }
 td, th { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em;  }
 h1 { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1.17em; font-weight: bold; margin: 0; padding: 0.3125em; }
 h2 { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; font-weight: bold; }
@@ -11,7 +11,7 @@ img { border: 0; }
 .item { margin:0.3125em; padding:0.3125em; background-color: #ffffff; float: left; overflow:hidden; } /* border:1px solid #B0B0B0;  */
 
 /* Hint: any changes in these sizes must also be made in the Retrospection.Settings.cs file */
-.item.Small { width:11.875em; height:10em; }
+.item.Small { width:23.75em; height:11em; }
 .item.Square { width:25em; height:21.25em; }
 .item.Wide { width:51.25em; height:21.25em; }
 

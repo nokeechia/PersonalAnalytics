@@ -44,6 +44,7 @@
     <Compile Include="Data\Queries.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Visualizations\DayInteractionStepChart.cs" />
+    <Compile Include="Visualizations\DayThisDayInteraction.cs" />
     <Compile Include="Visualizations\MiniThisDayInteraction.cs" />
     <Compile Include="Visualizations\MiniLastHourInteraction.cs" />
   </ItemGroup>

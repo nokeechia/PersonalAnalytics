@@ -59,20 +59,20 @@ namespace PersonalAnalytics
             //////////////////////////////////////////////////////
             // Register Tracker
             //////////////////////////////////////////////////////
-            ITracker t = new WindowsActivityTracker.Daemon();
-            TrackerManager.GetInstance().Register(t);
+            //ITracker t = new WindowsActivityTracker.Daemon();
+            //TrackerManager.GetInstance().Register(t);
 
-            ITracker t1 = new TimeSpentVisualizer.Visualizers.TimeSpentVisualizer();
-            TrackerManager.GetInstance().Register(t1);
+            //ITracker t1 = new TimeSpentVisualizer.Visualizers.TimeSpentVisualizer();
+            //TrackerManager.GetInstance().Register(t1);
 
-            ITracker t9 = new PeopleVisualizer.PeopleVisualizer();
+            //ITracker t9 = new PeopleVisualizer.PeopleVisualizer();
             //TrackerManager.GetInstance().Register(t9); // disabled, as it's not finished and pretty slow
 
-            ITracker t2 = new UserEfficiencyTracker.Daemon();
-            TrackerManager.GetInstance().Register(t2);
+            //ITracker t2 = new UserEfficiencyTracker.Daemon();
+            //TrackerManager.GetInstance().Register(t2);
 
-            ITracker t4 = new UserInputTracker.Daemon();
-            TrackerManager.GetInstance().Register(t4);
+            //ITracker t4 = new UserInputTracker.Daemon();
+            //TrackerManager.GetInstance().Register(t4);
 
             ITracker t3 = new MsOfficeTracker.Daemon();
             TrackerManager.GetInstance().Register(t3);
