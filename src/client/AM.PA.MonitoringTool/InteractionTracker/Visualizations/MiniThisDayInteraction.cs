@@ -69,10 +69,10 @@ namespace InteractionTracker.Visualizations
             var emailsReceivedImage = "emailsReceivedIcon";
             var emailsSentImage = "emailsSentIcon";
             var chatsImage = "chatsIcon";
-            string meetingsIcon = "<img src=\"" + meetingsImage + ".png\" width=\"40\" height=\"40\">";
-            string emailsReceivedIcon = "<img src=\"" + emailsReceivedImage + ".png\" width=\"40\" height=\"40\">";
-            string emailsSentIcon = "<img src=\"" + emailsSentImage + ".png\" width=\"40\" height=\"40\">";
-            string chatsIcon = "<img src=\"" + chatsImage + ".png\" width=\"40\" height=\"40\">";
+            string meetingsIcon = "<img src=\"" + meetingsImage + ".png\">";
+            string emailsReceivedIcon = "<img src=\"" + emailsReceivedImage + ".png\">";
+            string emailsSentIcon = "<img src=\"" + emailsSentImage + ".png\">";
+            string chatsIcon = "<img src=\"" + chatsImage + ".png\">";
 
             var okayColor = "#4F8A10"; // green
             var warningThreshold = 1.25;

@@ -552,7 +552,7 @@ namespace InteractionTracker.Data
                 earlier = earlier.AddMinutes(1);
             }
 
-            activityDictionary.Add("Meetings Attended", meetingsAttendedList);
+            activityDictionary.Add("Scheduled Meetings", meetingsAttendedList);
             activityDictionary.Add("Chat Conversations", chatsList);
             activityDictionary.Add("Emails Sent", emailsSentList);
             activityDictionary.Add("Emails Received", emailsReceivedList);
