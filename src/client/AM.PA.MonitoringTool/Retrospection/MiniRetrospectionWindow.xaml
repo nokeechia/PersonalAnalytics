@@ -75,7 +75,7 @@
 
         <Border x:Name="LoadingSign" Background="White" Grid.Row="1">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock HorizontalAlignment="Center" Text="Preparing your Mini-Retrospection ..." Foreground="{StaticResource RetrospectionColor}" FontSize="14" />
+                <TextBlock HorizontalAlignment="Center" Text="Preparing your interaction information..." Foreground="{StaticResource RetrospectionColor}" FontSize="14" />
                 <!--<TextBlock HorizontalAlignment="Center" Text="This might take a few moments. It will be worth the wait :)" Margin="0 5 0 0" />-->
             </StackPanel>
         </Border>
