@@ -23,7 +23,7 @@ namespace InteractionTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Interaction Summary";
+            Title = " ";
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Wide;
@@ -69,10 +69,10 @@ namespace InteractionTracker.Visualizations
             var emailsReceivedImage = "emailsReceivedIcon";
             var emailsSentImage = "emailsSentIcon";
             var chatsImage = "chatsIcon";
-            string meetingsIcon = "<img src=\"" + meetingsImage + ".png\" width=\"70\" height=\"70\">";
-            string emailsReceivedIcon = "<img src=\"" + emailsReceivedImage + ".png\" width=\"70\" height=\"70\">";
-            string emailsSentIcon = "<img src=\"" + emailsSentImage + ".png\" width=\"70\" height=\"70\">";
-            string chatsIcon = "<img src=\"" + chatsImage + ".png\" width=\"70\" height=\"70\">";
+            string meetingsIcon = "<img src=\"" + meetingsImage + ".png\" width=\"40\" height=\"40\">";
+            string emailsReceivedIcon = "<img src=\"" + emailsReceivedImage + ".png\" width=\"40\" height=\"40\">";
+            string emailsSentIcon = "<img src=\"" + emailsSentImage + ".png\" width=\"40\" height=\"40\">";
+            string chatsIcon = "<img src=\"" + chatsImage + ".png\" width=\"40\" height=\"40\">";
 
             var okayColor = "#4F8A10"; // green
             var warningThreshold = 1.25;
