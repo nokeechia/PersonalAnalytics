@@ -4,7 +4,7 @@
 body { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; margin: 0; padding: 0; color: #000; display: flex; align-items: center; justify-content: center; text-align: center; /*background-color: #E8E8E8;*/ }
 table { width: 100%; margin: auto; }
 td, th { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; border-bottom: 1px solid #ddd; }
-td { color: #00529B; }
+
 h1 { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1.17em; font-weight: bold; margin: 0; padding: 0.3125em; }
 h2 { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; font-weight: bold; }
 h3 { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; font-weight: bold; margin-top: 0; padding-top: 0.3125em; padding-bottom: 0.625em; border-bottom: 1px solid #E8E8E8; }
