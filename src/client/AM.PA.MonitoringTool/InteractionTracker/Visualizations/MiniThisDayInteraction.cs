@@ -79,35 +79,57 @@ namespace InteractionTracker.Visualizations
             var warningColor = "#9F6000"; // yellow
             var errorThreshold = 1.5;
             var errorColor = "#D8000C"; // red
+
             var meetingsColor = okayColor;
+            var emailsReceivedColor = okayColor;
+            var emailsSentColor = okayColor;
+            var chatsColor = okayColor;
+
+            var meetings = numMeetingsNow + "</td><td>" + numMeetingsPrevious.ToString() + "</td></tr>";
+            var chats = numChatsNow + "</td><td>" + numChatsPrevious.ToString() + "</td></tr>";
+            var emailsSent = numEmailsSentNow + "</td><td>" + numEmailsSentPrevious.ToString() + "</td></tr>";
+            var emailsReceived = numEmailsReceivedNow + "</td><td>" + numEmailsReceivedPrevious.ToString() + "<br />";
+
             if (numMeetingsNow > numMeetingsPrevious * errorThreshold)
+            {
                 meetingsColor = errorColor;
+                meetings = "<b>" + numMeetingsNow + "</b></td><td><b>" + numMeetingsPrevious.ToString() + "</b></td></tr>";
+            }
             else if (numMeetingsNow > numMeetingsPrevious * warningThreshold)
                 meetingsColor = warningColor;
-            var emailsReceivedColor = okayColor;
+
             if (numEmailsReceivedNow > numEmailsReceivedPrevious * errorThreshold)
+            {
                 emailsReceivedColor = errorColor;
+                emailsReceived = "<b>" + numEmailsReceivedNow + "</b></td><td><b>" + numEmailsReceivedPrevious.ToString() + "</b><br />";
+            }
             else if (numEmailsReceivedNow > numEmailsReceivedPrevious * warningThreshold)
                 emailsReceivedColor = warningColor;
-            var emailsSentColor = okayColor;
+
             if (numEmailsSentNow > numEmailsSentPrevious * errorThreshold)
+            {
                 emailsSentColor = errorColor;
+                emailsSent = "<b>" + numEmailsSentNow + "</b></td><td><b>" + numEmailsSentPrevious.ToString() + "</b></td></tr>";
+            }
             else if (numEmailsSentNow > numEmailsSentPrevious * warningThreshold)
                 emailsSentColor = warningColor;
-            var chatsColor = okayColor;
+
             if (numChatsNow > numChatsPrevious * errorThreshold)
+            {
                 chatsColor = errorColor;
+                chats = "<b>" + numChatsNow + "</b></td><td><b>" + numChatsPrevious.ToString() + "</b></td></tr>";
+            }
             else if (numChatsNow > numChatsPrevious * warningThreshold)
                 chatsColor = warningColor;
-            
+
             // generate html where queries were successful
             var html = string.Empty;
             html += "<table border=\"0\" cellpadding=\"2\" cellspacing=\"2\">";
             html += "<tr><th>Interaction</th><th>Today's Total</th><th>Previous Average</th></tr>";
-            html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + meetingsColor + "\">" + numMeetingsNow + "</td><td>" + numMeetingsPrevious.ToString() + "</td></tr>";
-            html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + chatsColor + "\">" + numChatsNow + "</td><td>" + numChatsPrevious.ToString() + "</td></tr>";
-            html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + emailsSentColor + "\">" + numEmailsSentNow + "</td><td>" + numEmailsSentPrevious.ToString() + "</td></tr>";
-            html += "<tr><td>" + emailsReceivedIcon + "</td><td style=\"color: " + emailsReceivedColor + "\">" + numEmailsReceivedNow + "</td><td>" + numEmailsReceivedPrevious.ToString() + "<br />";
+            html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + meetingsColor + "\">" + meetings;
+            html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + chatsColor + "\">" + chats;
+            html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + emailsSentColor + "\">" + emailsSent;
+            html += "<tr><td>" + emailsReceivedIcon + "</td><td style=\"color: " + emailsReceivedColor + "\">" + emailsReceived;
             html += "</table>";
 
             return html;
