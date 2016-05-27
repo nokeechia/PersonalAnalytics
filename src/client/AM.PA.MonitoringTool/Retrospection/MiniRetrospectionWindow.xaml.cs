@@ -7,6 +7,8 @@ using System.Threading;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
 using Timer = System.Threading.Timer;
+using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace Retrospection
 {
@@ -34,15 +36,15 @@ namespace Retrospection
         /// <returns></returns>
         public new bool? ShowDialog()
         {
-            const int windowWidth = 470; //this.ActualWidth;
-            const int windowHeight = 305; //this.ActualHeight;
+            const int windowWidth = 485; //this.ActualWidth;
+            const int windowHeight = 330; //this.ActualHeight;
 
             this.Topmost = true;
             this.ShowActivated = false;
             this.ShowInTaskbar = false;
             this.ResizeMode = ResizeMode.NoResize;
             //this.Owner = Application.Current.MainWindow;
-
+            this.interactionsImage.Source = ImageFromBuffer(Properties.Resources.interactionsIcon_png);
             //this.Closed += this.DailyProductivityPopUp_OnClosed;
 
             this.Left = SystemParameters.PrimaryScreenWidth - windowWidth;
@@ -61,6 +63,16 @@ namespace Retrospection
 
             StartFadeTimer();
             return base.ShowDialog();
+        }
+
+        private BitmapImage ImageFromBuffer(Byte[] bytes)
+        {
+            MemoryStream stream = new MemoryStream(bytes);
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.StreamSource = stream;
+            image.EndInit();
+            return image;
         }
 
         private void WindowLoaded(object sender, EventArgs e)

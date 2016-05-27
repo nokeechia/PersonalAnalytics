@@ -176,6 +176,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\callsIcon_png" />
+    <None Include="Properties\chatsIcon_png" />
+    <None Include="Properties\emailsReceivedIcon_png" />
+    <None Include="Properties\emailsSentIcon_png" />
+    <None Include="Properties\interactionsIcon_png" />
+    <None Include="Properties\meetingsIcon_png" />
     <Content Include="Properties\personalanalytics.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

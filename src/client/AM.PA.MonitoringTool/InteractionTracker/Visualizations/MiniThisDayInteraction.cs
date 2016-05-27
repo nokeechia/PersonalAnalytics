@@ -18,7 +18,7 @@ namespace InteractionTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Today - Previous Average";
+            Title = "Interaction Summary"; // Interaction Summary
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Small;
@@ -37,10 +37,10 @@ namespace InteractionTracker.Visualizations
             var numChatsNow = Queries.GetChatsSentOrReceivedFromSixAm(now).Count;
 
             // get previous data
-            var numMeetingsPrevious = 0;
-            var numEmailsReceivedPrevious = 0;
-            var numEmailsSentPrevious = 0;
-            var numChatsPrevious = 0;
+            var numMeetingsPrevious = 0f;
+            var numEmailsReceivedPrevious = 0f;
+            var numEmailsSentPrevious = 0f;
+            var numChatsPrevious = 0f;
             var j = -6;
             for (var i = -1; i > j; i--)
             {
@@ -59,20 +59,51 @@ namespace InteractionTracker.Visualizations
             numEmailsReceivedPrevious /= ((j + 1) * -1);
             numEmailsSentPrevious /= ((j + 1) * -1);
             numChatsPrevious /= ((j + 1) * -1);
+            
+            var meetingsImage = "meetingsIcon";
+            var emailsReceivedImage = "emailsReceivedIcon";
+            var emailsSentImage = "emailsSentIcon";
+            var chatsImage = "chatsIcon";
+            string meetingsIcon = "<img src=\"" + meetingsImage + ".png\" width=\"70\" height=\"70\">";
+            string emailsReceivedIcon = "<img src=\"" + emailsReceivedImage + ".png\" width=\"70\" height=\"70\">";
+            string emailsSentIcon = "<img src=\"" + emailsSentImage + ".png\" width=\"70\" height=\"70\">";
+            string chatsIcon = "<img src=\"" + chatsImage + ".png\" width=\"70\" height=\"70\">";
 
-            string meetingsIcon = "";
-            string emailsReceivedIcon = "";
-            string emailsSentIcon = "";
-            string chatsIcon = "";
-            string callsIcon = "";
-
+            var okayColor = "#4F8A10"; // green
+            var warningThreshold = 1.25;
+            var warningColor = "#9F6000"; // yellow
+            var errorThreshold = 1.5;
+            var errorColor = "#D8000C"; // red
+            var meetingsColor = okayColor;
+            if (numMeetingsNow > numMeetingsPrevious * errorThreshold)
+                meetingsColor = errorColor;
+            else if (numMeetingsNow > numMeetingsPrevious * warningThreshold)
+                meetingsColor = warningColor;
+            var emailsReceivedColor = okayColor;
+            if (numEmailsReceivedNow > numEmailsReceivedPrevious * errorThreshold)
+                emailsReceivedColor = errorColor;
+            else if (numEmailsReceivedNow > numEmailsReceivedPrevious * warningThreshold)
+                emailsReceivedColor = warningColor;
+            var emailsSentColor = okayColor;
+            if (numEmailsSentNow > numEmailsSentPrevious * errorThreshold)
+                emailsSentColor = errorColor;
+            else if (numEmailsSentNow > numEmailsSentPrevious * warningThreshold)
+                emailsSentColor = warningColor;
+            var chatsColor = okayColor;
+            if (numChatsNow > numChatsPrevious * errorThreshold)
+                chatsColor = errorColor;
+            else if (numChatsNow > numChatsPrevious * warningThreshold)
+                chatsColor = warningColor;
+            
             // generate html where queries were successful
             var html = string.Empty;
-           // html += "Today's Total - Previous Average<br />";
-            html += meetingsIcon + numMeetingsNow + "" + numMeetingsPrevious + "<br />";
-            html += emailsReceivedIcon + numEmailsReceivedNow + "" + numEmailsReceivedPrevious + "<br />";
-            html += emailsSentIcon + numEmailsSentNow + "" + numEmailsSentPrevious + "<br />";
-            html += chatsIcon + numChatsNow + "" + numChatsPrevious + "";
+            html += "<table border=\"0\" cellpadding=\"2\" cellspacing=\"2\">";
+            html += "<tr><th>Interaction</th><th>Today's Total</th><th>Previous Average</th></tr>";
+            html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + meetingsColor + "\">" + numMeetingsNow + "</td><td>" + numMeetingsPrevious.ToString("n2") + "</td></tr>";
+            html += "<tr><td>" + emailsReceivedIcon + "</td><td style=\"color: " + emailsReceivedColor + "\">" + numEmailsReceivedNow + "</td><td>" + numEmailsReceivedPrevious.ToString("n2") + "<br />";
+            html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + emailsSentColor + "\">" + numEmailsSentNow + "</td><td>" + numEmailsSentPrevious.ToString("n2") + "</td></tr>";
+            html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + chatsColor + "\">" + numChatsNow + "</td><td>" + numChatsPrevious.ToString("n2") + "</td></tr>";
+            html += "</table>";
 
             return html;
         }

@@ -15,7 +15,7 @@ namespace InteractionTracker.Visualizations
     {
         public DayInteractionStepChart()
         {
-            Title = "Today's Interaction Timeline";
+            Title = "Interaction Details";
             IsEnabled = true; //todo: handle by user
             Order = 1; //todo: handle by user
             Size = VisSize.Wide;

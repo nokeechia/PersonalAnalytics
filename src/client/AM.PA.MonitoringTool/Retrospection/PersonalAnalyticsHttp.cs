@@ -44,7 +44,12 @@ namespace Retrospection
             _server.AddHandler("styles.css", OnStylesheets); // load css
             _server.AddHandler("greenAward.png", OnResource); //load image
             _server.AddHandler("yellowAward.png", OnResource); //load image
-            _server.AddHandler("redAward.png", OnResource); //load image
+            _server.AddHandler("meetingsIcon.png", OnResource); //load image
+            _server.AddHandler("emailsReceivedIcon.png", OnResource); //load image
+            _server.AddHandler("emailsSentIcon.png", OnResource); //load image
+            _server.AddHandler("chatsIcon.png", OnResource); //load image
+            _server.AddHandler("callsIcon.png", OnResource); //load image
+            _server.AddHandler("interactionsIcon.png", OnResource); //load image
 
             try
             {

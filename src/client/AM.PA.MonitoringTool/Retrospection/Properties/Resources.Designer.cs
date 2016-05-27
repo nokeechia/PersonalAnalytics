@@ -83,6 +83,26 @@ namespace Retrospection.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] callsIcon_png {
+            get {
+                object obj = ResourceManager.GetObject("callsIcon_png", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] chatsIcon_png {
+            get {
+                object obj = ResourceManager.GetObject("chatsIcon_png", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] d3_min_js {
             get {
                 object obj = ResourceManager.GetObject("d3_min_js", resourceCulture);
@@ -103,9 +123,39 @@ namespace Retrospection.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] emailsReceivedIcon_png {
+            get {
+                object obj = ResourceManager.GetObject("emailsReceivedIcon_png", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] emailsSentIcon_png {
+            get {
+                object obj = ResourceManager.GetObject("emailsSentIcon_png", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] greenAward_png {
             get {
                 object obj = ResourceManager.GetObject("greenAward_png", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] interactionsIcon_png {
+            get {
+                object obj = ResourceManager.GetObject("interactionsIcon_png", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -126,6 +176,16 @@ namespace Retrospection.Properties {
         internal static byte[] masonry_pkgd_min_js {
             get {
                 object obj = ResourceManager.GetObject("masonry_pkgd_min_js", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] meetingsIcon_png {
+            get {
+                object obj = ResourceManager.GetObject("meetingsIcon_png", resourceCulture);
                 return ((byte[])(obj));
             }
         }

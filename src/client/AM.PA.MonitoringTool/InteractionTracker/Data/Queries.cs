@@ -461,6 +461,8 @@ namespace InteractionTracker.Data
             int minutes = (int)Math.Floor(span.TotalMinutes);
 
             var notFocused = 0;
+            var lastChat = DateTime.MinValue;
+            var chatTimeLimit = TimeSpan.FromMinutes(5);
 
             for (int i = 0; i < minutes; i++)
             {
@@ -468,16 +470,25 @@ namespace InteractionTracker.Data
                 {
                     if ((chat.AddSeconds(-30) <= earlier) && (chat.AddSeconds(30) >= earlier))
                     {
-                        chatsList.Add(1);
                         notFocused = 1;
+                        lastChat = chat;
                         didHappen = true;
                         break;
+                    }
+                    if ((chat > lastChat) && (chat < (lastChat + chatTimeLimit)))
+                    {
+                        notFocused = 1;
+                        didHappen = true;
                     }
                 }
 
                 if (!didHappen)
                 {
                     chatsList.Add(0);
+                }
+                else
+                {
+                    chatsList.Add(1);
                 }
                 didHappen = false;
 

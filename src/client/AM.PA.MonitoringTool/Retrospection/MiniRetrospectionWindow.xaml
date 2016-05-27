@@ -13,7 +13,7 @@
         mc:Ignorable="d"
         MouseEnter="OnWindowHover"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Closing="WindowClosing" Title="Today's Interactions Overview"
-        Height="265" Width="461">
+        Height="280" Width="480">
     
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
@@ -55,7 +55,11 @@
 
         <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
             <Grid Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Content="See Details" Width="80" Style = "{StaticResource ShowDetailsButton}" >
+                <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Style = "{StaticResource ShowDetailsButton}" >
+                    <DockPanel>
+                        <Image Name="interactionsImage" Width="35" DockPanel.Dock="Left"></Image>
+                        <Label Content="See Details" Width="80" DockPanel.Dock="Right"></Label>
+                    </DockPanel>
                     <Button.Effect>
                         <DropShadowEffect ShadowDepth="2" Direction="330" Color="Black" Opacity="0.3" BlurRadius="2"/>
                     </Button.Effect>

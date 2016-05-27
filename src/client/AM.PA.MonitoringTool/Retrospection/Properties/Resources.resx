@@ -124,20 +124,38 @@
   <data name="c3_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>c3_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="callsIcon_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>callsicon_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="chatsIcon_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>chatsicon_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="d3_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>d3_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="d3_timeline_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>d3_timeline_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="emailsReceivedIcon_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>emailsreceivedicon_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="emailsSentIcon_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>emailssenticon_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="greenAward_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>greenaward_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="interactionsIcon_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>interactionsicon_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="jquery_1_11_3_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>jquery_1_11_3_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="masonry_pkgd_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>masonry_pkgd_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="meetingsIcon_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>meetingsicon_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="personalanalytics_html" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>personalanalytics.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
