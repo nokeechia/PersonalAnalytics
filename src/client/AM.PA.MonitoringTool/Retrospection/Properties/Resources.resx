@@ -160,9 +160,6 @@
   <data name="personalanalytics_html" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>personalanalytics.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="redAward_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>redaward_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="styles_css" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>styles_css;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -183,8 +180,5 @@
   </data>
   <data name="thumbUpGray_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>thumbupgray_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="yellowAward_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>yellowaward_png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

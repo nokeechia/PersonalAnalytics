@@ -218,16 +218,6 @@ namespace Retrospection.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] redAward_png {
-            get {
-                object obj = ResourceManager.GetObject("redAward_png", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] styles_css {
             get {
                 object obj = ResourceManager.GetObject("styles_css", resourceCulture);
@@ -291,16 +281,6 @@ namespace Retrospection.Properties {
         internal static byte[] thumbUpGray_png {
             get {
                 object obj = ResourceManager.GetObject("thumbUpGray_png", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] yellowAward_png {
-            get {
-                object obj = ResourceManager.GetObject("yellowAward_png", resourceCulture);
                 return ((byte[])(obj));
             }
         }

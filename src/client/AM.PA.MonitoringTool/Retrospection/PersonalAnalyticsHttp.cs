@@ -42,8 +42,6 @@ namespace Retrospection
             _server.AddHandler("thumbUpGray.png", OnResource); // load image
             _server.AddHandler("thumbDownBlue.png", OnResource); // load image
             _server.AddHandler("styles.css", OnStylesheets); // load css
-            _server.AddHandler("greenAward.png", OnResource); //load image
-            _server.AddHandler("yellowAward.png", OnResource); //load image
             _server.AddHandler("meetingsIcon.png", OnResource); //load image
             _server.AddHandler("emailsReceivedIcon.png", OnResource); //load image
             _server.AddHandler("emailsSentIcon.png", OnResource); //load image
