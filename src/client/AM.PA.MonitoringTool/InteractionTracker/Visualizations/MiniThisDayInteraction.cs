@@ -105,9 +105,9 @@ namespace InteractionTracker.Visualizations
             html += "<table border=\"0\" cellpadding=\"2\" cellspacing=\"2\">";
             html += "<tr><th>Interaction</th><th>Today's Total</th><th>Previous Average</th></tr>";
             html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + meetingsColor + "\">" + numMeetingsNow + "</td><td>" + numMeetingsPrevious.ToString() + "</td></tr>";
-            html += "<tr><td>" + emailsReceivedIcon + "</td><td style=\"color: " + emailsReceivedColor + "\">" + numEmailsReceivedNow + "</td><td>" + numEmailsReceivedPrevious.ToString() + "<br />";
-            html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + emailsSentColor + "\">" + numEmailsSentNow + "</td><td>" + numEmailsSentPrevious.ToString() + "</td></tr>";
             html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + chatsColor + "\">" + numChatsNow + "</td><td>" + numChatsPrevious.ToString() + "</td></tr>";
+            html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + emailsSentColor + "\">" + numEmailsSentNow + "</td><td>" + numEmailsSentPrevious.ToString() + "</td></tr>";
+            html += "<tr><td>" + emailsReceivedIcon + "</td><td style=\"color: " + emailsReceivedColor + "\">" + numEmailsReceivedNow + "</td><td>" + numEmailsReceivedPrevious.ToString() + "<br />";
             html += "</table>";
 
             return html;
