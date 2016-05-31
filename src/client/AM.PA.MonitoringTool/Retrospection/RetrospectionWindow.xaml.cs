@@ -212,6 +212,15 @@ namespace Retrospection
 
         #region Other Options
 
+        public void ForceRefreshWindow()
+        { 
+            //TODO: only force refresh today if the data is more than 5 minutes old 
+
+            //if (DatePicker.SelectedDate.HasValue && DatePicker.SelectedDate.Value.Date == DateTime.Now.Date) 
+            _currentPage = Handler.GetInstance().GetDashboardNavigateUriForType(DateTime.MinValue, _currentVisType); // to force refresh 
+            DatePickerSelectDate(DateTime.Now); 
+        }
+
         private void Feedback_Clicked(object sender, EventArgs e)
         {
             Handler.GetInstance().SendFeedback();
