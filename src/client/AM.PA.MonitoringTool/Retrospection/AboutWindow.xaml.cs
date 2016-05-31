@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,19 +31,14 @@ namespace Retrospection
             Handler.GetInstance().SendFeedback();
         }
 
-        private void Andre_Clicked(object sender, MouseButtonEventArgs e)
+        private void Email_Clicked(object sender, MouseButtonEventArgs e)
         {
             Handler.GetInstance().SendFeedback();
         }
 
-        private void Tom_Clicked(object sender, MouseButtonEventArgs e)
+        private void Website_Clicked(object sender, MouseButtonEventArgs e)
         {
-            Handler.GetInstance().SendFeedback();
-        }
-
-        private void Thomas_Clicked(object sender, MouseButtonEventArgs e)
-        {
-            Handler.GetInstance().SendFeedback();
+            Process.Start(Shared.Settings.ProjectWebsite);
         }
 
         //private void CheckForUpdates_Clicked(object sender, RoutedEventArgs e)

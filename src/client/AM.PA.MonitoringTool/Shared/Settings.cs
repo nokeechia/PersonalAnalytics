@@ -56,10 +56,10 @@ namespace Shared
         internal const double titleMargin = 4.0; //5.625; //3.125;
 
         ////////////////////////////////////////////////////////////
-        // contact emails
-
-        public const string EmailAddress1 = "ameyer@ifi.uzh.ch"; // main email address
-        public const string EmailAddress2 = "tzimmer@microsoft.com";
+        // contact 
+        public const string ProjectWebsite = "http://www.focuslight.com"; 
+        public const string EmailAddress1 = "focuslight@abb.com"; //"ameyer@ifi.uzh.ch"; // main email address
+        public const string EmailAddress2 = ""; // no needed for now
 
     }
 }

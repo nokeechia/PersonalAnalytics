@@ -19,24 +19,30 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
-            <TextBlock Grid.Row="0" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Text="About the Application" Foreground="White" />
+            <TextBlock Grid.Row="0" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Text="About the Interaction Retrospection" Foreground="White" />
         </Grid>
 
         <StackPanel Margin="10" Grid.Row="1">
-            <TextBlock Margin="0 0 0 5" Text="Authors:" TextWrapping="Wrap" FontWeight="Bold" />
-            <StackPanel Margin="0 0 0 5" PreviewMouseDown="Andre_Clicked" Orientation="Horizontal">
-                <TextBlock Text="Andre Meyer (PhD Student, University of Zurich): " />
-                <TextBlock Text="ameyer@ifi.uzh.ch" TextDecorations="Underline" />
-                <TextBlock Text=" (Developer of the software)" />
+            <TextBlock Margin="0 0 0 5" Text="Authors:" FontWeight="Bold" />
+            <StackPanel Margin="0 0 0 5" PreviewMouseDown="Email_Clicked" Orientation="Horizontal">
+                <TextBlock Text="David Shepherd " FontWeight="DemiBold" />
+                <TextBlock Text=" (Project Lead; Senior Principal Scientist at ABB)" />
             </StackPanel>
-            <StackPanel Margin="0 0 0 5" PreviewMouseDown="Tom_Clicked" Orientation="Horizontal">
-                <TextBlock Text="Tom Zimmermann (Senior Researcher, Microsoft Research): " />
-                <TextBlock Text="tzimmer@microsoft.com" TextDecorations="Underline" />
+            <StackPanel Margin="0 0 0 5" PreviewMouseDown="Email_Clicked" Orientation="Horizontal">
+                <TextBlock Text="Paige Rodeghero " FontWeight="DemiBold" />
+                <TextBlock Text=" (Developer of the Software; ABB Intern; PhD Student, University of Notre Dame)" />
             </StackPanel>
-            <StackPanel Margin="0 0 0 30" PreviewMouseDown="Thomas_Clicked" Orientation="Horizontal">
-                <TextBlock Text="Thomas Fritz (Professor, University of Zurich): " />
-                <TextBlock Text="fritz@ifi.uzh.ch" TextDecorations="Underline" />
+            <StackPanel Margin="0 0 0 5" PreviewMouseDown="Email_Clicked" Orientation="Horizontal">
+                <TextBlock Text="Andre Meyer " FontWeight="DemiBold" />
+                <TextBlock Text=" (Developer of the Software; PhD Student, University of Zurich) " />
             </StackPanel>
+            <StackPanel Margin="0 0 0 5" PreviewMouseDown="Email_Clicked" Orientation="Horizontal">
+                <TextBlock Text="Thomas Fritz " FontWeight="DemiBold" />
+                <TextBlock Text=" (Project Lead; Professor, University of Zurich)" />
+            </StackPanel>
+
+            <TextBlock Margin="0 10 0 5" Text="&gt; Contact us" TextDecorations="Underline" PreviewMouseDown="Email_Clicked" />
+            <TextBlock Margin="0 0 0 30" Text="&gt; Project website" TextDecorations="Underline" PreviewMouseDown="Website_Clicked" />
 
             <TextBlock Margin="0 0 0 5" Text="Credits:" TextWrapping="Wrap" FontWeight="Bold" />
             <TextBlock Margin="0 0 0 30" Text="SQLite, JQuery, Masonry, D3.js, C3.js, HTML FilterTable, MousekeyHook, Hardcodet.NotifyIcon" TextWrapping="Wrap" />
