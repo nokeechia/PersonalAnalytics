@@ -316,7 +316,7 @@ namespace MsOfficeTracker.Helpers
                     }
 
                     groups = await groups.GetNextPageAsync();
-                } while (groups != null && groups.MorePagesAvailable);
+                } while (groups != null); // && groups.MorePagesAvailable);
             }
             catch (Exception e)
             {
@@ -439,7 +439,7 @@ namespace MsOfficeTracker.Helpers
                     var mailResults = groups.CurrentPage.ToList();
                     inboxSize += mailResults.Count;
                     groups = await groups.GetNextPageAsync();
-                } while (groups != null && groups.MorePagesAvailable);
+                } while (groups != null); // && groups.MorePagesAvailable);
 
                 return inboxSize;
             }
@@ -480,7 +480,7 @@ namespace MsOfficeTracker.Helpers
                     }
 
                     groups = await groups.GetNextPageAsync(); // next page
-                } while (groups != null && groups.MorePagesAvailable);
+                } while (groups != null); // && groups.MorePagesAvailable);
 
                 return timesEmailsSent;
             }
@@ -523,7 +523,7 @@ namespace MsOfficeTracker.Helpers
                     }
 
                     groups = await groups.GetNextPageAsync();
-                } while (groups != null && groups.MorePagesAvailable);
+                } while (groups != null); // && groups.MorePagesAvailable);
 
                 return timesEmailsReceived;
             }
@@ -709,7 +709,8 @@ namespace MsOfficeTracker.Helpers
                     var mailResults = groups.CurrentPage.ToList();
                     messageList.AddRange(mailResults);
                     groups = await groups.GetNextPageAsync(); // next page
-                } while (groups != null && groups.MorePagesAvailable);
+                }
+                while (groups != null); // && groups.MorePagesAvailable);
 
                 // remove duplicate messages
                 var cleanList = messageList.ToList();
