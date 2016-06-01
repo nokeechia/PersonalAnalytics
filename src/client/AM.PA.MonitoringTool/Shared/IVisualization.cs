@@ -26,6 +26,7 @@ namespace Shared
         Small,
         Square,
         Wide,
+        Mini,
         //Large
     }
 

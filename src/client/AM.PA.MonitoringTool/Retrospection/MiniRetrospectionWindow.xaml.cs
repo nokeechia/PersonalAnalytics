@@ -36,8 +36,8 @@ namespace Retrospection
         /// <returns></returns>
         public new bool? ShowDialog()
         {
-            const int windowWidth = 485; //this.ActualWidth;
-            const int windowHeight = 330; //this.ActualHeight;
+            const int windowWidth = 505; //this.ActualWidth;
+            const int windowHeight = 350; //this.ActualHeight;
 
             this.Topmost = true;
             this.ShowActivated = false;

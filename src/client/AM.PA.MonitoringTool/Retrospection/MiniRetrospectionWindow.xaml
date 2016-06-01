@@ -13,7 +13,7 @@
         mc:Ignorable="d"
         MouseEnter="OnWindowHover"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Closing="WindowClosing" Title="Today's Interactions Summary"
-        Height="280" Width="480">
+        Height="300" Width="500">
     
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />

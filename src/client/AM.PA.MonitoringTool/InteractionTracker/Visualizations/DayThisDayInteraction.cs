@@ -42,10 +42,10 @@ namespace InteractionTracker.Visualizations
             var numChatsNow = Queries.GetChatsSentOrReceivedFromSixAm(now).Count;
 
             // get previous data
-            var numMeetingsPrevious = 0d;
-            var numEmailsReceivedPrevious = 0d;
-            var numEmailsSentPrevious = 0d;
-            var numChatsPrevious = 0d;
+            var numMeetingsPrevious = new List<double>();
+            var numEmailsReceivedPrevious = new List<double>();
+            var numEmailsSentPrevious = new List<double>();
+            var numChatsPrevious = new List<double>();
             var j = -6;
             for (var i = -1; i > j; i--)
             {
@@ -55,20 +55,16 @@ namespace InteractionTracker.Visualizations
                     j--;
                     continue;
                 }
-                numMeetingsPrevious += Queries.GetMeetingsFromSixAm(previous).Count;
-                numEmailsReceivedPrevious += Queries.GetEmailsSentOrReceivedFromSixAm(previous, "received").Count;
-                numEmailsSentPrevious += Queries.GetEmailsSentOrReceivedFromSixAm(previous, "sent").Count;
-                numChatsPrevious += Queries.GetChatsSentOrReceivedFromSixAm(previous).Count;
+                numMeetingsPrevious.Add(Queries.GetMeetingsFromSixAm(previous).Count);
+                numEmailsReceivedPrevious.Add(Queries.GetEmailsSentOrReceivedFromSixAm(previous, "received").Count);
+                numEmailsSentPrevious.Add(Queries.GetEmailsSentOrReceivedFromSixAm(previous, "sent").Count);
+                numChatsPrevious.Add(Queries.GetChatsSentOrReceivedFromSixAm(previous).Count);
             }
-            numMeetingsPrevious /= ((j + 1) * -1);
-            numEmailsReceivedPrevious /= ((j + 1) * -1);
-            numEmailsSentPrevious /= ((j + 1) * -1);
-            numChatsPrevious /= ((j + 1) * -1);
 
-            numMeetingsPrevious = Math.Ceiling(numMeetingsPrevious);
-            numEmailsReceivedPrevious = Math.Ceiling(numEmailsReceivedPrevious);
-            numEmailsSentPrevious = Math.Ceiling(numEmailsSentPrevious);
-            numChatsPrevious = Math.Ceiling(numChatsPrevious);
+            var avgMeetingsPrevious = Math.Ceiling(numMeetingsPrevious.Average());
+            var avgEmailsReceivedPrevious = Math.Ceiling(numEmailsReceivedPrevious.Average());
+            var avgEmailsSentPrevious = Math.Ceiling(numEmailsSentPrevious.Average());
+            var avgChatsPrevious = Math.Ceiling(numChatsPrevious.Average());
 
             var meetingsImage = "meetingsIcon";
             var emailsReceivedImage = "emailsReceivedIcon";
@@ -80,9 +76,7 @@ namespace InteractionTracker.Visualizations
             string chatsIcon = "<img src=\"" + chatsImage + ".png\">";
 
             var okayColor = "#4F8A10"; // green
-            var warningThreshold = 1.25;
             var warningColor = "#9F6000"; // yellow
-            var errorThreshold = 1.5;
             var errorColor = "#D8000C"; // red
 
             var meetingsColor = okayColor;
@@ -90,54 +84,73 @@ namespace InteractionTracker.Visualizations
             var emailsSentColor = okayColor;
             var chatsColor = okayColor;
 
-            var meetings = numMeetingsNow + "</td><td>" + numMeetingsPrevious.ToString() + "</td></tr>";
-            var chats = numChatsNow + "</td><td>" + numChatsPrevious.ToString() + "</td></tr>";
-            var emailsSent = numEmailsSentNow + "</td><td>" + numEmailsSentPrevious.ToString() + "</td></tr>";
-            var emailsReceived = numEmailsReceivedNow + "</td><td>" + numEmailsReceivedPrevious.ToString() + "<br />";
+            var meetings = numMeetingsNow + "</td><td>" + avgMeetingsPrevious.ToString() + "</td></tr>";
+            var chats = numChatsNow + "</td><td>" + avgChatsPrevious.ToString() + "</td></tr>";
+            var emailsSent = numEmailsSentNow + "</td><td>" + avgEmailsSentPrevious.ToString() + "</td></tr>";
+            var emailsReceived = numEmailsReceivedNow + "</td><td>" + avgEmailsReceivedPrevious.ToString() + "<br />";
 
-            if (numMeetingsNow > numMeetingsPrevious * errorThreshold)
+            var meetingsSD = Math.Ceiling(CalculateStdDev(numMeetingsPrevious));
+            if (numMeetingsNow >= avgMeetingsPrevious + (2 * meetingsSD))
             {
                 meetingsColor = errorColor;
-                meetings = "<b>" + numMeetingsNow + "</b></td><td><b>" + numMeetingsPrevious.ToString() + "</b></td></tr>";
+                meetings = "<b>" + numMeetingsNow + "</b></td><td><b>" + avgMeetingsPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numMeetingsNow > numMeetingsPrevious * warningThreshold)
+            else if (numMeetingsNow >= avgMeetingsPrevious + meetingsSD)
                 meetingsColor = warningColor;
 
-            if (numEmailsReceivedNow > numEmailsReceivedPrevious * errorThreshold)
+            var emailsReceivedSD = Math.Ceiling(CalculateStdDev(numEmailsReceivedPrevious));
+            if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + (2 * emailsReceivedSD))
             {
                 emailsReceivedColor = errorColor;
-                emailsReceived = "<b>" + numEmailsReceivedNow + "</b></td><td><b>" + numEmailsReceivedPrevious.ToString() + "</b><br />";
+                emailsReceived = "<b>" + numEmailsReceivedNow + "</b></td><td><b>" + avgEmailsReceivedPrevious.ToString() + "</b><br />";
             }
-            else if (numEmailsReceivedNow > numEmailsReceivedPrevious * warningThreshold)
+            else if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + emailsReceivedSD)
                 emailsReceivedColor = warningColor;
 
-            if (numEmailsSentNow > numEmailsSentPrevious * errorThreshold)
+            var emailsSentSD = Math.Ceiling(CalculateStdDev(numEmailsSentPrevious));
+            if (numEmailsSentNow >= avgEmailsSentPrevious + (2 * emailsSentSD))
             {
                 emailsSentColor = errorColor;
-                emailsSent = "<b>" + numEmailsSentNow + "</b></td><td><b>" + numEmailsSentPrevious.ToString() + "</b></td></tr>";
+                emailsSent = "<b>" + numEmailsSentNow + "</b></td><td><b>" + avgEmailsSentPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numEmailsSentNow > numEmailsSentPrevious * warningThreshold)
+            else if (numEmailsSentNow >= avgEmailsSentPrevious + emailsSentSD)
                 emailsSentColor = warningColor;
 
-            if (numChatsNow > numChatsPrevious * errorThreshold)
+            var chatsSD = Math.Ceiling(CalculateStdDev(numChatsPrevious));
+            if (numChatsNow >= avgChatsPrevious + (2 * chatsSD))
             {
                 chatsColor = errorColor;
-                chats = "<b>" + numChatsNow + "</b></td><td><b>" + numChatsPrevious.ToString() + "</b></td></tr>";
+                chats = "<b>" + numChatsNow + "</b></td><td><b>" + avgChatsPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numChatsNow > numChatsPrevious * warningThreshold)
+            else if (numChatsNow >= avgChatsPrevious + chatsSD)
                 chatsColor = warningColor;
 
             // generate html where queries were successful
             var html = string.Empty;
-            html += "<table border=\"0\" cellpadding=\"2\" cellspacing=\"2\">";
+            html += "<table class=\"interactions\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">";
             html += "<tr><th>Interaction</th><th>Today's Total</th><th>Previous Average</th></tr>";
-            html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + meetingsColor + "\">" + meetings ;
+            html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + meetingsColor + "\">" + meetings;
             html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + chatsColor + "\">" + chats;
             html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + emailsSentColor + "\">" + emailsSent;
             html += "<tr><td>" + emailsReceivedIcon + "</td><td style=\"color: " + emailsReceivedColor + "\">" + emailsReceived;
             html += "</table>";
 
             return html;
+        }
+
+        private double CalculateStdDev(IEnumerable<double> values)
+        {
+            double ret = 0;
+            if (values.Count() > 0)
+            {
+                //Compute the Average      
+                double avg = values.Average();
+                //Perform the Sum of (value-avg)_2_2      
+                double sum = values.Sum(d => Math.Pow(d - avg, 2));
+                //Put it all together      
+                ret = Math.Sqrt((sum) / (values.Count() - 1));
+            }
+            return ret;
         }
     }
 }
