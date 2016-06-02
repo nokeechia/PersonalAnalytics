@@ -5,12 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
-using System.Timers;
 using InteractionTracker.Data;
 using Shared;
-using Shared.Data;
 
 
 namespace InteractionTracker.Visualizations
