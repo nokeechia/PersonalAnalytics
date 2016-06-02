@@ -46,6 +46,7 @@ namespace Retrospection
             //this.Owner = Application.Current.MainWindow;
             this.interactionsImage.Source = ImageFromBuffer(Properties.Resources.interactionsIcon_png);
             //this.Closed += this.DailyProductivityPopUp_OnClosed;
+            this._webBrowser.Size = new System.Drawing.Size(this._webBrowser.Parent.Width, this._webBrowser.Parent.Height);
 
             this.Left = SystemParameters.PrimaryScreenWidth - windowWidth;
             var top = SystemParameters.PrimaryScreenHeight - windowHeight;

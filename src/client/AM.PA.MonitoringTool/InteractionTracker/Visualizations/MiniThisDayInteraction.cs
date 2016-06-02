@@ -86,39 +86,39 @@ namespace InteractionTracker.Visualizations
             var emailsReceived = numEmailsReceivedNow + "</td><td>" + avgEmailsReceivedPrevious.ToString() + "<br />";
 
             var meetingsSD = Math.Ceiling(CalculateStdDev(numMeetingsPrevious));
-            if (numMeetingsNow >= avgMeetingsPrevious + (2 * meetingsSD))
+            if (numMeetingsNow >= avgMeetingsPrevious + (meetingsSD))
             {
                 meetingsColor = errorColor;
                 meetings = "<b>" + numMeetingsNow + "</b></td><td><b>" + avgMeetingsPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numMeetingsNow >= avgMeetingsPrevious + meetingsSD)
+            else if (numMeetingsNow >= avgMeetingsPrevious + (meetingsSD/2))
                 meetingsColor = warningColor;
 
             var emailsReceivedSD = Math.Ceiling(CalculateStdDev(numEmailsReceivedPrevious));
-            if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + (2 * emailsReceivedSD))
+            if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + (emailsReceivedSD))
             {
                 emailsReceivedColor = errorColor;
                 emailsReceived = "<b>" + numEmailsReceivedNow + "</b></td><td><b>" + avgEmailsReceivedPrevious.ToString() + "</b><br />";
             }
-            else if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + emailsReceivedSD)
+            else if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + (emailsReceivedSD/2))
                 emailsReceivedColor = warningColor;
 
             var emailsSentSD = Math.Ceiling(CalculateStdDev(numEmailsSentPrevious));
-            if (numEmailsSentNow >= avgEmailsSentPrevious + (2 * emailsSentSD))
+            if (numEmailsSentNow >= avgEmailsSentPrevious + (emailsSentSD))
             {
                 emailsSentColor = errorColor;
                 emailsSent = "<b>" + numEmailsSentNow + "</b></td><td><b>" + avgEmailsSentPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numEmailsSentNow >= avgEmailsSentPrevious + emailsSentSD)
+            else if (numEmailsSentNow >= avgEmailsSentPrevious + (emailsSentSD/2))
                 emailsSentColor = warningColor;
 
             var chatsSD = Math.Ceiling(CalculateStdDev(numChatsPrevious));
-            if (numChatsNow >= avgChatsPrevious + (2 * chatsSD))
+            if (numChatsNow >= avgChatsPrevious + (chatsSD))
             {
                 chatsColor = errorColor;
                 chats = "<b>" + numChatsNow + "</b></td><td><b>" + avgChatsPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numChatsNow >= avgChatsPrevious + chatsSD)
+            else if (numChatsNow >= avgChatsPrevious + (chatsSD/2))
                 chatsColor = warningColor;
 
             // generate html where queries were successful
