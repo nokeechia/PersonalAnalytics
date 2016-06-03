@@ -192,8 +192,6 @@
     <None Include="bin\Release\tessdata\eng.unicharset" />
     <None Include="bin\Release\tessdata\eng.user-words" />
     <None Include="bin\Release\tessdata\eng.word-dawg" />
-    <Fakes Include="Fakes\InteractionTracker.fakes" />
-    <Fakes Include="Fakes\InteractionTrackerTests01.fakes" />
     <None Include="packages.config" />
     <None Include="PersonalAnalytics_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
