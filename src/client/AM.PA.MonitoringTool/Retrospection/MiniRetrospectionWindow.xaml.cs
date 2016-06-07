@@ -36,16 +36,14 @@ namespace Retrospection
         /// <returns></returns>
         public new bool? ShowDialog()
         {
-            const int windowWidth = 505; //this.ActualWidth;
-            const int windowHeight = 350; //this.ActualHeight;
+            var windowWidth = 5 + this.Width;
+            var windowHeight = 50 + this.Height;  
 
             this.Topmost = true;
             this.ShowActivated = false;
             this.ShowInTaskbar = false;
             this.ResizeMode = ResizeMode.NoResize;
-            //this.Owner = Application.Current.MainWindow;
             this.interactionsImage.Source = ImageFromBuffer(Properties.Resources.interactionsIcon_png);
-            //this.Closed += this.DailyProductivityPopUp_OnClosed;
             this._webBrowser.Size = new System.Drawing.Size(this._webBrowser.Parent.Width, this._webBrowser.Parent.Height);
 
             this.Left = SystemParameters.PrimaryScreenWidth - windowWidth;

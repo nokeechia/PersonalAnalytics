@@ -15,7 +15,7 @@ img { border: 0; }
 .item.Small { width:11.875em; height:10em; }
 .item.Square { width:25em; height:21.25em; }
 .item.Wide { width:51.25em; height:21.25em; }
-.item.Mini { width:23.75em; height:11em; }
+.item.Mini { width:23.75em; height:11em; overflow:visible; }
 
 .verticalLine { border-left: thick solid #007acc; height:11em; background-color: #ffffff; float: left; margin-top: -0.3125em; }
 

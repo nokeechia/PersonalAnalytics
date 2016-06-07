@@ -13,7 +13,7 @@
         mc:Ignorable="d"
         MouseEnter="OnWindowHover"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Closing="WindowClosing" Title="Today's Interactions Summary"
-        Height="300" Width="500">
+        Height="380" Width="500">
     
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
@@ -76,7 +76,6 @@
         <Border x:Name="LoadingSign" Background="White" Grid.Row="1">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock HorizontalAlignment="Center" Text="Preparing your Interaction Retrospection..." Foreground="{StaticResource RetrospectionColor}" FontSize="14" />
-                <!--<TextBlock HorizontalAlignment="Center" Text="This might take a few moments. It will be worth the wait :)" Margin="0 5 0 0" />-->
             </StackPanel>
         </Border>
     </Grid>

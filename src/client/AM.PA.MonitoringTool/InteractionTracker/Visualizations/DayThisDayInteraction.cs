@@ -99,7 +99,7 @@ namespace InteractionTracker.Visualizations
             if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + (emailsReceivedSD))
             {
                 emailsReceivedColor = errorColor;
-                emailsReceived = "<b>" + numEmailsReceivedNow + "</b></td><td><b>" + avgEmailsReceivedPrevious.ToString() + "</b><br />";
+                emailsReceived = "<b>" + numEmailsReceivedNow + "</b></td><td><b>" + avgEmailsReceivedPrevious.ToString() + "</b></td></tr>";
             }
             else if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + (emailsReceivedSD/2))
                 emailsReceivedColor = warningColor;
