@@ -11,8 +11,8 @@ namespace Shared
 {
     public static class Settings
     {
-        public const bool IsFeedbackEnabled = false;
         public const bool IsUploadEnabled = false;
+        public const bool IsFeedbackEnabled = false;
 
         public const bool AnonymizeSensitiveData = false;
         public const bool PrintQueriesToConsole = false;
@@ -27,17 +27,20 @@ namespace Shared
         public const string MeetingsTable = "meetings";  // used for the retrospection
         public const string CallsTable = "calls"; // used for the retrospection
         public const string ChatsTable = "chats"; // used for the retrospection
-        public const string InteractionsTable = "interactions"; // used for the retrospection
+        public const string InteractionsTable = "interactions"; // used for the retrospection (TODO: remove later)
 
-        public static TimeSpan CheckForToolUpdatesInterval = TimeSpan.FromHours(3); // every 3 hours
+        public static TimeSpan CheckForToolUpdatesInterval = TimeSpan.FromHours(5); // every 5 hours
         public static TimeSpan TooltipIconUpdateInterval = TimeSpan.FromSeconds(10); // every 10 seconds
         public static TimeSpan RemindToResumeToolInterval = TimeSpan.FromMinutes(30); // every 30 minutes
 
+        public static TimeSpan IntervalCheckThresholds = TimeSpan.FromMinutes(10); // every 10 mins
+        public const bool IsAutoMiniRetrospectionPopUpEnabled = true;
+
+        public const int Port = 57827; // needed for the retrospection (local web server)
         public static string ExportFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PersonalAnalytics");
         //public static string RemoteFolderName = "remote\\";
 
         public const string RegAppName = "PersonalDeveloperAnalytics"; // set manually
-        public const int Port = 57827; // needed for the retrospection (local web server)
 
         // path (Regedit): Computer\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
         public const string RegAppPath = @"\Personal Analytics\Personal Analytics\Personal Analytics.appref-ms"; // change also publisher name in .csproj

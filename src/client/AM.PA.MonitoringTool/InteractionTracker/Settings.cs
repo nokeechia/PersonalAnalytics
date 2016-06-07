@@ -9,13 +9,6 @@ namespace InteractionTracker
     {
         public const bool IsEnabled = true;
 
-
-        public const string EmailsTable = "emails";
-        public const string MeetingsTable = "meetings";
-        public const string CallsTable = "calls";
-        public const string ChatsTable = "chats";
-        public const string InteractionsTable = "interactions";
-        public const string WindowsActivityTable = "windows_activity";
-        //todo: thresholds
+        // table names are defined in Shared.Settings
     }
 }

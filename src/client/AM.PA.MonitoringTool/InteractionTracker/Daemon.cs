@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using InteractionTracker.Visualizations;
 using Shared;
+using System.Windows.Threading;
+using InteractionTracker.Data;
 
 namespace InteractionTracker
 {
@@ -24,28 +26,11 @@ namespace InteractionTracker
 
         public override void Start()
         {
-            //// Start Email Count Timer
-            //if (_timer != null)
-            //    Stop();
-
-            //// initialize a new timer
-            //var interval = (int)TimeSpan.FromMinutes(Settings.SaveEmailCountsIntervalInMinutes).TotalMilliseconds;
-            //_timer = new Timer(new TimerCallback(TimerTick), // callback
-            //                null,  // no idea
-            //                10000, // start immediately after 10 seconds
-            //                interval); // interval
-
             IsRunning = true;
         }
 
         public override void Stop()
         {
-            //    if (_timer != null)
-            //    {
-            //        _timer.Dispose();
-            //        _timer = null;
-            //    }
-
             IsRunning = false;
         }
 
@@ -70,6 +55,15 @@ namespace InteractionTracker
             var vis1 = new DayInteractionStepChart();
             var vis2 = new DayThisDayInteraction(date);
             return new List<IVisualization> { vis1, vis2 };
+        }
+
+        #endregion
+
+        #region Other Methods
+
+        public InteractionDataSet GetInteractionDataSet(DateTimeOffset date)
+        {
+            return InteractionDataHelper.GetAllInteractionData(date);
         }
 
         #endregion

@@ -64,6 +64,7 @@ namespace Retrospection
             _http.Stop();
             _http = null;
         }
+
         #endregion
 
         /// <summary>

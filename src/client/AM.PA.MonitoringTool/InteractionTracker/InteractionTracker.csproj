@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Daemon.cs" />
+    <Compile Include="Data\InteractionDataHelper.cs" />
     <Compile Include="Data\Queries.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Visualizations\DayInteractionStepChart.cs" />
@@ -50,6 +51,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj">

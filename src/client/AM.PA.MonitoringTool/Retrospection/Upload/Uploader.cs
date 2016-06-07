@@ -108,7 +108,7 @@ namespace Retrospection.Upload
         {
             try
             {
-                var anonymizedDbFile = Path.Combine(Settings.ExportFilePath, "pa_obfuscated.dat");
+                var anonymizedDbFile = Path.Combine(Shared.Settings.ExportFilePath, "pa_obfuscated.dat");
                 var originalDbFile = Database.GetLocalDatabaseSavePath();
                 File.Copy(originalDbFile, anonymizedDbFile, true);
 
@@ -136,9 +136,9 @@ namespace Retrospection.Upload
             {
                 try
                 {
-                    var query = "UPDATE " + Settings.MeetingsTable + " SET subject = hash(subject);";
+                    var query = "UPDATE " + Shared.Settings.MeetingsTable + " SET subject = hash(subject);";
                     var res = anonDb.ExecuteDefaultQuery(query);
-                    LogSuccessfulObfuscation(anonDb, Settings.MeetingsTable, res);
+                    LogSuccessfulObfuscation(anonDb, Shared.Settings.MeetingsTable, res);
                 }
                 catch (Exception e)
                 {
@@ -151,9 +151,9 @@ namespace Retrospection.Upload
             {
                 try
                 {
-                    var query = "UPDATE " + Settings.WindowsActivityTable + " SET window = hash(window);";
+                    var query = "UPDATE " + Shared.Settings.WindowsActivityTable + " SET window = hash(window);";
                     var res = anonDb.ExecuteDefaultQuery(query);
-                    LogSuccessfulObfuscation(anonDb, Settings.WindowsActivityTable, res);
+                    LogSuccessfulObfuscation(anonDb, Shared.Settings.WindowsActivityTable, res);
                 }
                 catch (Exception e)
                 {
@@ -178,7 +178,7 @@ namespace Retrospection.Upload
             try
             {
                 var zipFileName = "pa_upload_" + _participantId + ".zip";
-                var zipFilePath = Path.Combine(Settings.ExportFilePath, zipFileName);
+                var zipFilePath = Path.Combine(Shared.Settings.ExportFilePath, zipFileName);
                 if (File.Exists(zipFilePath)) File.Delete(zipFilePath);
 
                 using (var archive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
@@ -243,7 +243,7 @@ namespace Retrospection.Upload
 
         internal string GetAdditionalInfoFilePath()
         {
-            return Path.Combine(Settings.ExportFilePath, _additionalInfoFilePath);
+            return Path.Combine(Shared.Settings.ExportFilePath, _additionalInfoFilePath);
         }
     }
 }

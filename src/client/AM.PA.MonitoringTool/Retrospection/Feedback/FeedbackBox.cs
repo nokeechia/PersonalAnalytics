@@ -13,7 +13,7 @@ namespace Retrospection.Feedback
         public FeedbackBox(VisType type)
         {
             Title = "Got feedback?";
-            IsEnabled = Settings.IsFeedbackEnabled;
+            IsEnabled = Shared.Settings.IsFeedbackEnabled;
             Order = 22; //todo: handle by user
             Size = VisSize.Small;
             Type = type;

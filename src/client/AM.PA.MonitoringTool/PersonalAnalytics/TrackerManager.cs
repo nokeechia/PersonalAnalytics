@@ -13,6 +13,7 @@ using Shared;
 using Shared.Data;
 using System.Windows;
 using System.Globalization;
+using System.Timers;
 
 namespace PersonalAnalytics
 {
@@ -25,6 +26,7 @@ namespace PersonalAnalytics
         private DispatcherTimer _taskbarIconTimer;
         private DispatcherTimer _remindToContinueTrackerTimer;
         private DispatcherTimer _checkForUpdatesTimer;
+        private Timer _thresholdChecker;
         private System.Windows.Controls.MenuItem _pauseContinueMenuItem;
         private string _publishedAppVersion;
         private bool _isPaused;
@@ -90,6 +92,14 @@ namespace PersonalAnalytics
             _checkForUpdatesTimer.Interval = Settings.CheckForToolUpdatesInterval;
             _checkForUpdatesTimer.Tick += UpdateApplicationIfNecessary;
             _checkForUpdatesTimer.Start();
+
+            // start checker to automatically show mini-retrospection pop-up
+            if (_thresholdChecker != null)
+                Stop();
+            _thresholdChecker = new Timer();
+            _thresholdChecker.Interval = Settings.IntervalCheckThresholds.TotalMilliseconds;
+            _thresholdChecker.Elapsed += CheckThresholdsReached;
+            if (Settings.IsAutoMiniRetrospectionPopUpEnabled) _thresholdChecker.Start();
         }
 
         /// <summary>
@@ -111,9 +121,10 @@ namespace PersonalAnalytics
             Retrospection.Handler.GetInstance().Stop();
 
             // stop timers & unregister
-            if (_taskbarIconTimer != null) _taskbarIconTimer.Stop();
-            if (_remindToContinueTrackerTimer != null) _remindToContinueTrackerTimer.Stop();
-            if (_checkForUpdatesTimer != null) _checkForUpdatesTimer.Stop();
+            if (_taskbarIconTimer != null) { _taskbarIconTimer.Stop(); _taskbarIconTimer = null; }
+            if (_remindToContinueTrackerTimer != null) { _remindToContinueTrackerTimer.Stop(); _remindToContinueTrackerTimer = null; }
+            if (_checkForUpdatesTimer != null) { _checkForUpdatesTimer.Stop(); _checkForUpdatesTimer = null; }
+            if (_thresholdChecker != null) { _thresholdChecker.Stop(); _thresholdChecker = null; }
             TaskbarIcon.TrayBalloonTipClicked -= TrayBallonTipClicked;
             TaskbarIcon.TrayMouseDoubleClick -= (o, i) => OpenRetrospection();
 
@@ -400,6 +411,49 @@ namespace PersonalAnalytics
             if (TaskbarIcon == null) return;
             TaskbarIcon.ToolTipText = message;
         }
+
+        #region Threshold Checker to automatically show the interaction dashboard
+
+        /// <summary>
+        /// If the threshold has been treached, show the mini-retrospection dashboard
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckThresholdsReached(object sender, EventArgs e)
+        {
+            // TODO: only show mini-retrospection once a day?
+
+            // HACK: get InteractionTracker using Reflection
+            var interactionTracker =
+                    _trackers.Where(t => t.GetType() == typeof(InteractionTracker.Daemon))
+                        .Cast<InteractionTracker.Daemon>()
+                        .FirstOrDefault();
+            if (interactionTracker == null) return;
+
+            // calculate if threshold is reached
+            var thresholdReached = false;
+
+            var data = interactionTracker.GetInteractionDataSet(DateTimeOffset.Now.Date);
+
+            if (data.NumMeetingsNow >= data.AvgChatsPrevious + data.MeetingsSD) thresholdReached = true;
+            else if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + data.EmailsReceivedSD) thresholdReached = true;
+            else if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + data.EmailsSentSD) thresholdReached = true;
+            else if (data.NumChatsNow >= data.AvgChatsPrevious + data.ChatsSD) thresholdReached = true;
+
+            // if threshold is reached => show dashboard
+            if (thresholdReached)
+            {
+                Database.GetInstance().LogInfo("Automatically showed Mini-Retrospection as the threshold was reached.");
+
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
+                () =>
+                {
+                    Retrospection.Handler.GetInstance().OpenMiniRetrospection();
+                }));
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Called in a regular interval to try and update the tool.

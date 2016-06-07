@@ -28,7 +28,7 @@ namespace InteractionTracker.Data
                 var query = "SELECT (3600 - SUM(difference)) as 'difference'"
                           + "FROM ( "
                           + "SELECT (strftime('%s', t2.time) - strftime('%s', t1.time)) as 'difference' "
-                          + "FROM " + Settings.WindowsActivityTable + " t1 LEFT JOIN " + Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
+                          + "FROM " + Shared.Settings.WindowsActivityTable + " t1 LEFT JOIN " + Shared.Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
                           + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t2.time") + " "
                           + "AND TIME(t2.time) between TIME('" + today.AddHours(-1).ToString("HH:mm") + "') and TIME('" + today.ToString("HH:mm") + "') "
                           + "AND ( LOWER(t1.process) == 'outlook' or LOWER(t1.process) == 'skype' or LOWER(t1.process) == 'lync')"
@@ -85,7 +85,7 @@ namespace InteractionTracker.Data
                 var today = DateTime.Now;
 
                 var query = "SELECT (2 * COUNT(*)) as 'totalSwitches'"
-                              + "FROM " + Settings.WindowsActivityTable + " t1 LEFT JOIN " + Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
+                              + "FROM " + Shared.Settings.WindowsActivityTable + " t1 LEFT JOIN " + Shared.Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
                               + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, today.Date, "t2.time") + " "
                               + "AND TIME(t2.time) between TIME('" + today.AddHours(-1).ToString("HH:mm") + "') and TIME('" + today.ToString("HH:mm") + "') "
                               + "AND ( LOWER(t1.process) == 'outlook' or LOWER(t1.process) == 'skype' or LOWER(t1.process) == 'lync')"
@@ -124,7 +124,7 @@ namespace InteractionTracker.Data
             var meetings = new List<Tuple<DateTime, DateTime>>();
             try
             {
-                var query = "SELECT time, durationInMins FROM " + Settings.MeetingsTable + " "
+                var query = "SELECT time, durationInMins FROM " + Shared.Settings.MeetingsTable + " "
                             + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, DateTime.Now.Date) + ";";
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
@@ -166,7 +166,7 @@ namespace InteractionTracker.Data
         {
             try
             {
-                var answer = "SELECT COUNT(*) FROM " + Settings.MeetingsTable + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date.Date) + ";";
+                var answer = "SELECT COUNT(*) FROM " + Shared.Settings.MeetingsTable + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date.Date) + ";";
                 var count = Database.GetInstance().ExecuteScalar(answer);
                 return count;
             }
@@ -190,7 +190,7 @@ namespace InteractionTracker.Data
 
             try
             {
-                var query = "SELECT time, durationInMins FROM " + Settings.MeetingsTable + " "
+                var query = "SELECT time, durationInMins FROM " + Shared.Settings.MeetingsTable + " "
                             + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date) + ";"; // DateTime.Now.Date
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
@@ -245,7 +245,7 @@ namespace InteractionTracker.Data
         {
             try
             {
-                var query = "SELECT time, " + sentOrReceived + " FROM " + Settings.EmailsTable + " "
+                var query = "SELECT time, " + sentOrReceived + " FROM " + Shared.Settings.EmailsTable + " "
                             + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) + " "
                             + "ORDER BY time DESC "
                             + "LIMIT 1;";
@@ -286,7 +286,7 @@ namespace InteractionTracker.Data
 
             try
             {
-                var query = "SELECT * FROM " + Settings.InteractionsTable
+                var query = "SELECT * FROM " + Shared.Settings.InteractionsTable
                             + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date) // DateTime.Now.Date
                             + "AND interactionType = 'email'"
                             + " AND sentType = '" + sentOrReceived + "';"; 
@@ -367,7 +367,7 @@ namespace InteractionTracker.Data
 
             try
             {
-                var query = "SELECT * FROM " + Settings.InteractionsTable
+                var query = "SELECT * FROM " + Shared.Settings.InteractionsTable
                             + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date) // DateTime.Now.Date
                             + "AND interactionType = 'chat'"
                             + ";";
@@ -408,7 +408,7 @@ namespace InteractionTracker.Data
 
             try
             {
-                var query = "SELECT * FROM " + Settings.InteractionsTable
+                var query = "SELECT * FROM " + Shared.Settings.InteractionsTable
                             + " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date) // DateTime.Now.Date
                             + "AND interactionType = 'call'"
                             + " AND sentType = '" + sentOrReceived + "';";

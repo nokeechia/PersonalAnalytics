@@ -46,7 +46,7 @@ namespace InteractionTrackerTests
         public void GetNumInteractionSwitchesTest()
         {
             // add table & dummy data
-            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.WindowsActivityTable + " (id INTEGER PRIMARY KEY, time TEXT, window TEXT, process TEXT)");
+            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Shared.Settings.WindowsActivityTable + " (id INTEGER PRIMARY KEY, time TEXT, window TEXT, process TEXT)");
             
             var activities = new List<Tuple<DateTime, string>>();
             activities.Add(new Tuple<DateTime, string>(DateTime.Now.AddMinutes(-1), "skype"));
@@ -62,7 +62,7 @@ namespace InteractionTrackerTests
 
             foreach (var activity in activities.OrderBy(a => a.Item1))
             {
-                _database.ExecuteDefaultQuery("INSERT INTO " + Settings.WindowsActivityTable + " (time, process) VALUES (" +
+                _database.ExecuteDefaultQuery("INSERT INTO " + Shared.Settings.WindowsActivityTable + " (time, process) VALUES (" +
                     _database.QTime(activity.Item1) + ", " + _database.Q(activity.Item2) + ");");
             }
 
@@ -71,7 +71,7 @@ namespace InteractionTrackerTests
             Assert.AreEqual(6, numActivitySwitches);
 
             // clean-up
-            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.WindowsActivityTable + ";");
+            _database.ExecuteDefaultQuery("DROP TABLE " + Shared.Settings.WindowsActivityTable + ";");
 
         }
 
@@ -79,7 +79,7 @@ namespace InteractionTrackerTests
         public void GetMeetingsForLastHourTest()
         {
             // add table & dummy data
-            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.MeetingsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, subject TEXT, durationInMins INTEGER)");
+            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Shared.Settings.MeetingsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, subject TEXT, durationInMins INTEGER)");
 
             var meetings = new List<Tuple<DateTime, int>>();
             meetings.Add(new Tuple<DateTime, int>(DateTime.Now.AddMinutes(20), 20));
@@ -91,7 +91,7 @@ namespace InteractionTrackerTests
 
             foreach (var meeting in meetings)
             {
-                _database.ExecuteDefaultQuery("INSERT INTO " + Settings.MeetingsTable + " (timestamp, time, durationInMins) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
+                _database.ExecuteDefaultQuery("INSERT INTO " + Shared.Settings.MeetingsTable + " (timestamp, time, durationInMins) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
                     _database.QTime(meeting.Item1) + ", " + _database.Q(meeting.Item2) + ");");
             }
 
@@ -101,14 +101,14 @@ namespace InteractionTrackerTests
             Assert.AreEqual(2, numMeetingsLastHour);
 
             // clean-up
-            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.MeetingsTable + ";");
+            _database.ExecuteDefaultQuery("DROP TABLE " + Shared.Settings.MeetingsTable + ";");
         }
 
         [TestMethod]
         public void GetMeetingsForDateTest()
         {
             // add table & dummy data
-            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.MeetingsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, subject TEXT, durationInMins INTEGER)");
+            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Shared.Settings.MeetingsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, subject TEXT, durationInMins INTEGER)");
 
             var meetings = new List<Tuple<DateTime, string>>();
             meetings.Add(new Tuple<DateTime, string>(DateTime.Now, "Meeting 1"));
@@ -119,7 +119,7 @@ namespace InteractionTrackerTests
 
             foreach (var meeting in meetings)
             {
-                _database.ExecuteDefaultQuery("INSERT INTO " + Settings.MeetingsTable + " (timestamp, time, subject) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
+                _database.ExecuteDefaultQuery("INSERT INTO " + Shared.Settings.MeetingsTable + " (timestamp, time, subject) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
                     _database.QTime(meeting.Item1) + ", " + _database.Q(meeting.Item2) + ");");
             }
 
@@ -133,14 +133,14 @@ namespace InteractionTrackerTests
             Assert.AreEqual(1, totalNumMeetingsTomorrow);
 
             // clean-up
-            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.MeetingsTable + ";");
+            _database.ExecuteDefaultQuery("DROP TABLE " + Shared.Settings.MeetingsTable + ";");
         }
 
         [TestMethod]
         public void GetSentOrReceivedEmailsTest()
         {
             // add table & dummy data
-            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.EmailsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, inbox INTEGER, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
+            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Shared.Settings.EmailsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, inbox INTEGER, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
 
             var emails = new List<Tuple<DateTime, int, int>>();
             emails.Add(new Tuple<DateTime, int, int>(DateTime.Now, 10, 1));
@@ -155,7 +155,7 @@ namespace InteractionTrackerTests
 
             foreach (var email in emails)
             {
-                _database.ExecuteDefaultQuery("INSERT INTO " + Settings.EmailsTable + " (timestamp, time, sent, received) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
+                _database.ExecuteDefaultQuery("INSERT INTO " + Shared.Settings.EmailsTable + " (timestamp, time, sent, received) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
                     _database.QTime(email.Item1) + ", " + _database.Q(email.Item2) + ", " + _database.Q(email.Item3) + ");");
             }
 
@@ -177,7 +177,7 @@ namespace InteractionTrackerTests
 
 
             // clean-up
-            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.EmailsTable + ";");
+            _database.ExecuteDefaultQuery("DROP TABLE " + Shared.Settings.EmailsTable + ";");
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace InteractionTrackerTests
         public void GetCallsOrChatsTest()
         {
             // add table & dummy data
-            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.ChatsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
+            _database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Shared.Settings.ChatsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
             //_database.ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.CallsTable + " (id INTEGER PRIMARY KEY, timestamp TEXT, time TEXT, service TEXT, sent INTEGER, received INTEGER, isFromTimer INTEGER)");
 
             var chats = new List<Tuple<DateTime, int>>();
@@ -202,21 +202,21 @@ namespace InteractionTrackerTests
 
             foreach (var chat in chats)
             {
-                _database.ExecuteDefaultQuery("INSERT INTO " + Settings.ChatsTable + " (timestamp, time, sent, received) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
+                _database.ExecuteDefaultQuery("INSERT INTO " + Shared.Settings.ChatsTable + " (timestamp, time, sent, received) VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), " +
                     _database.QTime(chat.Item1) + ", " + chat.Item2 + ", 0);");
             }
 
             // run tests
-            var numChatsToday = Queries.GetNumCallsOrChats(DateTime.Now.Date, Settings.ChatsTable);
-            var numChatsYesterday = Queries.GetNumCallsOrChats(DateTime.Now.AddDays(-1).Date, Settings.ChatsTable);
-            var numChatsOtherDay = Queries.GetNumCallsOrChats(DateTime.Now.AddDays(-100).Date, Settings.ChatsTable);
+            var numChatsToday = Queries.GetNumCallsOrChats(DateTime.Now.Date, Shared.Settings.ChatsTable);
+            var numChatsYesterday = Queries.GetNumCallsOrChats(DateTime.Now.AddDays(-1).Date, Shared.Settings.ChatsTable);
+            var numChatsOtherDay = Queries.GetNumCallsOrChats(DateTime.Now.AddDays(-100).Date, Shared.Settings.ChatsTable);
 
             Assert.AreEqual(3, numChatsToday);
             Assert.AreEqual(3, numChatsYesterday);
             Assert.AreEqual(-1, numChatsOtherDay); // -1 means: we don't know, we have no entries
 
             // clean-up
-            _database.ExecuteDefaultQuery("DROP TABLE " + Settings.ChatsTable + ";");
+            _database.ExecuteDefaultQuery("DROP TABLE " + Shared.Settings.ChatsTable + ";");
             //_database.ExecuteDefaultQuery("DROP TABLE " + Settings.CallsTable + ";");
         }
 
