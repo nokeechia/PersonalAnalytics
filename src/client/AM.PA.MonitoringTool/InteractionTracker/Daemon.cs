@@ -61,9 +61,23 @@ namespace InteractionTracker
 
         #region Other Methods
 
-        public InteractionDataSet GetInteractionDataSet(DateTimeOffset date)
+        /// <summary>
+        /// Gets the interaction data (meetings, emails sent/received and chats) and calculates
+        /// if they are higher than the threshold (which is the average + 1 standard deviation)
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public bool ThresholdReached(DateTime date)
         {
-            return InteractionDataHelper.GetAllInteractionData(date);
+            var data = InteractionDataHelper.GetAllInteractionData(date);
+
+            var thresholdReached = false;
+            if (data.NumMeetingsNow >= data.AvgChatsPrevious + data.MeetingsSD) thresholdReached = true;
+            else if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + data.EmailsReceivedSD) thresholdReached = true;
+            else if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + data.EmailsSentSD) thresholdReached = true;
+            else if (data.NumChatsNow >= data.AvgChatsPrevious + data.ChatsSD) thresholdReached = true;
+
+            return thresholdReached;
         }
 
         #endregion

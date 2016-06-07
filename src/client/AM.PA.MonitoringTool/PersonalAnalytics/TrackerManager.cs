@@ -428,20 +428,9 @@ namespace PersonalAnalytics
                     _trackers.Where(t => t.GetType() == typeof(InteractionTracker.Daemon))
                         .Cast<InteractionTracker.Daemon>()
                         .FirstOrDefault();
-            if (interactionTracker == null) return;
-
-            // calculate if threshold is reached
-            var thresholdReached = false;
-
-            var data = interactionTracker.GetInteractionDataSet(DateTimeOffset.Now.Date);
-
-            if (data.NumMeetingsNow >= data.AvgChatsPrevious + data.MeetingsSD) thresholdReached = true;
-            else if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + data.EmailsReceivedSD) thresholdReached = true;
-            else if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + data.EmailsSentSD) thresholdReached = true;
-            else if (data.NumChatsNow >= data.AvgChatsPrevious + data.ChatsSD) thresholdReached = true;
 
             // if threshold is reached => show dashboard
-            if (thresholdReached)
+            if (interactionTracker != null && interactionTracker.ThresholdReached(DateTimeOffset.Now.Date))
             {
                 Database.GetInstance().LogInfo("Automatically showed Mini-Retrospection as the threshold was reached.");
 
