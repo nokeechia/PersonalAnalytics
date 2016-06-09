@@ -12,7 +12,7 @@
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
         MouseEnter="OnWindowHover"
-        WindowStyle="ToolWindow" Loaded="WindowLoaded" Closing="WindowClosing" Title="Today's Interactions Summary"
+        WindowStyle="ToolWindow" Loaded="WindowLoaded" Closing="WindowClosing" Title="Today's Communication Summary"
         Height="380" Width="500">
     
     <Window.Resources>
@@ -75,7 +75,7 @@
 
         <Border x:Name="LoadingSign" Background="White" Grid.Row="1">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock HorizontalAlignment="Center" Text="Preparing your Interaction Retrospection..." Foreground="{StaticResource RetrospectionColor}" FontSize="14" />
+                <TextBlock HorizontalAlignment="Center" Text="Preparing your Communication Retrospection..." Foreground="{StaticResource RetrospectionColor}" FontSize="14" />
             </StackPanel>
         </Border>
     </Grid>

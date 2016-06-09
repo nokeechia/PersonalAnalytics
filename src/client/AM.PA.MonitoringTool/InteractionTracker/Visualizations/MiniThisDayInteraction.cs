@@ -18,7 +18,7 @@ namespace InteractionTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Interaction Summary"; // Interaction Summary
+            Title = "Communication Summary"; // Interaction Summary
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Mini;
