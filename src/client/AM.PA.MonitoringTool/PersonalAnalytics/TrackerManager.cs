@@ -414,6 +414,8 @@ namespace PersonalAnalytics
 
         #region Threshold Checker to automatically show the interaction dashboard
 
+        private DateTimeOffset _lastTimeShownPopUp;
+
         /// <summary>
         /// If the threshold has been treached, show the mini-retrospection dashboard
         /// </summary>
@@ -421,7 +423,8 @@ namespace PersonalAnalytics
         /// <param name="e"></param>
         private void CheckThresholdsReached(object sender, EventArgs e)
         {
-            // TODO: only show mini-retrospection once a day?
+            // only show pop-up at most once a day
+            if (_lastTimeShownPopUp.Date == DateTime.Now.Date) return;
 
             // HACK: get InteractionTracker using Reflection
             var interactionTracker =
@@ -432,6 +435,7 @@ namespace PersonalAnalytics
             // if threshold is reached => show dashboard
             if (interactionTracker != null && interactionTracker.ThresholdReached(DateTimeOffset.Now.Date))
             {
+                _lastTimeShownPopUp = DateTimeOffset.Now;
                 Database.GetInstance().LogInfo("Automatically showed Mini-Retrospection as the threshold was reached.");
 
                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
