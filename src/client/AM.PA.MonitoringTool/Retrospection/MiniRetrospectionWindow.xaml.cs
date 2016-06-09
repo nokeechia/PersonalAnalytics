@@ -180,7 +180,6 @@ namespace Retrospection
 
         private void SeeDetails_Clicked(object sender, RoutedEventArgs e)
         {
-            //DetailsButton.Background=Brushes.Transparent;
             Handler.GetInstance().OpenRetrospection();
             Close();
         }
