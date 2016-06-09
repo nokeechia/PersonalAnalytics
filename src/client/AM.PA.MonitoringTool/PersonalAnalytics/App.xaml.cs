@@ -59,8 +59,8 @@ namespace PersonalAnalytics
             //////////////////////////////////////////////////////
             // Register Tracker
             //////////////////////////////////////////////////////
-            //ITracker t = new WindowsActivityTracker.Daemon();
-            //TrackerManager.GetInstance().Register(t);
+            ITracker t = new WindowsActivityTracker.Daemon();
+            TrackerManager.GetInstance().Register(t);
 
             //ITracker t1 = new TimeSpentVisualizer.Visualizers.TimeSpentVisualizer();
             //TrackerManager.GetInstance().Register(t1);

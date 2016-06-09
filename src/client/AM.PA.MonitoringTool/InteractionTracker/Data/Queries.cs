@@ -314,6 +314,58 @@ namespace InteractionTracker.Data
             return current;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Returns emails that have occurred since 6 am until now</returns>
+        internal static List<DateTime> GetEmailTimesSentOrReceivedFromSixAm(DateTime later, string sentOrReceived)
+        {
+            var endTs = later;
+            var startTs = endTs.Date.AddHours(6); // 6 am today
+            var current = new List<DateTime>();
+            var emails = new List<DateTime>();
+
+            try
+            {
+                var query = "SELECT t1.window as 'window', t1.process as 'process', (strftime('%s', t2.time) - strftime('%s', t1.time)) as 'difference', t1.time as 'from', t2.time as 'to' " // t1.window as 'window', 
+                          + "FROM " + Shared.Settings.WindowsActivityTable + " t1 LEFT JOIN " + Shared.Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
+                          + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date, "t2.time") + " "
+                          + "AND t1.process == 'OUTLOOK' "
+                          + "GROUP BY t1.id, t1.time "
+                          + "ORDER BY difference DESC;";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+                
+                foreach (DataRow row in table.Rows)
+                {
+                    var window = (string)row["window"];
+                    var process = Shared.Helpers.ProcessNameHelper.GetFileDescriptionFromProcess((string)row["process"]);
+                    var difference = Convert.ToInt32(row["difference"], CultureInfo.InvariantCulture);
+                    var from = DateTime.Parse((string)row["from"], CultureInfo.InvariantCulture);
+                    var to = DateTime.Parse((string)row["to"], CultureInfo.InvariantCulture);
+                    for (var t = from; t < to; t += TimeSpan.FromMinutes(1))
+                    {
+                        if (sentOrReceived == "sent" && window.Contains("- Message"))
+                            emails.Add(t);
+                        else if (sentOrReceived == "received" && window.Contains("Inbox -"))
+                            emails.Add(t);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            foreach (var email in emails)
+            {
+                if (email >= startTs)
+                {
+                    current.Add(email);
+                }
+            }
+            return current;
+        }
 
         /// <summary>
         /// The calls sent or received
@@ -451,8 +503,8 @@ namespace InteractionTracker.Data
             var overallFocusList = new List<int>();
 
             var chats = GetChatsSentOrReceivedFromSixAm(later);
-            var emailsSent = GetEmailsSentOrReceivedFromSixAm(later, "sent");
-            var emailsReceived = GetEmailsSentOrReceivedFromSixAm(later, "received");
+            var emailsSent = GetEmailTimesSentOrReceivedFromSixAm(later, "sent");
+            var emailsReceived = GetEmailTimesSentOrReceivedFromSixAm(later, "received");
             var meetings = GetMeetingsFromSixAm(later);
 
             bool didHappen = false;

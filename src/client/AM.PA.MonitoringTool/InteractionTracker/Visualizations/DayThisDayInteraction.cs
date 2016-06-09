@@ -4,10 +4,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using InteractionTracker.Data;
 using Shared;
+using Shared.Helpers;
 
 
 namespace InteractionTracker.Visualizations
@@ -29,40 +28,15 @@ namespace InteractionTracker.Visualizations
 
         public override string GetHtml()
         {
-            //var startTime = Database.GetInstance().GetUserWorkStart(_date);
+            // get interaction data
+            var data = InteractionDataHelper.GetAllInteractionData(_date);
 
-            // get now data
-            var now = _date.Date.AddHours(18);
-            var numMeetingsNow = Queries.GetMeetingsFromSixAm(now).Count;
-            var numEmailsReceivedNow = Queries.GetEmailsSentOrReceivedFromSixAm(now, "received").Count;
-            var numEmailsSentNow = Queries.GetEmailsSentOrReceivedFromSixAm(now, "sent").Count;
-            var numChatsNow = Queries.GetChatsSentOrReceivedFromSixAm(now).Count;
-
-            // get previous data
-            var numMeetingsPrevious = new List<double>();
-            var numEmailsReceivedPrevious = new List<double>();
-            var numEmailsSentPrevious = new List<double>();
-            var numChatsPrevious = new List<double>();
-            var j = -6;
-            for (var i = -1; i > j; i--)
+            if (data == null)
             {
-                var previous = now.AddDays(i);
-                if (previous.DayOfWeek == DayOfWeek.Saturday || previous.DayOfWeek == DayOfWeek.Sunday)
-                {
-                    j--;
-                    continue;
-                }
-                numMeetingsPrevious.Add(Queries.GetMeetingsFromSixAm(previous).Count);
-                numEmailsReceivedPrevious.Add(Queries.GetEmailsSentOrReceivedFromSixAm(previous, "received").Count);
-                numEmailsSentPrevious.Add(Queries.GetEmailsSentOrReceivedFromSixAm(previous, "sent").Count);
-                numChatsPrevious.Add(Queries.GetChatsSentOrReceivedFromSixAm(previous).Count);
+                return VisHelper.Error();
             }
 
-            var avgMeetingsPrevious = Math.Ceiling(numMeetingsPrevious.Average());
-            var avgEmailsReceivedPrevious = Math.Ceiling(numEmailsReceivedPrevious.Average());
-            var avgEmailsSentPrevious = Math.Ceiling(numEmailsSentPrevious.Average());
-            var avgChatsPrevious = Math.Ceiling(numChatsPrevious.Average());
-
+            // prepare icons
             var meetingsImage = "meetingsIcon";
             var emailsReceivedImage = "emailsReceivedIcon";
             var emailsSentImage = "emailsSentIcon";
@@ -72,54 +46,53 @@ namespace InteractionTracker.Visualizations
             string emailsSentIcon = "<img src=\"" + emailsSentImage + ".png\">";
             string chatsIcon = "<img src=\"" + chatsImage + ".png\">";
 
+            // colors
             var okayColor = "#4F8A10"; // green
             var warningColor = "#9F6000"; // yellow
             var errorColor = "#D8000C"; // red
 
+            // base colors
             var meetingsColor = okayColor;
             var emailsReceivedColor = okayColor;
             var emailsSentColor = okayColor;
             var chatsColor = okayColor;
 
-            var meetings = numMeetingsNow + "</td><td>" + avgMeetingsPrevious.ToString() + "</td></tr>";
-            var chats = numChatsNow + "</td><td>" + avgChatsPrevious.ToString() + "</td></tr>";
-            var emailsSent = numEmailsSentNow + "</td><td>" + avgEmailsSentPrevious.ToString() + "</td></tr>";
-            var emailsReceived = numEmailsReceivedNow + "</td><td>" + avgEmailsReceivedPrevious.ToString() + "<br />";
+            var meetings = data.NumMeetingsNow + "</td><td>" + data.AvgMeetingsPrevious.ToString() + "</td></tr>";
+            var chats = data.NumChatsNow + "</td><td>" + data.AvgChatsPrevious.ToString() + "</td></tr>";
+            var emailsSent = data.NumEmailsSentNow + "</td><td>" + data.AvgEmailsSentPrevious.ToString() + "</td></tr>";
+            var emailsReceived = data.NumEmailsReceivedNow + "</td><td>" + data.AvgEmailsReceivedPrevious.ToString() + "</td></tr>";
 
-            var meetingsSD = Math.Ceiling(CalculateStdDev(numMeetingsPrevious));
-            if (numMeetingsNow >= avgMeetingsPrevious + (meetingsSD))
+            if (data.NumMeetingsNow >= data.AvgMeetingsPrevious + (data.MeetingsSD))
             {
                 meetingsColor = errorColor;
-                meetings = "<b>" + numMeetingsNow + "</b></td><td><b>" + avgMeetingsPrevious.ToString() + "</b></td></tr>";
+                meetings = "<b>" + data.NumMeetingsNow + "</b></td><td><b>" + data.AvgMeetingsPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numMeetingsNow >= avgMeetingsPrevious + (meetingsSD/2))
+            else if (data.NumMeetingsNow >= data.AvgMeetingsPrevious + (data.MeetingsSD / 2))
                 meetingsColor = warningColor;
 
-            var emailsReceivedSD = Math.Ceiling(CalculateStdDev(numEmailsReceivedPrevious));
-            if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + (emailsReceivedSD))
+            if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + (data.EmailsReceivedSD))
             {
                 emailsReceivedColor = errorColor;
-                emailsReceived = "<b>" + numEmailsReceivedNow + "</b></td><td><b>" + avgEmailsReceivedPrevious.ToString() + "</b></td></tr>";
+                emailsReceived = "<b>" + data.NumEmailsReceivedNow + "</b></td><td><b>" + data.AvgEmailsReceivedPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numEmailsReceivedNow >= avgEmailsReceivedPrevious + (emailsReceivedSD/2))
+            else if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + (data.EmailsReceivedSD / 2))
                 emailsReceivedColor = warningColor;
 
-            var emailsSentSD = Math.Ceiling(CalculateStdDev(numEmailsSentPrevious));
-            if (numEmailsSentNow >= avgEmailsSentPrevious + (emailsSentSD))
+            if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + (data.EmailsSentSD))
             {
                 emailsSentColor = errorColor;
-                emailsSent = "<b>" + numEmailsSentNow + "</b></td><td><b>" + avgEmailsSentPrevious.ToString() + "</b></td></tr>";
+                emailsSent = "<b>" + data.NumEmailsSentNow + "</b></td><td><b>" + data.AvgEmailsSentPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numEmailsSentNow >= avgEmailsSentPrevious + (emailsSentSD/2))
+            else if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + (data.EmailsSentSD / 2))
                 emailsSentColor = warningColor;
 
-            var chatsSD = Math.Ceiling(CalculateStdDev(numChatsPrevious));
-            if (numChatsNow >= avgChatsPrevious + (chatsSD))
+
+            if (data.NumChatsNow >= data.AvgChatsPrevious + (data.ChatsSD))
             {
                 chatsColor = errorColor;
-                chats = "<b>" + numChatsNow + "</b></td><td><b>" + avgChatsPrevious.ToString() + "</b></td></tr>";
+                chats = "<b>" + data.NumChatsNow + "</b></td><td><b>" + data.AvgChatsPrevious.ToString() + "</b></td></tr>";
             }
-            else if (numChatsNow >= avgChatsPrevious + (chatsSD/2))
+            else if (data.NumChatsNow >= data.AvgChatsPrevious + (data.ChatsSD / 2))
                 chatsColor = warningColor;
 
             // generate html where queries were successful
@@ -133,21 +106,6 @@ namespace InteractionTracker.Visualizations
             html += "</table>";
 
             return html;
-        }
-
-        private double CalculateStdDev(IEnumerable<double> values)
-        {
-            double ret = 0;
-            if (values.Count() > 0)
-            {
-                //Compute the Average      
-                double avg = values.Average();
-                //Perform the Sum of (value-avg)_2_2      
-                double sum = values.Sum(d => Math.Pow(d - avg, 2));
-                //Put it all together      
-                ret = Math.Sqrt((sum) / (values.Count() - 1));
-            }
-            return ret;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Shared
         public static TimeSpan TooltipIconUpdateInterval = TimeSpan.FromSeconds(10); // every 10 seconds
         public static TimeSpan RemindToResumeToolInterval = TimeSpan.FromMinutes(30); // every 30 minutes
 
-        public static TimeSpan IntervalCheckThresholds = TimeSpan.FromMinutes(10); // every 10 mins
+        public static TimeSpan IntervalCheckThresholds = TimeSpan.FromMinutes(2); // every 2 mins
         public const bool IsAutoMiniRetrospectionPopUpEnabled = true;
 
         public const int Port = 57827; // needed for the retrospection (local web server)
@@ -55,6 +55,8 @@ namespace Shared
         internal static double ItemSquareHeightEm = (21.25 - titleMargin);
         internal static double ItemWideWidthEm = (51.25 - sideMargin);
         internal static double ItemWideHeightEm = (21.25 - titleMargin);
+        internal static double ItemMiniWidthEm = (23.75 - sideMargin);
+        internal static double ItemMiniHeightEm = (11 - titleMargin);
         internal const double sideMargin = 1.25; //2.5; //1.25;
         internal const double titleMargin = 4.0; //5.625; //3.125;
 

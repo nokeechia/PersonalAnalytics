@@ -72,7 +72,7 @@ namespace InteractionTracker
             var data = InteractionDataHelper.GetAllInteractionData(date);
 
             var thresholdReached = false;
-            if (data.NumMeetingsNow >= data.AvgChatsPrevious + data.MeetingsSD) thresholdReached = true;
+            if (data.NumMeetingsNow >= data.AvgMeetingsPrevious + data.MeetingsSD) thresholdReached = true;
             else if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + data.EmailsReceivedSD) thresholdReached = true;
             else if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + data.EmailsSentSD) thresholdReached = true;
             else if (data.NumChatsNow >= data.AvgChatsPrevious + data.ChatsSD) thresholdReached = true;

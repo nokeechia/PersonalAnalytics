@@ -59,7 +59,7 @@ namespace InteractionTracker.Visualizations
             var meetings = data.NumMeetingsNow + "</td><td>" + data.AvgMeetingsPrevious.ToString() + "</td></tr>";
             var chats = data.NumChatsNow + "</td><td>" + data.AvgChatsPrevious.ToString() + "</td></tr>";
             var emailsSent = data.NumEmailsSentNow + "</td><td>" + data.AvgEmailsSentPrevious.ToString() + "</td></tr>";
-            var emailsReceived = data.NumEmailsReceivedNow + "</td><td>" + data.AvgEmailsReceivedPrevious.ToString() + "<br />";
+            var emailsReceived = data.NumEmailsReceivedNow + "</td><td>" + data.AvgEmailsReceivedPrevious.ToString() + "</td></tr>";
 
             if (data.NumMeetingsNow >= data.AvgMeetingsPrevious + (data.MeetingsSD))
             {

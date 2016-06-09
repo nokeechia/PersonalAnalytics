@@ -69,7 +69,7 @@
 
         <WindowsFormsHost Grid.Row="1" Name="wbWinForms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" Margin="5 0 5 5">
             <WindowsFormsHost.Child>
-                <forms:WebBrowser  />
+                <forms:WebBrowser Anchor="Top" Dock="Fill" ScriptErrorsSuppressed="True" />
             </WindowsFormsHost.Child>
         </WindowsFormsHost>
 
