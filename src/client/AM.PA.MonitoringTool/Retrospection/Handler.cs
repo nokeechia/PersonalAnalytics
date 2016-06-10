@@ -115,7 +115,7 @@ namespace Retrospection
             try
             {
                 // new window
-                if (_retrospection == null || _retrospection.isClosed)
+                if (_retrospection == null || _retrospection.IsClosed)
                 {
                     _retrospection = new RetrospectionWindow();
                     _retrospection.WindowState = (OpenRetrospectionInFullScreen) ? WindowState.Maximized : WindowState.Normal;
