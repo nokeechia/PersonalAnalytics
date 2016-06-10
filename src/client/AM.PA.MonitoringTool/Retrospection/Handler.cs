@@ -160,7 +160,6 @@ namespace Retrospection
 
         public void CloseRetrospection()
         {
-            _retrospection = null;
             _retrospection?.Close();
         }
 
