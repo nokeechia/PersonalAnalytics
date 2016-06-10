@@ -12,6 +12,7 @@ namespace Retrospection
         private readonly System.Windows.Forms.WebBrowser _webBrowser;
         private string _currentPage;
         private VisType _currentVisType;
+        public bool isClosed = true;
 
         public RetrospectionWindow()
         {
@@ -57,10 +58,13 @@ namespace Retrospection
             WebBrowserNavigateTo(Handler.GetInstance().GetDashboardHome());
             SwitchToWeekButton.Visibility = Visibility.Visible;
             SwitchToDayButton.Visibility = Visibility.Collapsed;
+
+            isClosed = false;
         }
 
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            isClosed = true;
             Database.GetInstance().LogInfo("Retrospection closed");
         }
 
