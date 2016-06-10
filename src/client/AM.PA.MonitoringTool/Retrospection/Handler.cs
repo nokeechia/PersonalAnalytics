@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System;
 using System.Windows;
 using Shared.Data;
-using System.Net.Mail;
 using System.Diagnostics;
 using System.Windows.Threading;
 using Shared.Helpers;
@@ -116,7 +115,7 @@ namespace Retrospection
             try
             {
                 // new window
-                if (_retrospection == null)
+                if (_retrospection == null || _retrospection.IsClosed)
                 {
                     _retrospection = new RetrospectionWindow();
                     _retrospection.WindowState = (OpenRetrospectionInFullScreen) ? WindowState.Maximized : WindowState.Normal;
@@ -127,13 +126,14 @@ namespace Retrospection
                 // open again if it lost focus, is minimized or was in the background
                 else
                 {
-                    _retrospection.ForceRefreshWindow();
-                    _retrospection.WindowState = (OpenRetrospectionInFullScreen) ? WindowState.Maximized : WindowState.Normal;
-                    _retrospection.Activate();
-                    _retrospection.Topmost = true;
-                    _retrospection.Topmost = false;
-                    _retrospection.Focus();
-                    _retrospection.Show();
+                        _retrospection.ForceRefreshWindow();
+                        _retrospection.WindowState = (OpenRetrospectionInFullScreen) ? WindowState.Maximized : WindowState.Normal;
+                        _retrospection.Activate();
+                        _retrospection.Topmost = true;
+                        _retrospection.Topmost = false;
+                        _retrospection.Focus();
+                        //opens the form on the forms thread
+                        _retrospection.Show();
                 }
 
                 return true;

@@ -12,6 +12,7 @@ namespace Retrospection
         private readonly System.Windows.Forms.WebBrowser _webBrowser;
         private string _currentPage;
         private VisType _currentVisType;
+        public bool IsClosed = true; // property to check whether the current state of the window is closed/open
 
         public RetrospectionWindow()
         {
@@ -57,10 +58,13 @@ namespace Retrospection
             WebBrowserNavigateTo(Handler.GetInstance().GetDashboardHome());
             SwitchToWeekButton.Visibility = Visibility.Visible;
             SwitchToDayButton.Visibility = Visibility.Collapsed;
+
+            IsClosed = false;
         }
 
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            IsClosed = true;
             Database.GetInstance().LogInfo("Retrospection closed");
         }
 
