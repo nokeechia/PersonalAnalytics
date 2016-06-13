@@ -606,8 +606,8 @@ namespace InteractionTracker.Data
 
             activityDictionary.Add("Scheduled Meetings", meetingsAttendedList);
             activityDictionary.Add("Chat Conversations", chatsList);
-            activityDictionary.Add("Emails Sent", emailsSentList);
-            activityDictionary.Add("Emails Received", emailsReceivedList);
+            activityDictionary.Add("Sending Emails", emailsSentList);
+            activityDictionary.Add("Reading Emails", emailsReceivedList);
             activityDictionary.Add("Overall Interactions", overallFocusList);
             return activityDictionary;
         }
