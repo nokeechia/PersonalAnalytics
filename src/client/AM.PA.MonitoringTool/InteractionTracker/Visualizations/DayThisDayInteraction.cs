@@ -19,7 +19,7 @@ namespace InteractionTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Today's Communication in Numbers";
+            Title = "Communication in Numbers";
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Wide;
