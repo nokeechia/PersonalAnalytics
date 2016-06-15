@@ -15,7 +15,7 @@ namespace InteractionTracker.Visualizations
     {
         public DayInteractionStepChart()
         {
-            Title = "Communication Timeline";
+            Title = "Today's Communication Timeline";
             IsEnabled = true; //todo: handle by user
             Order = 1; //todo: handle by user
             Size = VisSize.Wide;
@@ -71,13 +71,11 @@ namespace InteractionTracker.Visualizations
                 columns += string.Format(CultureInfo.InvariantCulture, "['{0}', {1}], ", activity.Key, values);
             }
 
-            // html += "<p style='text-align: center;'>Today's Interactions</p>";
-            html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;'  align='center'></div>";
-
-            html += "<script type='text/javascript'>";
-            html +=
-                "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'area-step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}, grid: {y:{lines: [{value: 1 }]}}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Reading Emails']);" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Overall Interactions']);";
-            html += "</script>";
+            // html += "<p style='text-align: center;'>Today's Communications</p>";
+            html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>"
+                    + "<script type='text/javascript'>"
+                    + "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'area-step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}, grid: {y:{lines: [{value: 1 }]}}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Reading Emails']);" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Overall Communication']);"
+                    + "</script>";
 
             return html;
         }

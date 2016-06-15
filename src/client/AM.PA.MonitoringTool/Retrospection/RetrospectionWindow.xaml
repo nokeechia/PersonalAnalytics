@@ -14,7 +14,7 @@
         mc:Ignorable="d"
         Title="Personal Analytics: Retrospection &amp; Insights" 
         Loaded="WindowLoaded" Closing="WindowClosing" ResizeMode="NoResize"
-        Height="880" Width="880" Top="0" Left="40"> <!-- width was: 1310 -->
+        Height="815" Width="870" Top="0" Left="40"> <!-- width was: 1310 -->
 
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
@@ -25,7 +25,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="20" />
+            <!--<RowDefinition Height="20" />-->
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
@@ -39,6 +39,19 @@
             <TextBlock Grid.Column="0" x:Name="RetrospectionTitle" Text="Retrospection and insights" VerticalAlignment="Center" Foreground="White" FontSize="16" Margin="10 0 0 0" />
 
             <!-- Day/Week View -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Background" Value="{StaticResource RetrospectionColor}" />
+                        <Setter Property="BorderBrush" Value="White" />
+                        <Setter Property="Padding" Value="5 2 5 2" />
+                    </Style>
+                </StackPanel.Resources>
+                
+                <Button Content="Refresh" Cursor="Hand" Click="Refresh_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
+                <Button Content="About" Cursor="Hand" Click="About_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
+            </StackPanel>
             <StackPanel x:Name="DayControl" Grid.Column="1" Visibility="Collapsed" Orientation="Horizontal" HorizontalAlignment="Right">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
@@ -67,14 +80,14 @@
             </WindowsFormsHost.Child>
         </WindowsFormsHost>
 
-        <Border x:Name="LoadingSign"  Background="{StaticResource GrayColor}" Grid.Row="1">
+        <Border x:Name="LoadingSign" Background="{StaticResource GrayColor}" Grid.Row="1">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock HorizontalAlignment="Center" Text="Preparing your Retrospection ..." Foreground="{StaticResource RetrospectionColor}" FontSize="30" />
                 <TextBlock HorizontalAlignment="Center" Text="This might take a few moments. It will be worth the wait :)" Margin="0 5 0 0" />
             </StackPanel>
         </Border>
 
-        <Grid Background="#E8E8E8" Grid.Row="3">
+        <!--<Grid Background="#E8E8E8" Grid.Row="3">
             <Grid.Resources>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
                     <Setter Property="Foreground" Value="Gray" />
@@ -94,10 +107,10 @@
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button Content="Refresh" Cursor="Hand" Click="Refresh_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
                 <Button Content="Feedback" Cursor="Hand" Click="Feedback_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
-                <!--<Button Content="Settings" Click="Settings_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />-->
+                <Button Content="Settings" Click="Settings_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
                 <Button Content="About" Cursor="Hand" Click="About_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />
             </StackPanel>
-        </Grid>
+        </Grid>-->
 
     </Grid>
 </Window>

@@ -87,6 +87,9 @@ namespace Retrospection
 
                 // prepare html which is displayed in the browser control
                 var html = dashboard.Replace("{title}", title).Replace("{visualizations}", visualizations);
+
+                if (visType == VisType.Mini) html += "<style type='text/css'>body {background-color: white;}</style>";
+
                 req.Write(html);
 
                 req.SetHeader("Content-Type", "text/html; charset=utf-8");

@@ -30,9 +30,10 @@ namespace Shared.Helpers
         /// </summary>
         /// <param name="title"></param>
         /// <returns></returns>
-        public static string FormatChartTitle(string title = "Visualization")
+        public static string FormatChartTitle(string title)
         {
-            return "<h3 style='text-align: center;'>" + title + "</h3>";
+            if (string.IsNullOrEmpty(title)) return string.Empty;
+            else return "<h3 style='text-align: center;'>" + title + "</h3>";
         }
 
         /// <summary>

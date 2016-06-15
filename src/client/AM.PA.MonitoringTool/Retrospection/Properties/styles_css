@@ -1,7 +1,7 @@
 /* =============================
    GENERAL
    ============================= */
-body { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; margin: 0; padding: 0; color: #000; display: flex; align-items: center; justify-content: center; text-align: center; /*background-color: #E8E8E8;*/ }
+body { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; margin: 0; padding: 0; color: #000; display: flex; align-items: center; justify-content: center; text-align: center; background-color: #E8E8E8; }
 td, th { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em;}
 
 h1 { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1.17em; font-weight: bold; margin: 0; padding: 0.3125em; }

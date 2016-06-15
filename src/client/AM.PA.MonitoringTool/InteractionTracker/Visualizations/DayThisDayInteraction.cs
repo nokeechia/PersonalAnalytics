@@ -19,7 +19,7 @@ namespace InteractionTracker.Visualizations
         {
             this._date = date;
 
-            Title = " ";
+            Title = "Today's Communication in Numbers";
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
             Size = VisSize.Wide;
@@ -98,7 +98,7 @@ namespace InteractionTracker.Visualizations
             // generate html where queries were successful
             var html = string.Empty;
             html += "<table class=\"interactions\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">";
-            html += "<tr><th>Interaction</th><th>Today's Total</th><th>Previous Average</th></tr>";
+            html += "<tr><th>Communication</th><th>Today's Total</th><th>Previous Average</th></tr>";
             html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + meetingsColor + "\">" + meetings;
             html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + chatsColor + "\">" + chats;
             html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + emailsSentColor + "\">" + emailsSent;

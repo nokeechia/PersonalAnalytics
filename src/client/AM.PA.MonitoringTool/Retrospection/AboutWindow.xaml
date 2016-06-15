@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="{StaticResource RetrospectionColor}">
-            <TextBlock Grid.Row="0" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Text="About the Interaction Retrospection" Foreground="White" />
+            <TextBlock Grid.Row="0" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Text="About the Communication Retrospection" Foreground="White" />
         </Grid>
 
         <StackPanel Margin="10" Grid.Row="1">
@@ -41,10 +41,10 @@
                 <TextBlock Text=" (Project Lead; Professor, University of Zurich)" />
             </StackPanel>
 
-            <TextBlock Margin="0 10 0 5" Text="&gt; Contact us" TextDecorations="Underline" PreviewMouseDown="Email_Clicked" />
-            <TextBlock Margin="0 0 0 30" Text="&gt; Project website" TextDecorations="Underline" PreviewMouseDown="Website_Clicked" />
+            <!--<TextBlock Margin="0 10 0 5" Text="&gt; Contact us" TextDecorations="Underline" PreviewMouseDown="Email_Clicked" />
+            <TextBlock Margin="0 0 0 30" Text="&gt; Project website" TextDecorations="Underline" PreviewMouseDown="Website_Clicked" />-->
 
-            <TextBlock Margin="0 0 0 5" Text="Credits:" TextWrapping="Wrap" FontWeight="Bold" />
+            <TextBlock Margin="0 30 0 5" Text="Credits:" TextWrapping="Wrap" FontWeight="Bold" />
             <TextBlock Margin="0 0 0 30" Text="SQLite, JQuery, Masonry, D3.js, C3.js, HTML FilterTable, MousekeyHook, Hardcodet.NotifyIcon" TextWrapping="Wrap" />
 
             <!--<TextBlock Margin="0 0 0 5" Text="Manually check for updates:" TextWrapping="Wrap" FontWeight="Bold" />
@@ -66,7 +66,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" x:Name="TbVersion" Margin="10 0 0 0" Foreground="Gray" />
-            <Button Grid.Column="1" Content="Feedback" Click="Feedback_Clicked" Cursor="Hand" VerticalAlignment="Center" Margin="0 0 5 0" />
+            <!--<Button Grid.Column="1" Content="Feedback" Click="Feedback_Clicked" Cursor="Hand" VerticalAlignment="Center" Margin="0 0 5 0" />-->
         </Grid>
     </Grid>
 </Window>
