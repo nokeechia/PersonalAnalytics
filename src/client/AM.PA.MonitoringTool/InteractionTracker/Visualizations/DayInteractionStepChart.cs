@@ -18,7 +18,7 @@ namespace InteractionTracker.Visualizations
             Title = "Today's Communication Timeline";
             IsEnabled = true; //todo: handle by user
             Order = 1; //todo: handle by user
-            Size = VisSize.Wide;
+            Size = VisSize.Wide2;
             Type = VisType.Day;
         }
 

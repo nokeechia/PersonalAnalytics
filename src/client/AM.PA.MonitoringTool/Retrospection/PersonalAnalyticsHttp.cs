@@ -213,11 +213,8 @@ namespace Retrospection
                 var chartTitle = VisHelper.FormatChartTitle(vis.Title);
                 var html = vis.GetHtml();
 
-                // add a vertical line if it's a mini-item (not for the first one)
-                var verticalLine = (vis.Type == VisType.Mini && ! string.IsNullOrWhiteSpace(existingHtml)) ? "<div class=\"verticalLine\"></div>" : "";
-
-                var itemTemplate = "{4}<div class='item {3}'>{0}{1}{2}</div>";
-                return string.Format(CultureInfo.InvariantCulture, itemTemplate, feedbackButtons, chartTitle, html, vis.Size, verticalLine);
+                var itemTemplate = "<div class='item {3}'>{0}{1}{2}</div>";
+                return string.Format(CultureInfo.InvariantCulture, itemTemplate, feedbackButtons, chartTitle, html, vis.Size);
             }
             catch(Exception e)
             {

@@ -26,6 +26,7 @@ namespace Shared
         Small,
         Square,
         Wide,
+        Wide2, // temporary, for focuslight on small screens only
         Mini,
         //Large
     }

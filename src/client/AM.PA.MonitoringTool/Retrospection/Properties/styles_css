@@ -15,9 +15,8 @@ img { border: 0; }
 .item.Small { width:11.875em; height:10em; }
 .item.Square { width:25em; height:21.25em; }
 .item.Wide { width:51.25em; height:21.25em; }
-.item.Mini { width:23.75em; height:11em; overflow:visible; }
-
-.verticalLine { border-left: thick solid #007acc; height:11em; background-color: #ffffff; float: left; margin-top: -0.3125em; }
+.item.Wide2 { width:51.25em; height:17.2em; } /* temp, for small screens */
+.item.Mini { width:23.75em; height:14.5em; overflow:visible; }
 
 table.interactions { width: 100%; margin: auto; }
 table.interactions td,th { font-family: Segoe UI Light, Segoe UI, Tahoma, Arial, Verdana; font-size: 1em; border-bottom: 1px solid #ddd; }

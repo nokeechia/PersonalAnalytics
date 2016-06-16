@@ -49,16 +49,17 @@ namespace Shared
         ////////////////////////////////////////////////////////////
         // retrospection constants
         // hint: any changes must also be done in styles_css
-        internal static double ItemSmallWidthEm = (11.875 - sideMargin);
-        internal static double ItemSmallHeightEm = (10 - titleMargin);
-        internal static double ItemSquareWidthEm = (25 - sideMargin);
-        internal static double ItemSquareHeightEm = (21.25 - titleMargin);
-        internal static double ItemWideWidthEm = (51.25 - sideMargin);
-        internal static double ItemWideHeightEm = (21.25 - titleMargin);
-        internal static double ItemMiniWidthEm = (23.75 - sideMargin);
-        internal static double ItemMiniHeightEm = (11 - titleMargin);
-        internal const double sideMargin = 1.25; //2.5; //1.25;
-        internal const double titleMargin = 4.0; //5.625; //3.125;
+        //internal static double ItemSmallWidthEm = (11.875 - sideMargin);
+        //internal static double ItemSmallHeightEm = (10 - titleMargin);
+        //internal static double ItemSquareWidthEm = (25 - sideMargin);
+        //internal static double ItemSquareHeightEm = (21.25 - titleMargin);
+        //internal static double ItemWideWidthEm = (51.25 - sideMargin);
+        //internal static double ItemWideHeightEm = (21.25 - titleMargin);
+        //internal static double ItemWide2WidthEm = (17.00 - titleMargin);
+        //internal static double ItemMiniWidthEm = (23.75 - sideMargin);
+        //internal static double ItemMiniHeightEm = (11 - titleMargin);
+        //internal const double sideMargin = 1.25; //2.5; //1.25;
+        //internal const double titleMargin = 4.0; //5.625; //3.125;
 
         ////////////////////////////////////////////////////////////
         // contact 

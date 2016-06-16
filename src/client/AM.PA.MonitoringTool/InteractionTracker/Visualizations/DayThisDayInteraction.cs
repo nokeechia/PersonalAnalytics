@@ -22,7 +22,7 @@ namespace InteractionTracker.Visualizations
             Title = "Today's Communication in Numbers";
             IsEnabled = true; //todo: handle by user
             Order = 2; //todo: handle by user
-            Size = VisSize.Wide;
+            Size = VisSize.Wide2;
             Type = VisType.Day;
         }
 
