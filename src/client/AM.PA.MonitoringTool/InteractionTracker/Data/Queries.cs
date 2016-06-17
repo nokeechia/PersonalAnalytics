@@ -320,22 +320,25 @@ namespace InteractionTracker.Data
         /// <returns>Returns emails that have occurred since 6 am until now</returns>
         internal static List<DateTime> GetEmailTimesSentOrReceivedFromSixAm(DateTime later, string sentOrReceived)
         {
+            var isSent = false;
             var endTs = later;
             var startTs = endTs.Date.AddHours(6); // 6 am today
             var current = new List<DateTime>();
             var emails = new List<DateTime>();
+            var sentMail = new List<DateTime>();
 
             try
             {
-                var query = "SELECT t1.window as 'window', t1.process as 'process', (strftime('%s', t2.time) - strftime('%s', t1.time)) as 'difference', t1.time as 'from', t2.time as 'to' " // t1.window as 'window', 
-                          + "FROM " + Shared.Settings.WindowsActivityTable + " t1 LEFT JOIN " + Shared.Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
-                          + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date, "t2.time") + " "
-                          + "AND t1.process == 'OUTLOOK' "
+                var query = "SELECT t1.window AS 'window', t1.process AS 'process', (strftime('%s', t2.time) - strftime('%s', t1.time)) AS 'difference', t1.time AS 'from', t2.time AS 'to' " // t1.window as 'window', 
+                          + "FROM " + Shared.Settings.WindowsActivityTable + " t1 LEFT JOIN " + Shared.Settings.WindowsActivityTable + " t2 ON t1.id + 1 = t2.id "
+                          + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date, "t1.time") + " AND " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, endTs.Date, "t2.time") + " "
                           + "GROUP BY t1.id, t1.time "
                           + "ORDER BY difference DESC;";
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
                 
+                sentMail = GetEmailsSentOrReceivedFromSixAm(later, "sent");
+
                 foreach (DataRow row in table.Rows)
                 {
                     var window = (string)row["window"];
@@ -343,12 +346,21 @@ namespace InteractionTracker.Data
                     var difference = Convert.ToInt32(row["difference"], CultureInfo.InvariantCulture);
                     var from = DateTime.Parse((string)row["from"], CultureInfo.InvariantCulture);
                     var to = DateTime.Parse((string)row["to"], CultureInfo.InvariantCulture);
-                    for (var t = from; t < to; t += TimeSpan.FromMinutes(1))
+                    if (process.ToLower() == "outlook")
                     {
-                        if (sentOrReceived == "sent" && window.Contains("- Message"))
-                            emails.Add(t);
-                        else if (sentOrReceived == "received" && window.Contains("Inbox -"))
-                            emails.Add(t);
+                        isSent = false;
+                        for (var t = to - TimeSpan.FromMinutes(1); t < to + TimeSpan.FromMinutes(4); t += TimeSpan.FromSeconds(1))
+                        {
+                            if (sentMail.Contains(t))
+                                isSent = true;
+                        }
+                        for (var t = from; t < to; t += TimeSpan.FromMinutes(1))
+                        {
+                            if (sentOrReceived == "sent" && isSent)
+                                emails.Add(t);
+                            else if (sentOrReceived == "received" && !isSent)
+                                emails.Add(t);
+                        }
                     }
                 }
             }
@@ -606,7 +618,7 @@ namespace InteractionTracker.Data
 
             activityDictionary.Add("Scheduled Meetings", meetingsAttendedList);
             activityDictionary.Add("Chat Conversations", chatsList);
-            activityDictionary.Add("Sending Emails", emailsSentList);
+            activityDictionary.Add("Writing Emails", emailsSentList);
             activityDictionary.Add("Reading Emails", emailsReceivedList);
             activityDictionary.Add("Overall Communication", overallFocusList);
             return activityDictionary;
