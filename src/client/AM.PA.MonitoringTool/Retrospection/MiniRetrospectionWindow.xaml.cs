@@ -20,7 +20,9 @@ namespace Retrospection
         private readonly WebBrowser _webBrowser;
         private string _currentPage;
         private Timer _closeMiniRetrospectionTimer;
-        private int _secondsUntilMiniRetrospectionCloses = 20;
+        private int _secondsUntilMiniRetrospectionCloses = 15;
+        private bool IsClosed = false;
+        private System.Timers.Timer _refreshChecker;
 
 
         public MiniRetrospectionWindow()
@@ -112,10 +114,25 @@ namespace Retrospection
 
             // load default page
             WebBrowserNavigateTo(Handler.GetInstance().GetMiniDashboard());
+
+            IsClosed = false;
+
+            // Initialize & start the timer to check for refresh
+            _refreshChecker = new System.Timers.Timer();
+            _refreshChecker.Interval = Shared.Settings.IntervalCheckThresholds.TotalMilliseconds;
+            _refreshChecker.Elapsed += RefreshApplicationIfNecessary;
+            _refreshChecker.Start();
+        }
+
+        private void RefreshApplicationIfNecessary(object sender, EventArgs e)
+        {
+            if (!IsClosed)
+                Refresh_Clicked(sender, e);
         }
 
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            IsClosed = true;
             Database.GetInstance().LogInfo("Mini-Retrospection closed");
         }
 
@@ -182,6 +199,11 @@ namespace Retrospection
         {
             Handler.GetInstance().OpenRetrospection();
             Close();
+        }
+
+        private void Refresh_Clicked(object sender, EventArgs e)
+        {
+            WebBrowserNavigateTo(_currentPage, true);
         }
 
         /// <summary>

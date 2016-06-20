@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Controls;
 using Shared.Data;
 using MsOfficeTracker.Models;
 using System.Runtime.InteropServices;
@@ -745,9 +744,9 @@ namespace MsOfficeTracker.Helpers
                         foreach (Match match in mc)
                         {
                             if (match.Groups[2].Value.Contains(user.DisplayName))
-                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim()));
+                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture));
                             else
-                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim()));
+                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture));
                         }
                     }
                     else

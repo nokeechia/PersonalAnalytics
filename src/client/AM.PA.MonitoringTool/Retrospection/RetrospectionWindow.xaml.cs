@@ -2,8 +2,10 @@
 using Shared.Data;
 using System;
 using System.Globalization;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace Retrospection
 {
@@ -13,6 +15,7 @@ namespace Retrospection
         private string _currentPage;
         private VisType _currentVisType;
         public bool IsClosed = true; // property to check whether the current state of the window is closed/open
+        private Timer _refreshChecker;
 
         public RetrospectionWindow()
         {
@@ -60,6 +63,18 @@ namespace Retrospection
             SwitchToDayButton.Visibility = Visibility.Collapsed;
 
             IsClosed = false;
+
+            // Initialize & start the timer to check for refresh
+            _refreshChecker = new Timer();
+            _refreshChecker.Interval = Shared.Settings.IntervalCheckThresholds.TotalMilliseconds;
+            _refreshChecker.Elapsed += RefreshApplicationIfNecessary;
+            _refreshChecker.Start();
+        }
+
+        private void RefreshApplicationIfNecessary(object sender, EventArgs e)
+        {
+            if (!IsClosed)
+                Refresh_Clicked(sender, e);
         }
 
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)

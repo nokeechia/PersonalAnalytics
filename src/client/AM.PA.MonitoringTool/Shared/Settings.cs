@@ -33,7 +33,7 @@ namespace Shared
         public static TimeSpan TooltipIconUpdateInterval = TimeSpan.FromSeconds(10); // every 10 seconds
         public static TimeSpan RemindToResumeToolInterval = TimeSpan.FromMinutes(30); // every 30 minutes
 
-        public static TimeSpan IntervalCheckThresholds = TimeSpan.FromMinutes(10); // every 2 mins
+        public static TimeSpan IntervalCheckThresholds = TimeSpan.FromMinutes(5); // every 5 mins
         public const bool IsAutoMiniRetrospectionPopUpEnabled = true;
 
         public const int Port = 57827; // needed for the retrospection (local web server)

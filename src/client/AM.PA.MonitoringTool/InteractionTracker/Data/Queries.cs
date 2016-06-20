@@ -346,19 +346,19 @@ namespace InteractionTracker.Data
                     var difference = Convert.ToInt32(row["difference"], CultureInfo.InvariantCulture);
                     var from = DateTime.Parse((string)row["from"], CultureInfo.InvariantCulture);
                     var to = DateTime.Parse((string)row["to"], CultureInfo.InvariantCulture);
-                    if (process.ToLower() == "outlook")
+                    if (process.ToLower().Contains("outlook"))
                     {
                         isSent = false;
-                        for (var t = to - TimeSpan.FromMinutes(1); t < to + TimeSpan.FromMinutes(4); t += TimeSpan.FromSeconds(1))
+                        for (var t = to - TimeSpan.FromMinutes(3); t < to + TimeSpan.FromMinutes(12); t += TimeSpan.FromSeconds(1))
                         {
                             if (sentMail.Contains(t))
                                 isSent = true;
                         }
                         for (var t = from; t < to; t += TimeSpan.FromMinutes(1))
                         {
-                            if (sentOrReceived == "sent" && isSent)
+                            if (sentOrReceived == "sent" && (isSent || !window.Contains("@")))
                                 emails.Add(t);
-                            else if (sentOrReceived == "received" && !isSent)
+                            else if (sentOrReceived == "received" && (!isSent || window.Contains("@")))
                                 emails.Add(t);
                         }
                     }
