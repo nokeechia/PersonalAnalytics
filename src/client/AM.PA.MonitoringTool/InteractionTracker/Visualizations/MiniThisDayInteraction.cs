@@ -40,10 +40,10 @@ namespace InteractionTracker.Visualizations
             var emailsReceivedImage = "emailsReceivedIcon";
             var emailsSentImage = "emailsSentIcon";
             var chatsImage = "chatsIcon";
-            string meetingsIcon = "<img src=\"" + meetingsImage + ".png\">";
-            string emailsReceivedIcon = "<img src=\"" + emailsReceivedImage + ".png\">";
-            string emailsSentIcon = "<img src=\"" + emailsSentImage + ".png\">";
-            string chatsIcon = "<img src=\"" + chatsImage + ".png\">";
+            string meetingsIcon = "<img src=\"" + meetingsImage + ".png\" title=\"Meetings scheduled\"> ";
+            string emailsReceivedIcon = "<img src=\"" + emailsReceivedImage + ".png\" title=\"Emails received\"> ";
+            string emailsSentIcon = "<img src=\"" + emailsSentImage + ".png\" title=\"Emails sent\"> ";
+            string chatsIcon = "<img src=\"" + chatsImage + ".png\" title=\"Chat messages\"> ";
 
             // colors
             var okayColor = "#4F8A10"; // green
