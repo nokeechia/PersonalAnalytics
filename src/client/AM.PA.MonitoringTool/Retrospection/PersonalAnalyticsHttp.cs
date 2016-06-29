@@ -14,6 +14,7 @@ using Retrospection.Feedback;
 using System.Diagnostics;
 using System.Windows;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Retrospection
 {
@@ -84,9 +85,10 @@ namespace Retrospection
                 var title = GetRetrospectionTitle(visType, date);
                 var dashboard = ((string)_resourceManager.GetObject("personalanalytics_html"));
                 var visualizations = GetVisualizationsHtml(visType, date);
+                visualizations.Wait(); // wait for the async task to complete
 
                 // prepare html which is displayed in the browser control
-                var html = dashboard.Replace("{title}", title).Replace("{visualizations}", visualizations);
+                var html = dashboard.Replace("{title}", title).Replace("{visualizations}", visualizations.Result);
 
                 if (visType == VisType.Mini) html += "<style type='text/css'>body {background-color: white;}</style>";
 
@@ -100,8 +102,6 @@ namespace Retrospection
             }
             return 200;
         }
-
-
 
         private int OnResource(HttpReqResp req)
         {
@@ -170,7 +170,7 @@ namespace Retrospection
         /// <param name="type"></param>
         /// <param name="date"></param>
         /// <returns></returns>
-        internal string GetVisualizationsHtml(VisType type, DateTimeOffset date)
+        internal async Task<string> GetVisualizationsHtml(VisType type, DateTimeOffset date)
         {
             // get updated visualizations (if enabled)
             var visualizations = new List<IVisualization>();
@@ -198,7 +198,7 @@ namespace Retrospection
             var html = string.Empty;
             foreach (var vis in visualizations.OrderBy(v => v.Order))
             {
-                html += CreateDashboardItem(html, vis, date);
+                html += await Task.Run(() => CreateDashboardItem(html, vis, date)); // run async
             }
 
             return html;
