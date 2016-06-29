@@ -137,6 +137,17 @@ namespace Retrospection
         }
 
         /// <summary>
+        /// when the window is deactivated, set the window topmost value to true
+        /// to really make it topmost and not overlap
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WindowDeactivated(object sender, EventArgs e)
+        {
+            this.Topmost = true;
+        }
+
+        /// <summary>
         /// Shows a loading sign overlaying the webbrowser control
         /// </summary>
         /// <param name="isLoading"></param>

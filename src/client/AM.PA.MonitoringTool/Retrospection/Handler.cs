@@ -147,6 +147,7 @@ namespace Retrospection
         public void OpenMiniRetrospection()
         {
             _miniRetrospection = new MiniRetrospectionWindow();
+            _miniRetrospection.Topmost = true;
             _miniRetrospection.ShowDialog();
         }
 

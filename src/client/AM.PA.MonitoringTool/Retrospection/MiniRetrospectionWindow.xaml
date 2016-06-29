@@ -11,8 +11,9 @@
         xmlns:local="clr-namespace:Retrospection"
         xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
-        MouseEnter="OnWindowHover"
-        WindowStyle="ToolWindow" Loaded="WindowLoaded" Closing="WindowClosing" Title="Today's Communication Summary"
+        MouseEnter="OnWindowHover" Topmost="True"
+        WindowStyle="ToolWindow" Loaded="WindowLoaded" Deactivated="WindowDeactivated" Closing="WindowClosing" 
+        Title="Today's Communication Summary"
         Height="350" Width="460">
     
     <Window.Resources>
