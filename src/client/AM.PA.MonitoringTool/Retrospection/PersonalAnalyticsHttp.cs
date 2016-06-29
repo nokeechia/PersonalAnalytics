@@ -60,7 +60,7 @@ namespace Retrospection
         {
             if (_server != null)
             {
-                _server.Start(Settings.Port, false);
+                _server.Start(Settings.Port, true); // true -> IPAddress.Loopback (loopback address (localhost / 127.0.0.1))
             }
         }
 
@@ -91,7 +91,6 @@ namespace Retrospection
                 if (visType == VisType.Mini) html += "<style type='text/css'>body {background-color: white;}</style>";
 
                 req.Write(html);
-
                 req.SetHeader("Content-Type", "text/html; charset=utf-8");
             }
             catch (Exception e)
