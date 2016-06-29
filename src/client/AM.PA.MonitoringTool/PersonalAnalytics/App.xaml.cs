@@ -41,7 +41,7 @@ namespace PersonalAnalytics
             //////////////////////////////////////////////////////
 
             // don't automatically shut down
-            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             // Initialize & Connect the database
             Database.GetInstance().Connect();

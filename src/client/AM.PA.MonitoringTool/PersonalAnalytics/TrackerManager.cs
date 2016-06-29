@@ -564,9 +564,10 @@ namespace PersonalAnalytics
         /// </summary>
         private void ShutdownApplication()
         {
-            Environment.Exit(0); // this is not clean, otherwise, the httpserver is not shut down and then in some strange inconsistent state
+            //Environment.Exit(0); // this is not clean, otherwise, the httpserver is not shut down and then in some strange inconsistent state
             //App.Current.Shutdown(); //todo: not sure if this is the right way to do 
-            //Application.Current.Shutdown();
+            App.Current.Shutdown(0);
+            Environment.Exit(0);
         }
 
 
