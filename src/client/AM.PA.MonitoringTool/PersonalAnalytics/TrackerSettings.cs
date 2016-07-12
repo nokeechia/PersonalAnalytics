@@ -81,6 +81,9 @@ namespace Shared.Data
                 var userInputTracker = GetUserInputTracker();
                 if (userInputTracker != null) dto.UserInputTrackerEnabled = userInputTracker.UserInputTrackerEnabled;
 
+                var museTracker = GetMuseTracker();
+                //TODO enable dynamically not hard coded
+                if (museTracker != null) dto.MuseTrackerEnabled = true;
                 var timeSpentVisualizer = GetTimeSpentVisualizerVisualizer();
                 if (timeSpentVisualizer != null)
                 {
@@ -114,6 +117,20 @@ namespace Shared.Data
                 return tracker;
             }
             catch { return null; }
+        }
+
+        private MuseTracker.Daemon GetMuseTracker() {
+            try
+            {
+                var tracker =
+                    _trackers.Where(t => t.GetType() == typeof(MuseTracker.Daemon))
+                        .Cast<MuseTracker.Daemon>()
+                        .FirstOrDefault();
+
+                return tracker;
+            }
+            catch { return null; }
+
         }
 
         private TimeSpentVisualizer.Visualizers.TimeSpentVisualizer GetTimeSpentVisualizerVisualizer()

@@ -31,6 +31,8 @@ namespace Shared.Data
         public bool? OpenRetrospectionInFullScreen { get; set; }
         public bool? TimeSpentShowEmailsEnabled { get; set; }
         public bool? TimeSpentShowProgramsEnabled { get; set; }
+        public bool? MuseTrackerEnabled { get; set; }
+
 
     }
     public class StartEndTimeDto

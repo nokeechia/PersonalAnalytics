@@ -57,6 +57,7 @@ namespace PersonalAnalytics
             Register(new UserEfficiencyTracker.Daemon());
             Register(new UserInputTracker.Daemon());
             Register(new MsOfficeTracker.Daemon());
+            Register(new MuseTracker.Daemon());
             //Register(new TaskSwitchTracker.Daemon();); // implementation not finished
             //Register(new WindowsContextTracker.Daemon();); // implementation not finished
 

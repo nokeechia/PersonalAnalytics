@@ -240,6 +240,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MuseTracker\MuseTracker.csproj">
+      <Project>{9e3d7767-6a63-4148-ab70-704575d8a702}</Project>
+      <Name>MuseTracker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TimeSpentVisualizer\TimeSpentVisualizer.csproj">
       <Project>{8eba3b95-be0e-4498-9eac-20d417176a00}</Project>
       <Name>TimeSpentVisualizer</Name>
@@ -311,6 +315,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.100.0\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.100.0\build\net45\System.Data.SQLite.Core.targets')" />
