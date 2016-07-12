@@ -349,7 +349,7 @@ namespace InteractionTracker.Data
                     if (process.ToLower().Contains("outlook"))
                     {
                         isSent = false;
-                        for (var t = to - TimeSpan.FromMinutes(3); t < to + TimeSpan.FromMinutes(12); t += TimeSpan.FromSeconds(1))
+                        for (var t = to - TimeSpan.FromMinutes(1); t < to + TimeSpan.FromMinutes(4); t += TimeSpan.FromSeconds(1))
                         {
                             if (sentMail.Contains(t))
                                 isSent = true;
@@ -358,7 +358,7 @@ namespace InteractionTracker.Data
                         {
                             if (sentOrReceived == "sent" && (isSent || !window.Contains("@")))
                                 emails.Add(t);
-                            else if (sentOrReceived == "received" && (!isSent || window.Contains("@")))
+                            else if (sentOrReceived == "received" && (!isSent && window.Contains("@")))
                                 emails.Add(t);
                         }
                     }
