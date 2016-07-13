@@ -18,6 +18,7 @@ namespace MuseTracker
     {
         private UDPListener _listener;
         private string blinkFile = @"C:\Users\seal\blinkFile.txt";
+        private string eegbandFile = @"C:\Users\seal\eegbandFile.txt";
         private StreamWriter w;
         public Daemon()
         {
@@ -48,7 +49,6 @@ namespace MuseTracker
 
             // SharpOSC lib from https://github.com/ValdemarOrn/SharpOSC
             // Callback function for received OSC messages. 
-            // Prints EEG and Relative Alpha data only.
             HandleOscPacket callback = delegate (OscPacket packet)
             {
                 var messageReceived = (OscMessage)packet;
@@ -75,7 +75,20 @@ namespace MuseTracker
                     }
                 }
 
-                //if (addr == "/muse/elements")
+                if (addr == "/muse/elements/alpha_absolute")
+                {
+                    writeToFile("alpha_abs", messageArgumentsToString(messageReceived.Arguments));
+                }
+
+                if (addr == "/muse/elements/beta_absolute")
+                {
+                    writeToFile("beta_abs", messageArgumentsToString(messageReceived.Arguments));
+                }
+
+                if (addr == "/muse/elements/theta_absolute")
+                {
+                    writeToFile("theta_abs", messageArgumentsToString(messageReceived.Arguments));
+                }
             };
 
             // Create an OSC server.
@@ -85,6 +98,24 @@ namespace MuseTracker
             Console.Write("++++ muse tracker started");
         }
 
+        private string messageArgumentsToString(List<Object> arguments) {
+            string bandvalues = "";
+            foreach (var arg in arguments)
+            {
+                bandvalues += arg + ";";
+            }
+            return bandvalues;
+        }
+        private void writeToFile(string bandname, string bandvalues)
+        {
+            if (File.Exists(eegbandFile))
+            {
+                using (StreamWriter sw = File.AppendText(eegbandFile))
+                {
+                    sw.WriteLine(bandname + ";" + bandvalues + String.Format("{0:s}", DateTime.Now));
+                }
+            }
+        }
         public override void Stop()
         {
             if (_listener != null) {
