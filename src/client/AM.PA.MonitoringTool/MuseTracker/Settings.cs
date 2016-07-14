@@ -21,5 +21,7 @@ namespace MuseTracker
         public const string alphaAbsolute = "alpha_abs";
         public const string betaAbsolute = "beta_abs";
         public const string thetaAbsolute = "theta_abs";
+
+        public const int msTimeIntervalForAggregation = 2000;
     }
 }
