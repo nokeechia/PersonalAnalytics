@@ -4,22 +4,24 @@
 // Licensed under the MIT License.
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Shared;
-using Shared.Data;
 using SharpOSC;
 using System.IO;
+using System.Timers;
 
 namespace MuseTracker
 {
     public class Daemon : BaseTracker, ITracker
     {
         private UDPListener _listener;
-        private string blinkFile = @"C:\Users\seal\blinkFile.txt";
-        private string eegbandFile = @"C:\Users\seal\eegbandFile.txt";
-        private StreamWriter w;
+        private string blinkFile = Settings.blinkFilePath;
+        private string eegbandFile = Settings.eegbandFilePath;
+        private static StreamWriter w;
+        private static StreamReader sr;
+
+        private static FileStream fs;
+
+        private static Timer atimer;
         public Daemon()
         {
             Name = "Muse Tracker";
@@ -41,11 +43,11 @@ namespace MuseTracker
 
         public override void Start()
         {
-            
-               
-                      // w = new StreamWriter(blinkFile);
-            
-
+            //set timer interval to 1 minute
+            atimer = new Timer(Settings.msTimerInterval);
+            //hook up elapsed event
+            atimer.Elapsed += OnTimedEvent;
+            atimer.Enabled = true;
 
             // SharpOSC lib from https://github.com/ValdemarOrn/SharpOSC
             // Callback function for received OSC messages. 
@@ -65,37 +67,52 @@ namespace MuseTracker
 
                         if (File.Exists(blinkFile))
                         {
-                            using (StreamWriter sw = File.AppendText(blinkFile))
+                            using (FileStream fs = new FileStream(Settings.blinkFilePath, FileMode.Append, FileAccess.Write, FileShare.Read))
                             {
-                                sw.WriteLine(tmp);
+                                using (StreamWriter sw = new StreamWriter(fs))
+                                {
+                                    sw.WriteLine(tmp);
+                                }
                             }
                         }
-
                         Console.WriteLine("+++++" + tmp);
                     }
                 }
 
                 if (addr == "/muse/elements/alpha_absolute")
                 {
-                    writeToFile("alpha_abs", messageArgumentsToString(messageReceived.Arguments));
+                    writeToFile(Settings.alphaAbsolute, messageArgumentsToString(messageReceived.Arguments));
                 }
 
                 if (addr == "/muse/elements/beta_absolute")
                 {
-                    writeToFile("beta_abs", messageArgumentsToString(messageReceived.Arguments));
+                    writeToFile(Settings.betaAbsolute, messageArgumentsToString(messageReceived.Arguments));
                 }
 
                 if (addr == "/muse/elements/theta_absolute")
                 {
-                    writeToFile("theta_abs", messageArgumentsToString(messageReceived.Arguments));
+                    writeToFile(Settings.thetaAbsolute, messageArgumentsToString(messageReceived.Arguments));
                 }
             };
 
             // Create an OSC server.
-            _listener = new UDPListener(5000, callback);
+            _listener = new UDPListener(Settings.museIoPort, callback);
 
             IsRunning = true;
             Console.Write("++++ muse tracker started");
+        }
+
+        private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            using (FileStream fss = new FileStream(Settings.eegbandFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (StreamReader sr = new StreamReader(fss))
+                {
+                    string lines = sr.ReadToEnd();
+                    Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime + lines);
+                    //Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime + "nr of lines " + lines.Length);
+                }
+            }
         }
 
         private string messageArgumentsToString(List<Object> arguments) {
@@ -110,10 +127,14 @@ namespace MuseTracker
         {
             if (File.Exists(eegbandFile))
             {
-                using (StreamWriter sw = File.AppendText(eegbandFile))
+
+                using (FileStream fs = new FileStream(Settings.eegbandFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
                 {
-                    sw.WriteLine(bandname + ";" + bandvalues + String.Format("{0:s}", DateTime.Now));
-                }
+                    using (StreamWriter sw = new StreamWriter(fs)) // File.AppendText(Settings.eegbandFilePath))
+                    {
+                        sw.WriteLine(bandname + ";" + bandvalues + String.Format("{0:s}", DateTime.Now));
+                    }
+                }          
             }
         }
         public override void Stop()
