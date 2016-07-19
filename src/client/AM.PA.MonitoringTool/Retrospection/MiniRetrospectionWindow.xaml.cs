@@ -42,7 +42,7 @@ namespace Retrospection
             var windowHeight = 50 + this.Height;  
 
             this.Topmost = true;
-            this.ShowActivated = false;
+            this.ShowActivated = true;
             this.ShowInTaskbar = false;
             this.ResizeMode = ResizeMode.NoResize;
             this.interactionsImage.Source = ImageFromBuffer(Properties.Resources.interactionsIcon_png);

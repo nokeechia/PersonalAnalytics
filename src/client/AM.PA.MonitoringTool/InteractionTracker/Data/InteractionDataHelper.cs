@@ -89,8 +89,11 @@ namespace InteractionTracker.Data
                 data.ChatsSD = Math.Ceiling(CalculateStdDev(numChatsPrevious));
 
                 // for caching
-                _previousInteractionDataSet = data;
-                _lastTimeCalculatedDataSet = DateTime.Now;
+                if (data.AvgChatsPrevious + data.AvgEmailsReceivedPrevious + data.AvgEmailsSentPrevious + data.AvgMeetingsPrevious < 1)
+                {
+                    _previousInteractionDataSet = data;
+                    _lastTimeCalculatedDataSet = DateTime.Now;
+                }
 
                 return data;
             }
