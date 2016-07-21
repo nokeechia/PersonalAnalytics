@@ -18,7 +18,7 @@ namespace Retrospection
     /// <summary>
     /// Class which manages the retrospection window & server
     /// </summary>
-    public sealed class Handler
+    public class Handler
     {
         private static Handler _handler;
         private PersonalAnalyticsHttp _http;
@@ -29,6 +29,8 @@ namespace Retrospection
         private List<ITracker> _trackers;
 
         #region Start/Stop & Initialization of Singleton
+
+        public event EventHandler StatusChanged;
 
         /// <summary>
         /// Singleton
@@ -52,6 +54,7 @@ namespace Retrospection
             if (_http != null) return;
             _http = new PersonalAnalyticsHttp();
             _http.Start();
+            OnStatusChanged(new EventArgs());
         }
 
         /// <summary>
@@ -62,6 +65,13 @@ namespace Retrospection
             if (_http != null) return;
             _http.Stop();
             _http = null;
+            OnStatusChanged(new EventArgs());
+        }
+
+        protected virtual void OnStatusChanged(EventArgs e)
+        {
+            if (StatusChanged != null)
+                StatusChanged(this, e);
         }
 
         #endregion

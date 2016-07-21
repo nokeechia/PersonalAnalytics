@@ -18,7 +18,7 @@ using Shared.Data;
 
 namespace UserInputTracker
 {
-    public sealed class Daemon : BaseTrackerDisposable, ITracker
+    public class Daemon : BaseTrackerDisposable, ITracker
     {
         #region FIELDS
 
@@ -42,6 +42,8 @@ namespace UserInputTracker
         #region METHODS
 
         #region ITracker Stuff
+
+        public event EventHandler StatusChanged;
 
         public Daemon()
         {
@@ -94,6 +96,7 @@ namespace UserInputTracker
             _mEvents.KeyDown += KeyboardListener_KeyDown;
 
             IsRunning = true;
+            OnStatusChanged(new EventArgs());
         }
 
         public override void Stop()
@@ -125,6 +128,13 @@ namespace UserInputTracker
             }
 
             IsRunning = false;
+            OnStatusChanged(new EventArgs());
+        }
+
+        protected virtual void OnStatusChanged(EventArgs e)
+        {
+            if (StatusChanged != null)
+                StatusChanged(this, e);
         }
 
         public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)

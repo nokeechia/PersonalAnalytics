@@ -35,6 +35,8 @@ namespace UserEfficiencyTracker
 
         #region ITracker Stuff
 
+        public event EventHandler StatusChanged;
+
         public Daemon()
         {
             Name = "User Efficiency Survey";
@@ -56,6 +58,7 @@ namespace UserEfficiencyTracker
             }
 
             IsRunning = true;
+            OnStatusChanged(new EventArgs());
         }
 
         public override void Stop()
@@ -67,6 +70,13 @@ namespace UserEfficiencyTracker
             }
 
             IsRunning = false;
+            OnStatusChanged(new EventArgs());
+        }
+
+        protected virtual void OnStatusChanged(EventArgs e)
+        {
+            if (StatusChanged != null)
+                StatusChanged(this, e);
         }
 
         public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)

@@ -23,6 +23,8 @@ namespace MsOfficeTracker
 
         #region ITracker Stuff
 
+        public event EventHandler StatusChanged;
+
         public Daemon()
         {
             Name = "Office 365 Tracker";
@@ -45,6 +47,7 @@ namespace MsOfficeTracker
                 else
                 {
                     IsRunning = false;
+                    OnStatusChanged(new EventArgs());
                     MsOfficeTrackerEnabled = false;
                     return; // don't start the tracker !
                 }
@@ -57,6 +60,7 @@ namespace MsOfficeTracker
             if (!isAuthenticated)
             {
                 IsRunning = false;
+                OnStatusChanged(new EventArgs());
 
                 var msg = string.Format(CultureInfo.InvariantCulture, "The {0} was disabled as the authentication with Office 365 failed. Maybe you don't have an internet connection or the Office 365 credentials were wrong.\n\nThe tool will prompt the Office 365 login again with the next start of the application. You can also disable the {0} in the settings.\n\nIf the problem persists, please contact us via t-anmeye@microsoft.com and attach the logfile.", Name);
                 MessageBox.Show(msg, Dict.ToolName + ": Error", MessageBoxButton.OK); //todo: use toast message
@@ -64,6 +68,7 @@ namespace MsOfficeTracker
             else
             {
                 IsRunning = true;
+                OnStatusChanged(new EventArgs());
             }
 
             // Start Email Count Timer
@@ -87,6 +92,13 @@ namespace MsOfficeTracker
             }
 
             IsRunning = false;
+            OnStatusChanged(new EventArgs());
+        }
+
+        protected virtual void OnStatusChanged(EventArgs e)
+        {
+            if (StatusChanged != null)
+                StatusChanged(this, e);
         }
 
         public override void CreateDatabaseTablesIfNotExist()

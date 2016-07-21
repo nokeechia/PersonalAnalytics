@@ -21,7 +21,7 @@ namespace WindowsActivityTracker
     /// This tracker stores all program switches (window switch) and changes of the
     /// window titles in the database (using Windows Hooks and its events).
     /// </summary>
-    public sealed class Daemon : BaseTrackerDisposable, ITracker
+    public class Daemon : BaseTrackerDisposable, ITracker
     {
         private bool _disposed = false;
         NativeMethods.WinEventDelegate _dele; // to ensure it's not collected while using
@@ -34,6 +34,8 @@ namespace WindowsActivityTracker
         private bool _lastEntryWasIdle = false;
 
         #region ITracker Stuff
+
+        public event EventHandler StatusChanged;
 
         public Daemon()
         {
@@ -83,12 +85,14 @@ namespace WindowsActivityTracker
                 }
 
                 IsRunning = true;
+                OnStatusChanged(new EventArgs());
             }
             catch (Exception e)
             {
                 Database.GetInstance().LogWarning("Registering events failed: " + e.Message);
 
                 IsRunning = false;
+                OnStatusChanged(new EventArgs());
             }
         }
 
@@ -114,6 +118,13 @@ namespace WindowsActivityTracker
             }
 
             IsRunning = false;
+            OnStatusChanged(new EventArgs());
+        }
+
+        protected virtual void OnStatusChanged(EventArgs e)
+        {
+            if (StatusChanged != null)
+                StatusChanged(this, e);
         }
 
         public override void CreateDatabaseTablesIfNotExist()
