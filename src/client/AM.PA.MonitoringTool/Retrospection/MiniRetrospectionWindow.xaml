@@ -58,7 +58,7 @@
             <Grid Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Name="DetailsButton" Cursor="Hand" Click="SeeDetails_Clicked" Style = "{StaticResource ShowDetailsButton}" >
                     <DockPanel>
-                        <Image Name="interactionsImage" Width="35" DockPanel.Dock="Right"></Image>
+                        <!--     <Image Name="interactionsImage" Width="35" DockPanel.Dock="Right"></Image> -->
                         <Label Content="See Details" Width="80" DockPanel.Dock="Left" Foreground="White"></Label>
                     </DockPanel>
                     <Button.Effect>

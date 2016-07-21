@@ -45,7 +45,7 @@ namespace Retrospection
             this.ShowActivated = true;
             this.ShowInTaskbar = false;
             this.ResizeMode = ResizeMode.NoResize;
-            this.interactionsImage.Source = ImageFromBuffer(Properties.Resources.interactionsIcon_png);
+          //  this.interactionsImage.Source = ImageFromBuffer(Properties.Resources.interactionsIcon_png);
             this._webBrowser.Size = new System.Drawing.Size(this._webBrowser.Parent.Width, this._webBrowser.Parent.Height);
 
             this.Left = SystemParameters.PrimaryScreenWidth - windowWidth;
