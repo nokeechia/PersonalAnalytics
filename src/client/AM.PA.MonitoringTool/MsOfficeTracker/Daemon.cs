@@ -23,7 +23,7 @@ namespace MsOfficeTracker
 
         #region ITracker Stuff
 
-        public event EventHandler StatusChanged;
+        public event StatusChangedEventHandler StatusChanged;
 
         public Daemon()
         {
@@ -46,8 +46,8 @@ namespace MsOfficeTracker
                 }
                 else
                 {
+                    OnStatusChanged(new StatusChangedEventArgs(IsRunning, false));
                     IsRunning = false;
-                    OnStatusChanged(new EventArgs());
                     MsOfficeTrackerEnabled = false;
                     return; // don't start the tracker !
                 }
@@ -59,16 +59,16 @@ namespace MsOfficeTracker
             // disable tracker if authentication was without success
             if (!isAuthenticated)
             {
+                OnStatusChanged(new StatusChangedEventArgs(IsRunning, false));
                 IsRunning = false;
-                OnStatusChanged(new EventArgs());
 
                 var msg = string.Format(CultureInfo.InvariantCulture, "The {0} was disabled as the authentication with Office 365 failed. Maybe you don't have an internet connection or the Office 365 credentials were wrong.\n\nThe tool will prompt the Office 365 login again with the next start of the application. You can also disable the {0} in the settings.\n\nIf the problem persists, please contact us via t-anmeye@microsoft.com and attach the logfile.", Name);
                 MessageBox.Show(msg, Dict.ToolName + ": Error", MessageBoxButton.OK); //todo: use toast message
             }
             else
             {
+                OnStatusChanged(new StatusChangedEventArgs(IsRunning, true));
                 IsRunning = true;
-                OnStatusChanged(new EventArgs());
             }
 
             // Start Email Count Timer
@@ -91,14 +91,14 @@ namespace MsOfficeTracker
                 _timer = null;
             }
 
+            OnStatusChanged(new StatusChangedEventArgs(IsRunning, false));
             IsRunning = false;
-            OnStatusChanged(new EventArgs());
         }
 
-        protected virtual void OnStatusChanged(EventArgs e)
+        protected virtual void OnStatusChanged(StatusChangedEventArgs se)
         {
             if (StatusChanged != null)
-                StatusChanged(this, e);
+                StatusChanged(this, se);
         }
 
         public override void CreateDatabaseTablesIfNotExist()
@@ -295,4 +295,28 @@ namespace MsOfficeTracker
 
         #endregion
     }
+
+    public class StatusChangedEventArgs : EventArgs
+    {
+        private bool _previousStatus;
+        private bool _currentStatus;
+
+        public StatusChangedEventArgs(bool previous, bool current)
+        {
+            _previousStatus = previous;
+            _currentStatus = current;
+        }
+
+        public bool PreviousStatus
+        {
+            get { return _previousStatus; }
+        }
+
+        public bool CurrentStatus
+        {
+            get { return _currentStatus; }
+        }
+    }
+
+    public delegate void StatusChangedEventHandler(object sender, StatusChangedEventArgs se);
 }

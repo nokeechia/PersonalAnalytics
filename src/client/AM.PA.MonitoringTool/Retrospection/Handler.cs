@@ -30,7 +30,7 @@ namespace Retrospection
 
         #region Start/Stop & Initialization of Singleton
 
-        public event EventHandler StatusChanged;
+        //public event EventHandler StatusChanged;
 
         /// <summary>
         /// Singleton
@@ -54,7 +54,7 @@ namespace Retrospection
             if (_http != null) return;
             _http = new PersonalAnalyticsHttp();
             _http.Start();
-            OnStatusChanged(new EventArgs());
+            //OnStatusChanged(new EventArgs());
         }
 
         /// <summary>
@@ -65,14 +65,14 @@ namespace Retrospection
             if (_http != null) return;
             _http.Stop();
             _http = null;
-            OnStatusChanged(new EventArgs());
+            //OnStatusChanged(new EventArgs());
         }
 
-        protected virtual void OnStatusChanged(EventArgs e)
+        /*protected virtual void OnStatusChanged(EventArgs e)
         {
             if (StatusChanged != null)
                 StatusChanged(this, e);
-        }
+        }*/
 
         #endregion
 

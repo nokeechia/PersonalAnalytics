@@ -43,7 +43,7 @@ namespace UserInputTracker
 
         #region ITracker Stuff
 
-        public event EventHandler StatusChanged;
+        //public event EventHandler StatusChanged;
 
         public Daemon()
         {
@@ -96,7 +96,7 @@ namespace UserInputTracker
             _mEvents.KeyDown += KeyboardListener_KeyDown;
 
             IsRunning = true;
-            OnStatusChanged(new EventArgs());
+            //OnStatusChanged(new EventArgs());
         }
 
         public override void Stop()
@@ -128,14 +128,14 @@ namespace UserInputTracker
             }
 
             IsRunning = false;
-            OnStatusChanged(new EventArgs());
+            //OnStatusChanged(new EventArgs());
         }
 
-        protected virtual void OnStatusChanged(EventArgs e)
+        /*protected virtual void OnStatusChanged(EventArgs e)
         {
             if (StatusChanged != null)
                 StatusChanged(this, e);
-        }
+        }*/
 
         public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
         {

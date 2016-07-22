@@ -19,7 +19,7 @@ namespace InteractionTracker
     {
         #region ITracker Stuff
 
-        public event EventHandler StatusChanged;
+        //public event EventHandler StatusChanged;
 
         public Daemon()
         {
@@ -29,20 +29,20 @@ namespace InteractionTracker
         public override void Start()
         {
             IsRunning = true;
-            OnStatusChanged(new EventArgs());
+            //OnStatusChanged(new EventArgs());
         }
 
         public override void Stop()
         {
             IsRunning = false;
-            OnStatusChanged(new EventArgs());
+            //OnStatusChanged(new EventArgs());
         }
 
-        protected virtual void OnStatusChanged(EventArgs e)
+        /*protected virtual void OnStatusChanged(EventArgs e)
         {
             if (StatusChanged != null)
                 StatusChanged(this, e);
-        }
+        }*/
 
         public override void CreateDatabaseTablesIfNotExist()
         {

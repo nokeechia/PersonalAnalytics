@@ -35,7 +35,7 @@ namespace WindowsActivityTracker
 
         #region ITracker Stuff
 
-        public event EventHandler StatusChanged;
+        //public event EventHandler StatusChanged;
 
         public Daemon()
         {
@@ -85,14 +85,14 @@ namespace WindowsActivityTracker
                 }
 
                 IsRunning = true;
-                OnStatusChanged(new EventArgs());
+                //OnStatusChanged(new EventArgs());
             }
             catch (Exception e)
             {
                 Database.GetInstance().LogWarning("Registering events failed: " + e.Message);
 
                 IsRunning = false;
-                OnStatusChanged(new EventArgs());
+                //OnStatusChanged(new EventArgs());
             }
         }
 
@@ -118,14 +118,14 @@ namespace WindowsActivityTracker
             }
 
             IsRunning = false;
-            OnStatusChanged(new EventArgs());
+            //OnStatusChanged(new EventArgs());
         }
 
-        protected virtual void OnStatusChanged(EventArgs e)
+        /*protected virtual void OnStatusChanged(EventArgs e)
         {
             if (StatusChanged != null)
                 StatusChanged(this, e);
-        }
+        }*/
 
         public override void CreateDatabaseTablesIfNotExist()
         {
