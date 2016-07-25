@@ -159,6 +159,7 @@ namespace Retrospection
             _miniRetrospection = new MiniRetrospectionWindow();
             _miniRetrospection.Topmost = true;
             _miniRetrospection.ShowDialog();
+            _miniRetrospection.Topmost = true;
         }
 
         /// <summary>
