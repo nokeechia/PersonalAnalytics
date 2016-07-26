@@ -95,10 +95,10 @@ namespace MsOfficeTracker
             IsRunning = false;
         }
 
-        protected virtual void OnStatusChanged(StatusChangedEventArgs se)
+        protected virtual void OnStatusChanged(StatusChangedEventArgs sce)
         {
             if (StatusChanged != null)
-                StatusChanged(this, se);
+                StatusChanged(this, sce);
         }
 
         public override void CreateDatabaseTablesIfNotExist()
@@ -318,5 +318,5 @@ namespace MsOfficeTracker
         }
     }
 
-    public delegate void StatusChangedEventHandler(object sender, StatusChangedEventArgs se);
+    public delegate void StatusChangedEventHandler(object sender, StatusChangedEventArgs sce);
 }

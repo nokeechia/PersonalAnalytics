@@ -77,11 +77,11 @@ namespace InteractionTracker.Visualizations
                 else
                     hourMinute = String.Format(CultureInfo.InvariantCulture, "'{0}:0{1}', ", earlier.Hour, earlier.Minute);
 
-                if (includes.Contains(counter) || earlier.Minute % 30 == 0)
+                if (includes.Contains(counter))
                 {
                     xList += hourMinute;
 
-                    if (earlier.Minute % 30 == 0)
+                    if (counter % 30 == 0)
                     {
                         smallXList += hourMinute;
                     }
@@ -93,7 +93,7 @@ namespace InteractionTracker.Visualizations
             // html += "<p style='text-align: center;'>Today's Communications</p>";
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>"
                     + "<script type='text/javascript'>"
-                    + "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'area-step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}, grid: {y:{lines: [{value: 1 }]}}, legend:{position:'right'}, transition:{duration:0}, interaction:{enabled:false}, point:{show:false}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Reading Emails']);" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Overall Communication']);"
+                    + "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'area-step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}, grid: {y:{lines: [{value: 1 }]}}, legend:{position:'inset', inset:{anchor:'top-right',x:10,y:10,step:undefined}}, transition:{duration:0}, interaction:{enabled:false}, point:{show:false}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Reading Emails']);" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Overall Communication']);"
                     + "</script>";
 
             return html;
