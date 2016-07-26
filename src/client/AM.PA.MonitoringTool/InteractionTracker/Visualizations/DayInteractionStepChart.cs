@@ -8,6 +8,7 @@ using Shared;
 using Shared.Helpers;
 using InteractionTracker.Data;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace InteractionTracker.Visualizations
 {
@@ -42,39 +43,57 @@ namespace InteractionTracker.Visualizations
             var smallXList = string.Empty;
             var columns = string.Empty;
 
-            for (; earlier <= later;)
-            {
-                if (earlier.Minute > 9)
-                    hourMinute = String.Format(CultureInfo.InvariantCulture, "'{0}:{1}', ", earlier.Hour, earlier.Minute);
-                else
-                    hourMinute = String.Format(CultureInfo.InvariantCulture, "'{0}:0{1}', ", earlier.Hour, earlier.Minute);
-
-                xList += hourMinute;
-
-                if (earlier.Minute % 30 == 0)
-                {
-                    smallXList += hourMinute;
-                }
-
-                earlier = earlier.AddMinutes(1);
-            }
-
+            TimeSpan span = later.Subtract(earlier);
+            int minutes = (int)Math.Floor(span.TotalMinutes);
+            int counter = -1;
+            List<int> includes = new List<int>();
             foreach (var activity in chartQueryResultsLocal)
             {
+                counter = -1;
+                int previous = -1; 
                 var values = string.Empty;
 
                 foreach (var val in activity.Value)
                 {
-                    values += val.ToString() + ", ";
+                    counter++;
+                    if (previous != val || counter % 30 == 0)
+                    {
+                        values += val.ToString() + ", ";
+                        previous = val;
+                        includes.Add(counter);
+                    }
                 }
 
                 columns += string.Format(CultureInfo.InvariantCulture, "['{0}', {1}], ", activity.Key, values);
             }
 
+            counter = -1;
+            while (earlier <= later)
+            {
+                counter++;
+
+                if (earlier.Minute > 9)
+                    hourMinute = String.Format(CultureInfo.InvariantCulture, "'{0}:{1}', ", earlier.Hour, earlier.Minute);
+                else
+                    hourMinute = String.Format(CultureInfo.InvariantCulture, "'{0}:0{1}', ", earlier.Hour, earlier.Minute);
+
+                if (includes.Contains(counter) || earlier.Minute % 30 == 0)
+                {
+                    xList += hourMinute;
+
+                    if (earlier.Minute % 30 == 0)
+                    {
+                        smallXList += hourMinute;
+                    }
+                }
+
+                earlier = earlier.AddMinutes(1);
+            }
+
             // html += "<p style='text-align: center;'>Today's Communications</p>";
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>"
                     + "<script type='text/javascript'>"
-                    + "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'area-step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}, grid: {y:{lines: [{value: 1 }]}}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Reading Emails']);" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Overall Communication']);"
+                    + "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'area-step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}, grid: {y:{lines: [{value: 1 }]}}, legend:{position:'right'}, transition:{duration:0}, interaction:{enabled:false}, point:{show:false}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Reading Emails']);" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Overall Communication']);"
                     + "</script>";
 
             return html;

@@ -615,7 +615,7 @@ namespace InteractionTracker.Data
 
                 earlier = earlier.AddMinutes(1);
             }
-
+            
             activityDictionary.Add("Scheduled Meetings", meetingsAttendedList);
             activityDictionary.Add("Chat Conversations", chatsList);
             activityDictionary.Add("Writing Emails", emailsSentList);
