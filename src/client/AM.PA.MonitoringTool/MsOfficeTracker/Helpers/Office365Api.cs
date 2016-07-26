@@ -744,17 +744,17 @@ namespace MsOfficeTracker.Helpers
                         foreach (Match match in mc)
                         {
                             if (match.Groups[2].Value.Contains(user.DisplayName))
-                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture));
+                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture).ToLocalTime());
                             else
-                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture));
+                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture).ToLocalTime());
                         }
                     }
                     else
                     {
                         if (message.From.EmailAddress.Address.ToLower() == user.EmailAddress.ToLower())
-                            callsSent.Add(message.ReceivedDateTime.Value.DateTime);
+                            callsSent.Add(message.ReceivedDateTime.Value.DateTime.ToLocalTime());
                         else
-                            callsReceived.Add(message.ReceivedDateTime.Value.DateTime);
+                            callsReceived.Add(message.ReceivedDateTime.Value.DateTime.ToLocalTime());
                     }               
                 }
 
