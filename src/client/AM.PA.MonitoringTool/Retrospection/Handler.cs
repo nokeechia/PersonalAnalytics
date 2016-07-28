@@ -43,18 +43,29 @@ namespace Retrospection
 
         public Handler()
         {
-            Start();
+            StartHttpServer();
         }
 
         /// <summary>
         /// start HTTP Localhost
         /// </summary>
-        public void Start()
+        public void Start(List<ITracker> trackers, string appVersion)
         {
-            if (_http != null) return;
+            // start http server (if not already started)  
+            StartHttpServer();
+
+            // set needed variables  
+            SetTrackers(trackers);
+            _publishedAppVersion = appVersion;
+
+            //OnStatusChanged(new EventArgs());
+        }
+
+        private void StartHttpServer()
+        {  
+             if (_http != null) return;
             _http = new PersonalAnalyticsHttp();
             _http.Start();
-            //OnStatusChanged(new EventArgs());
         }
 
         /// <summary>
@@ -62,7 +73,7 @@ namespace Retrospection
         /// </summary>
         public void Stop()
         {
-            if (_http != null) return;
+            if (_http == null) return;
             _http.Stop();
             _http = null;
             //OnStatusChanged(new EventArgs());
@@ -81,20 +92,10 @@ namespace Retrospection
         /// needs them for the visualization
         /// </summary>
         /// <param name="trackers"></param>
-        public void SetTrackers(List<ITracker> trackers)
+        private void SetTrackers(List<ITracker> trackers)
         {
             _trackers = trackers;
             _http.SetTrackers(_trackers);
-        }
-
-        /// <summary>
-        /// Sets the current published app version 
-        /// (used for feedback) 
-        /// </summary>
-        /// <param name="v"></param>
-        public void SetAppVersion(string v)
-        {
-            _publishedAppVersion = v;
         }
 
         #region Open/Close & Navigate Retrospection
