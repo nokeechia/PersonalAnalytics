@@ -744,9 +744,9 @@ namespace MsOfficeTracker.Helpers
                         foreach (Match match in mc)
                         {
                             if (match.Groups[2].Value.Contains(user.DisplayName))
-                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture).ToLocalTime());
+                                chatsSent.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture));
                             else
-                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture).ToLocalTime());
+                                chatsReceived.Add(DateTime.Parse(date.Date.ToShortDateString() + " " + match.Groups[3].Value.Trim(), CultureInfo.InvariantCulture));
                         }
                     }
                     else

@@ -42,31 +42,43 @@ namespace InteractionTracker.Visualizations
             var xList = string.Empty;
             var smallXList = string.Empty;
             var columns = string.Empty;
-
-            TimeSpan span = later.Subtract(earlier);
-            int minutes = (int)Math.Floor(span.TotalMinutes);
+            
             int counter = -1;
             List<int> includes = new List<int>();
             foreach (var activity in chartQueryResultsLocal)
             {
                 counter = -1;
-                int previous = -1; 
-                var values = string.Empty;
+                int previous = -1;
 
                 foreach (var val in activity.Value)
                 {
                     counter++;
                     if (previous != val || counter % 30 == 0)
                     {
-                        values += val.ToString() + ", ";
                         previous = val;
+                        includes.Add(counter-1);
                         includes.Add(counter);
+                        includes.Add(counter+1);
+                    }
+                }
+            }
+            counter = -1;
+            foreach (var activity in chartQueryResultsLocal)
+            {
+                counter = -1;
+                var values = string.Empty;
+
+                foreach (var val in activity.Value)
+                {
+                    counter++;
+                    if (includes.Contains(counter))
+                    {
+                        values += val.ToString() + ", ";
                     }
                 }
 
                 columns += string.Format(CultureInfo.InvariantCulture, "['{0}', {1}], ", activity.Key, values);
             }
-
             counter = -1;
             while (earlier <= later)
             {
@@ -77,11 +89,11 @@ namespace InteractionTracker.Visualizations
                 else
                     hourMinute = String.Format(CultureInfo.InvariantCulture, "'{0}:0{1}', ", earlier.Hour, earlier.Minute);
 
-                if (includes.Contains(counter))
+                if (includes.Contains(counter) || earlier.Minute % 30 == 0)
                 {
                     xList += hourMinute;
 
-                    if (counter % 30 == 0)
+                    if (earlier.Minute % 30 == 0)
                     {
                         smallXList += hourMinute;
                     }
@@ -93,7 +105,7 @@ namespace InteractionTracker.Visualizations
             // html += "<p style='text-align: center;'>Today's Communications</p>";
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>"
                     + "<script type='text/javascript'>"
-                    + "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'area-step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:true, fit:true}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}, grid: {y:{lines: [{value: 1 }]}}, legend:{position:'inset', inset:{anchor:'top-right',x:10,y:10,step:undefined}}, transition:{duration:0}, interaction:{enabled:false}, point:{show:false}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Reading Emails']);" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Overall Communication']);"
+                    + "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "',data: { x:'x', xFormat:'%H:%M', columns:[['x', " + xList + "]," + columns + "], type:'area-step'}, selection: {enabled: true}, axis:{x:{show:true, tick:{rotate: 40, values: [" + smallXList + "], multiline:false, centered:false, fit:false}, type:'timeseries'}, y:{show:false}}, tooltip:{show:false}, padding: {left: 20, right: 20}, grid: {y:{lines: [{value: 1 }]}}, legend:{position:'inset', inset:{anchor:'top-right',x:10,y:10,step:undefined}}, transition:{duration:0}, interaction:{enabled:false}, point:{show:false}});" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Reading Emails']);" + VisHelper.CreateChartHtmlTitle(Title) + ".toggle(['Overall Communication']);"
                     + "</script>";
 
             return html;

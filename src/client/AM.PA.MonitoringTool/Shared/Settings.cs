@@ -14,7 +14,7 @@ namespace Shared
         public const bool IsUploadEnabled = false;
         public const bool IsFeedbackEnabled = false;
 
-        public const bool AnonymizeSensitiveData = false;
+        public static bool AnonymizeSensitiveData = false;
         public const bool PrintQueriesToConsole = false;
 
         internal const string LogDbTable = "log";

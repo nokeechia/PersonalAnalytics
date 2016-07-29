@@ -33,11 +33,22 @@ namespace WindowsActivityTracker
         private string _previousProcess = string.Empty;
         private bool _lastEntryWasIdle = false;
 
+        /// <summary>
+        /// public property to enable/disable the storing of the window title to the database
+        /// 
+        /// true -> enabled, false -> disabled
+        /// </summary>
+        /// <param name="isEnabled"></param>
+        public void SetWindowsTitleRecordingIsEnabled(bool isEnabled)
+        {
+            Shared.Settings.AnonymizeSensitiveData = !isEnabled;
+        }
+
         #region ITracker Stuff
 
-        //public event EventHandler StatusChanged;
+    //public event EventHandler StatusChanged;
 
-        public Daemon()
+    public Daemon()
         {
             Name = "Windows Activity Tracker";
         }
