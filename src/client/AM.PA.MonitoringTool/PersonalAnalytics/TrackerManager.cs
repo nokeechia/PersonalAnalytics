@@ -69,6 +69,7 @@ namespace PersonalAnalytics
             {
                 tracker.CreateDatabaseTablesIfNotExist();
                 if (! tracker.IsEnabled()) continue;
+                tracker.IsRunningStatusChanged += TrackerStatusChanged;
                 tracker.Start();
             }
 
@@ -109,6 +110,7 @@ namespace PersonalAnalytics
             // stop trackers
             foreach (var tracker in _trackers)
             {
+                tracker.IsRunningStatusChanged -= TrackerStatusChanged;
                 tracker.Stop();
             }
 
@@ -139,6 +141,32 @@ namespace PersonalAnalytics
             {
                 ShutdownApplication();
             }
+        }
+
+        /// <summary>
+        /// Handle the status changed event for the property "IsRunning" for every tracker
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TrackerStatusChanged(object sender, EventArgs e)
+        {
+            //if (sender.GetType() == typeof(MsOfficeTracker.Daemon))
+            //{
+            //    var msOfficeTracker = ((MsOfficeTracker.Daemon)sender);
+            //    if (msOfficeTracker.IsRunning)
+            //    {
+            //        // enable the retrospection
+            //        Retrospection.Handler.GetInstance().Start(_trackers, _publishedAppVersion);
+            //    }
+            //    else
+            //    {
+            //        // disable the retrospection
+            //        Retrospection.Handler.GetInstance().Stop();
+
+            //        // shutdown the msOfficeTracker since it can't be used now
+            //        msOfficeTracker.Stop();
+            //    }
+            //}
         }
 
         /// <summary>

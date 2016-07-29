@@ -15,22 +15,38 @@ namespace Shared
     {
         string Name { get; set; }
         bool IsRunning { get; set; }
+        event EventHandler IsRunningStatusChanged;
         void Start();
         void Stop();
         void CreateDatabaseTablesIfNotExist();
         string GetStatus();
         bool IsEnabled();
         List<IVisualization> GetVisualizationsDay(DateTimeOffset date);
-
         List<IVisualization> GetVisualizationsWeek(DateTimeOffset date);
-
         List<IVisualization> GetVisualizationsMini(DateTimeOffset date);
     }
 
     public abstract class BaseTracker : ITracker
     {
         public string Name { get; set; }
-        public bool IsRunning { get; set; }
+
+        private bool _isRunning;
+        public bool IsRunning
+        {
+            get
+            {
+                return _isRunning;
+            }
+            set
+            {
+                if (_isRunning != value)
+                {
+                    _isRunning = value;
+                    IsRunningStatusChanged?.Invoke(this, null);
+                }
+            }
+        }
+        public event EventHandler IsRunningStatusChanged;
         public abstract void Start();
         public abstract void Stop();
         public abstract void CreateDatabaseTablesIfNotExist();
@@ -94,7 +110,23 @@ namespace Shared
     public abstract class BaseVisualizer : ITracker
     {
         public string Name { get; set; }
-        public bool IsRunning { get; set; }
+        private bool _isRunning;
+        public bool IsRunning
+        {
+            get
+            {
+                return _isRunning;
+            }
+            set
+            {
+                if (_isRunning != value)
+                {
+                    _isRunning = value;
+                    IsRunningStatusChanged?.Invoke(this, null);
+                }
+            }
+        }
+        public event EventHandler IsRunningStatusChanged;
         public virtual void Start()
         {
             IsRunning = true;
