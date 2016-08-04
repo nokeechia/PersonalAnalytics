@@ -28,6 +28,11 @@ namespace UserInputTracker
         private Timer _saveToDatabaseTimer;
 
         // buffers for user input, they are emptied every 60s (Settings.IntervalSaveToDatabaseInSeconds)
+        private static readonly ConcurrentStack<KeystrokeEvent> SaveKeystrokeBuffer = new ConcurrentStack<KeystrokeEvent>();
+        private static readonly ConcurrentStack<MouseClickEvent> SaveMouseClickBuffer = new ConcurrentStack<MouseClickEvent>();
+        private static readonly ConcurrentStack<MouseMovementSnapshot> SaveMouseMoveBuffer = new ConcurrentStack<MouseMovementSnapshot>();
+        private static readonly ConcurrentStack<MouseScrollSnapshot> SaveMouseScrollBuffer = new ConcurrentStack<MouseScrollSnapshot>();
+
         private static readonly ConcurrentQueue<KeystrokeEvent> KeystrokeBuffer = new ConcurrentQueue<KeystrokeEvent>();
         private static readonly ConcurrentQueue<MouseClickEvent> MouseClickBuffer = new ConcurrentQueue<MouseClickEvent>();
         private static readonly ConcurrentQueue<MouseMovementSnapshot> MouseMoveBuffer = new ConcurrentQueue<MouseMovementSnapshot>();
@@ -188,9 +193,119 @@ namespace UserInputTracker
 
         #endregion
 
-        #region Daemon Tracker: Events & manual Clicks (save to buffer)
+        #region Daemon: Get current Values from Buffer (not yet saved)
 
-        #region Prepare Buffers for saving in database
+        public static int GetNumberOfKeystrokes(DateTime startTime, DateTime endTime)
+        {
+            return KeystrokeBuffer.Count(x => x.Timestamp > startTime && x.Timestamp < endTime);
+        }
+
+        public static int GetNumberOfMouseClicks(DateTime startTime, DateTime endTime)
+        {
+            return MouseClickBuffer.Count(x => x.Timestamp > startTime && x.Timestamp < endTime);
+        }
+
+        public static double GetTotalLogMouseScrollDelta(DateTime startTime, DateTime endTime)
+        {
+            var buffer = MouseScrollBuffer.Where(x => x.Timestamp > startTime && x.Timestamp < endTime);
+            double sumOfLogScrollDelta = 0;
+            foreach (var snapshot in buffer)
+            {
+                long scrollDelta = (long)snapshot.ScrollDelta;
+                sumOfLogScrollDelta += Math.Log(Math.Abs(scrollDelta) + 1);
+            }
+
+            return sumOfLogScrollDelta;
+        }
+
+        public static int GetTotalMouseMovedDistance(DateTime startTime, DateTime endTime)
+        {
+            var buffer = MouseMoveBuffer.Where(x => x.Timestamp > startTime && x.Timestamp < endTime);
+            int distance = buffer.Sum(x => x.MovedDistance);
+
+            return distance;
+        }
+
+        #endregion
+
+        #region Daemon: Move records that are not used anymore from InputBuffers to SaveBuffers (which will save the values)
+
+        /// <summary>
+        /// moves all data that is NOT in the given time range to the saveToDatabase Buffers.
+        /// </summary>
+        /// <param name="usedDataStartTime"></param>
+        /// <param name="usedDataEndTime"></param>
+        public static void SaveUnusedDataFromBuffer(DateTime usedDataStartTime, DateTime usedDataEndTime)
+        {
+            SaveUnusedKeystrokesFromBuffer(usedDataStartTime, usedDataEndTime);
+            SaveUnusedMouseClicksFromBuffer(usedDataStartTime, usedDataEndTime);
+            SaveUnusedMouseMovesFromBuffer(usedDataStartTime, usedDataEndTime);
+            SaveUnusedMouseScrollsFromBuffer(usedDataStartTime, usedDataEndTime);
+        }
+
+        private static void SaveUnusedKeystrokesFromBuffer(DateTime usedDataStartTime, DateTime usedDataEndTime)
+        {
+            var dataToKeep = KeystrokeBuffer.Count(x => x.Timestamp > usedDataStartTime && x.Timestamp < usedDataEndTime);
+            var saving = KeystrokeBuffer.Count - dataToKeep;
+
+            KeystrokeEvent e;
+            for (int i = 0; i <= saving; i++)
+            {
+                if (KeystrokeBuffer.TryDequeue(out e))
+                {
+                    SaveKeystrokeBuffer.Push(e);
+                }
+            }
+        }
+
+        private static void SaveUnusedMouseClicksFromBuffer(DateTime usedDataStartTime, DateTime usedDataEndTime)
+        {
+            var dataToKeep = MouseClickBuffer.Count(x => x.Timestamp > usedDataStartTime && x.Timestamp < usedDataEndTime);
+            var saving = MouseClickBuffer.Count - dataToKeep;
+
+            MouseClickEvent e;
+            for (int i = 0; i <= saving; i++)
+            {
+                if (MouseClickBuffer.TryDequeue(out e))
+                {
+                    SaveMouseClickBuffer.Push(e);
+                }
+            }
+        }
+
+        private static void SaveUnusedMouseMovesFromBuffer(DateTime usedDataStartTime, DateTime usedDataEndTime)
+        {
+            var buffer = MouseMoveBuffer.Where(x => x.Timestamp > usedDataStartTime && x.Timestamp < usedDataEndTime);
+            var saving = MouseMoveBuffer.Count - buffer.Count();
+
+            MouseMovementSnapshot e;
+            for (int i = 0; i <= saving; i++)
+            {
+                if (MouseMoveBuffer.TryDequeue(out e))
+                {
+                    SaveMouseMoveBuffer.Push(e);
+                }
+            }
+        }
+
+        private static void SaveUnusedMouseScrollsFromBuffer(DateTime usedDataStartTime, DateTime usedDataEndTime)
+        {
+            var buffer = MouseScrollBuffer.Where(x => x.Timestamp > usedDataStartTime && x.Timestamp < usedDataEndTime);
+            var saving = MouseScrollBuffer.Count - buffer.Count();
+
+            MouseScrollSnapshot e;
+            for (int i = 0; i <= saving; i++)
+            {
+                if (MouseScrollBuffer.TryDequeue(out e))
+                {
+                    SaveMouseScrollBuffer.Push(e);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Listener Events (i.e. actual clicks/keystrokes/scrolls/moves) => to InputBuffers
 
         /// <summary>
         /// Mouse Click event. Create a new event and add it to the buffer.
@@ -355,44 +470,31 @@ namespace UserInputTracker
         {
             try
             {
-                if (KeystrokeBuffer.Count > 0)
-                {
-                    var keystrokes = new KeystrokeEvent[KeystrokeBuffer.Count];
-                    for (var i = 0; i < KeystrokeBuffer.Count; i++)
-                    {
-                        KeystrokeBuffer.TryDequeue(out keystrokes[i]);
-                    }
-                    //KeystrokeBuffer.TryPopRange(keystrokes);
+                //Logger.WriteToLogFile(new Exception("Started saving Keystrokes to database. [" + DateTime.Now.ToString("hh.mm.ss.ffffff") + "]")); // TODO: temp!  
+                if (SaveKeystrokeBuffer.Count > 0) {
+                    KeystrokeEvent[] keystrokes = new KeystrokeEvent[SaveKeystrokeBuffer.Count];
+                    SaveKeystrokeBuffer.TryPopRange(keystrokes);
                     Queries.SaveKeystrokesToDatabase(keystrokes);
                 }
 
-                if (MouseClickBuffer.Count > 0)
-                {
-                    var mouseClicks = new MouseClickEvent[MouseClickBuffer.Count];
-                    for (int i = 0; i < MouseClickBuffer.Count; i++)
-                    {
-                        MouseClickBuffer.TryDequeue(out mouseClicks[i]);
-                    }
+                //Logger.WriteToLogFile(new Exception("Started saving Mouse Click Events to database (ended keystroke saving). [" + DateTime.Now.ToString("hh.mm.ss.ffffff") + "]")); // TODO: temp!
+                if (SaveMouseClickBuffer.Count > 0) {
+                    MouseClickEvent[] mouseClicks = new MouseClickEvent[SaveMouseClickBuffer.Count];
+                    SaveMouseClickBuffer.TryPopRange(mouseClicks);
                     Queries.SaveMouseClicksToDatabase(mouseClicks);
                 }
 
-                if (MouseScrollBuffer.Count > 0)
-                {
-                    var mouseScrolls = new MouseScrollSnapshot[MouseScrollBuffer.Count];
-                    for (int i = 0; i < MouseScrollBuffer.Count; i++)
-                    {
-                        MouseScrollBuffer.TryDequeue(out mouseScrolls[i]);
-                    }
+                //Logger.WriteToLogFile(new Exception("Started saving Mouse Scroll Events to database (ended mouse click saving). [" + DateTime.Now.ToString("hh.mm.ss.ffffff") + "]")); // TODO: temp!
+                if (SaveMouseScrollBuffer.Count > 0) {
+                    MouseScrollSnapshot[] mouseScrolls = new MouseScrollSnapshot[SaveMouseScrollBuffer.Count];
+                    SaveMouseScrollBuffer.TryPopRange(mouseScrolls);
                     Queries.SaveMouseScrollsToDatabase(mouseScrolls);
                 }
 
-                if (MouseMoveBuffer.Count > 0)
-                {
-                    var mouseMovements = new MouseMovementSnapshot[MouseMoveBuffer.Count];
-                    for (int i = 0; i < MouseMoveBuffer.Count; i++)
-                    {
-                        MouseMoveBuffer.TryDequeue(out mouseMovements[i]);
-                    }
+                //Logger.WriteToLogFile(new Exception("Started saving Mouse Movement Events to database (ended mouse scroll saving). [" + DateTime.Now.ToString("hh.mm.ss.ffffff") + "]")); // TODO: temp!
+                if (SaveMouseMoveBuffer.Count > 0) {
+                    MouseMovementSnapshot[] mouseMovements = new MouseMovementSnapshot[SaveMouseMoveBuffer.Count];
+                    SaveMouseMoveBuffer.TryPopRange(mouseMovements);
                     Queries.SaveMouseMovementsToDatabase(mouseMovements);
                 }
             }
@@ -401,89 +503,6 @@ namespace UserInputTracker
                 Logger.WriteToLogFile(e);
             }
         }
-
-        #endregion
-
-        //#region Calculate User Input
-
-        //public static int GetNumberOfKeystrokes(DateTime startTime, DateTime endTime)
-        //{
-        //    var returning = KeystrokeBuffer.Where(x => x.Timestamp > startTime && x.Timestamp < endTime).Count();
-        //    var saving = KeystrokeBuffer.Count - returning;
-
-        //    KeystrokeEvent e;
-        //    for (int i = 0; i <= saving; i++)
-        //    {
-        //        if (KeystrokeBuffer.TryDequeue(out e))
-        //        {
-        //            SaveKeystrokeBuffer.Push(e);
-        //        }
-        //    }
-
-        //    return returning;
-        //}
-
-        //public static int GetNumberOfMouseClicks(DateTime startTime, DateTime endTime)
-        //{
-        //    var returning = MouseClickBuffer.Where(x => x.Timestamp > startTime && x.Timestamp < endTime).Count();
-        //    var saving = MouseClickBuffer.Count - returning;
-
-        //    MouseClickEvent e;
-        //    for (int i = 0; i <= saving; i++)
-        //    {
-        //        if (MouseClickBuffer.TryDequeue(out e))
-        //        {
-        //            SaveMouseClickBuffer.Push(e);
-        //        }
-        //    }
-
-        //    return returning;
-        //}
-
-        //public static double GetTotalLogMouseScrollDelta(DateTime startTime, DateTime endTime)
-        //{
-        //    var buffer = MouseScrollBuffer.Where(x => x.Timestamp > startTime && x.Timestamp < endTime);
-        //    double sumOfLogScrollDelta = 0;
-        //    foreach (var snapshot in buffer)
-        //    {
-        //        long scrollDelta = (long)snapshot.ScrollDelta;
-        //        sumOfLogScrollDelta += Math.Log(Math.Abs(scrollDelta) + 1);
-        //    }
-
-        //    var saving = MouseScrollBuffer.Count - buffer.Count();
-
-        //    MouseScrollSnapshot e;
-        //    for (int i = 0; i <= saving; i++)
-        //    {
-        //        if (MouseScrollBuffer.TryDequeue(out e))
-        //        {
-        //            SaveMouseScrollBuffer.Push(e);
-        //        }
-        //    }
-
-        //    return sumOfLogScrollDelta;
-        //}
-
-        //public static int GetTotalMouseMovedDistance(DateTime startTime, DateTime endTime)
-        //{
-        //    var buffer = MouseMoveBuffer.Where(x => x.Timestamp > startTime && x.Timestamp < endTime);
-        //    int distance = buffer.Sum(x => x.MovedDistance);
-
-        //    var saving = MouseMoveBuffer.Count - buffer.Count();
-
-        //    MouseMovementSnapshot e;
-        //    for (int i = 0; i <= saving; i++)
-        //    {
-        //        if (MouseMoveBuffer.TryDequeue(out e))
-        //        {
-        //            SaveMouseMoveBuffer.Push(e);
-        //        }
-        //    }
-
-        //    return distance;
-        //}
-
-        //#endregion
 
         #endregion
 
