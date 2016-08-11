@@ -22,6 +22,16 @@ namespace MuseTracker
         public const string betaAbsolute = "beta_abs";
         public const string thetaAbsolute = "theta_abs";
 
+
+        public const string DbTableMuseEEGData = "muse_input_eeg";
+        public const string DbTableMuseBlink = "muse_input_blink";
+        public const string DbTableMuseConcentration = "muse_input_concentration";
+        public const string DbTableMuseMellow = "muse_input_mellow";
+
+
         public const int msTimeIntervalForAggregation = 2000;
+
+        private const int IntervalSaveToDatabaseInSeconds = 60;
+        public static TimeSpan SaveToDatabaseInterval = TimeSpan.FromSeconds(IntervalSaveToDatabaseInSeconds);
     }
 }

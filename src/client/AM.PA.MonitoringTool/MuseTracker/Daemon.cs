@@ -8,28 +8,66 @@ using Shared;
 using SharpOSC;
 using System.IO;
 using System.Timers;
+using MuseTracker.Models;
+using MuseTracker.Data;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace MuseTracker
 {
-    public class Daemon : BaseTracker, ITracker
+    public class Daemon : BaseTrackerDisposable, ITracker
     {
+        #region FIELDS
+        private bool _disposed = false;
+        private Timer _saveToDatabaseTimer;
         private UDPListener _listener;
-        private string blinkFile = Settings.blinkFilePath;
-        private string eegbandFile = Settings.eegbandFilePath;
-        private static StreamWriter w;
-        private static StreamReader sr;
+        //private string _blinkFile = Settings.blinkFilePath;
+        //private string _eegbandFile = Settings.eegbandFilePath;
+        //private static StreamWriter w;
+        //private static StreamReader sr;
 
-        private static FileStream fs;
+        // buffers for user input, they are emptied every 60s (Settings.IntervalSaveToDatabaseInSeconds)
+        private static readonly ConcurrentQueue<MuseEEGDataEvent> MuseEEGDataBuffer = new ConcurrentQueue<MuseEEGDataEvent>();
+        private static readonly ConcurrentQueue<MuseBlinkEvent> MuseBlinkBuffer = new ConcurrentQueue<MuseBlinkEvent>();
+        private static readonly ConcurrentQueue<MuseConcentrationEvent> MuseConcentrationBuffer = new ConcurrentQueue<MuseConcentrationEvent>();
+        private static readonly ConcurrentQueue<MuseMellowEvent> MuseMellowBuffer = new ConcurrentQueue<MuseMellowEvent>();
 
-        private static Timer atimer;
+        //private static FileStream fs;
+        //private static Timer atimer;
+
+        #endregion
+        
+        #region METHODS
+        
+        #region ITracker Stuff
+
         public Daemon()
         {
             Name = "Muse Tracker";
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _saveToDatabaseTimer.Dispose();
+                    _listener.Dispose();
+                }
+
+                // Release unmanaged resources.
+                // Set large fields to null.                
+                _disposed = true;
+            }
+
+            // Call Dispose on your base class.
+            base.Dispose(disposing);
+        }
+
         public override void CreateDatabaseTablesIfNotExist()
         {
-            //do nothing yet
+            Queries.CreateMuseInputTables();
         }
 
         public override bool IsEnabled()
@@ -43,11 +81,20 @@ namespace MuseTracker
 
         public override void Start()
         {
+            // Register Save-To-Database Timer
+            if (_saveToDatabaseTimer != null)
+                Stop();
+            _saveToDatabaseTimer = new Timer();
+            _saveToDatabaseTimer.Interval = Settings.SaveToDatabaseInterval.TotalMilliseconds;
+            _saveToDatabaseTimer.Elapsed += SaveToDatabaseTick;
+            _saveToDatabaseTimer.Start();
+
+
             //set timer interval to 1 minute
-            atimer = new Timer(Settings.msTimerInterval);
+            //atimer = new Timer(Settings.msTimerInterval);
             //hook up elapsed event
-            atimer.Elapsed += OnTimedEvent;
-            atimer.Enabled = true;
+            //atimer.Elapsed += OnTimedEvent;
+            //atimer.Enabled = true;
 
             // SharpOSC lib from https://github.com/ValdemarOrn/SharpOSC
             // Callback function for received OSC messages. 
@@ -55,43 +102,11 @@ namespace MuseTracker
             {
                 var messageReceived = (OscMessage)packet;
                 var addr = messageReceived.Address;
-                
-                //blink events
-                if (addr == "/muse/elements/blink")
+
+                if (messageReceived.Address != null && messageReceived.Arguments != null
+                                                    && messageReceived.Arguments.Count > 0)
                 {
-                    int blink = (int)messageReceived.Arguments[0];
-
-                    if (blink == 1)
-                    {
-                        string tmp = String.Format("{0:s}", DateTime.Now);
-
-                        if (File.Exists(blinkFile))
-                        {
-                            using (FileStream fs = new FileStream(Settings.blinkFilePath, FileMode.Append, FileAccess.Write, FileShare.Read))
-                            {
-                                using (StreamWriter sw = new StreamWriter(fs))
-                                {
-                                    sw.WriteLine(tmp);
-                                }
-                            }
-                        }
-                        Console.WriteLine("+++++" + tmp);
-                    }
-                }
-
-                if (addr == "/muse/elements/alpha_absolute")
-                {
-                    writeToFile(Settings.alphaAbsolute, messageArgumentsToString(messageReceived.Arguments));
-                }
-
-                if (addr == "/muse/elements/beta_absolute")
-                {
-                    writeToFile(Settings.betaAbsolute, messageArgumentsToString(messageReceived.Arguments));
-                }
-
-                if (addr == "/muse/elements/theta_absolute")
-                {
-                    writeToFile(Settings.thetaAbsolute, messageArgumentsToString(messageReceived.Arguments));
+                    SaveToBuffer(addr, messageReceived.Arguments);
                 }
             };
 
@@ -100,48 +115,189 @@ namespace MuseTracker
 
             IsRunning = true;
             Console.Write("++++ muse tracker started");
-        }
 
-        private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+       }
+
+        #region Daemon Tracker: Save to Buffer
+        private static async void SaveToBuffer(String addr, List<Object> arguments)
         {
-            using (FileStream fss = new FileStream(Settings.eegbandFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            //blink events
+            if (addr == "/muse/elements/blink")
             {
-                using (StreamReader sr = new StreamReader(fss))
+                int blink = (int)arguments[0];
+
+                if (blink == 1)
                 {
-                    string lines = sr.ReadToEnd();
-                    Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime + lines);
-                    //Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime + "nr of lines " + lines.Length);
+                    await Task.Run(() => MuseBlinkBuffer.Enqueue(new MuseBlinkEvent(blink)));
+                    //string tmp = String.Format("{0:s}", DateTime.Now);
+                    //if (File.Exists(_blinkFile))
+                    //{
+                    //    using (FileStream fs = new FileStream(Settings.blinkFilePath, FileMode.Append, FileAccess.Write, FileShare.Read))
+                    //    {
+                    //        using (StreamWriter sw = new StreamWriter(fs))
+                    //        {
+                    //            sw.WriteLine(tmp);
+                    //        }
+                    //    }
+                    //}
+                    //Console.WriteLine("+++++" + tmp);
                 }
             }
-        }
 
-        private string messageArgumentsToString(List<Object> arguments) {
-            string bandvalues = "";
-            foreach (var arg in arguments)
+            if (addr == "/muse/elements/alpha_absolute")
             {
-                bandvalues += arg + ";";
+                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.AlphaAbsolute,
+                    (float) arguments[0],
+                    (float) arguments[1],
+                    (float) arguments[2],
+                    (float) arguments[3])));
+
+                //writeToFile(Settings.alphaAbsolute, messageArgumentsToString(messageReceived.Arguments));
             }
-            return bandvalues;
+
+            if (addr == "/muse/elements/beta_absolute")
+            {
+                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.BetaAbsolute,
+                    (float)arguments[0],
+                    (float)arguments[1],
+                    (float)arguments[2],
+                    (float)arguments[3])));
+
+                //writeToFile(Settings.betaAbsolute, messageArgumentsToString(messageReceived.Arguments));
+            }
+
+            if (addr == "/muse/elements/theta_absolute")
+            {
+                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.ThetaAbsolute,
+                    (float)arguments[0],
+                    (float)arguments[1],
+                    (float)arguments[2],
+                    (float)arguments[3])));
+                //writeToFile(Settings.thetaAbsolute, messageArgumentsToString(messageReceived.Arguments));
+            }
         }
-        private void writeToFile(string bandname, string bandvalues)
+        #endregion
+
+        #region Daemon Tracker: Persist (save to database)
+
+        /// <summary>
+        /// Saves the buffer to the database and clears it afterwards.
+        /// </summary>
+        private static async void SaveToDatabaseTick(object sender, EventArgs e)
         {
-            if (File.Exists(eegbandFile))
-            {
+            // throw and save
+            await Task.Run(() => SaveInputBufferToDatabase());
+        }
 
-                using (FileStream fs = new FileStream(Settings.eegbandFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+        /// <summary>
+        /// dequeues the currently counted number of elements from the buffer and safes them to the database
+        /// (it can happen that more elements are added to the end of the queue while this happens,
+        /// those elements will be safed to the database in the next run of this method)
+        /// </summary>
+        private static void SaveInputBufferToDatabase() {
+            try
+            {
+                if (MuseEEGDataBuffer.Count > 0)
                 {
-                    using (StreamWriter sw = new StreamWriter(fs)) // File.AppendText(Settings.eegbandFilePath))
+                    var museEEGData = new MuseEEGDataEvent[MuseEEGDataBuffer.Count];
+                    for (var i = 0; i < MuseEEGDataBuffer.Count; i++)
                     {
-                        sw.WriteLine(bandname + ";" + bandvalues + String.Format("{0:s}", DateTime.Now));
+                        MuseEEGDataBuffer.TryDequeue(out museEEGData[i]);
                     }
-                }          
+                    Queries.SaveMuseEEGDataToDatabase(museEEGData);
+                }
+
+                if (MuseBlinkBuffer.Count > 0)
+                {
+                    var museBlink = new MuseBlinkEvent[MuseBlinkBuffer.Count];
+                    for (var i = 0; i < MuseBlinkBuffer.Count; i++)
+                    {
+                        MuseBlinkBuffer.TryDequeue(out museBlink[i]);
+                    }
+                    Queries.SaveMuseBlinksToDatabase(museBlink);
+                }
+
+
+                if (MuseConcentrationBuffer.Count > 0)
+                {
+                    var museConcentration = new MuseConcentrationEvent[MuseConcentrationBuffer.Count];
+                    for (var i = 0; i < MuseConcentrationBuffer.Count; i++)
+                    {
+                        MuseConcentrationBuffer.TryDequeue(out museConcentration[i]);
+                    }
+                    Queries.SaveMuseConcentrationToDatabase(museConcentration);
+                }
+
+
+                if (MuseMellowBuffer.Count > 0)
+                {
+                    var museMellow = new MuseMellowEvent[MuseMellowBuffer.Count];
+                    for (var i = 0; i < MuseMellowBuffer.Count; i++)
+                    {
+                        MuseMellowBuffer.TryDequeue(out museMellow[i]);
+                    }
+                    Queries.SaveMuseMellowToDatabase(museMellow);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
             }
         }
+
+        #endregion
+
+
+        //private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        //{
+        //    using (FileStream fss = new FileStream(Settings.eegbandFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+        //    {
+        //        using (StreamReader sr = new StreamReader(fss))
+        //        {
+        //            string lines = sr.ReadToEnd();
+        //            Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime + lines);
+        //            //Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime + "nr of lines " + lines.Length);
+        //        }
+        //    }
+        //}
+
+        //private string messageArgumentsToString(List<Object> arguments) {
+        //    string bandvalues = "";
+        //    foreach (var arg in arguments)
+        //    {
+        //        bandvalues += arg + ";";
+        //    }
+        //    return bandvalues;
+        //}
+
+        //private void writeToFile(string bandname, string bandvalues)
+        //{
+        //    if (File.Exists(_eegbandFile))
+        //    {
+
+        //        using (FileStream fs = new FileStream(Settings.eegbandFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+        //        {
+        //            using (StreamWriter sw = new StreamWriter(fs)) // File.AppendText(Settings.eegbandFilePath))
+        //            {
+        //                sw.WriteLine(bandname + ";" + bandvalues + String.Format("{0:s}", DateTime.Now));
+        //            }
+        //        }          
+        //    }
+        //}
         public override void Stop()
         {
             if (_listener != null) {
                 _listener.Close();
             }
+
+            if (_saveToDatabaseTimer != null)
+            {
+                _saveToDatabaseTimer.Stop();
+                _saveToDatabaseTimer.Dispose();
+                _saveToDatabaseTimer = null;
+            }
+
             IsRunning = false;
             Console.Write("++++ muse tracker stopped");
         }
@@ -150,5 +306,8 @@ namespace MuseTracker
         {
             // no database updates necessary yet
         }
+
+        #endregion
+        #endregion
     }
 }

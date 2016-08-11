@@ -46,6 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Daemon.cs" />
+    <Compile Include="Data\Queries.cs" />
+    <Compile Include="Helpers\DataAggregator.cs" />
+    <Compile Include="Models\IMuseTrackerInput.cs" />
+    <Compile Include="Models\MuseTrackerInput.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
