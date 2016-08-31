@@ -272,6 +272,10 @@
       <Project>{f4f1afb6-71a9-4ab4-be95-d3c45d3492cc}</Project>
       <Name>UserInputTracker</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UserSelfEvaluationTracker\UserSelfEvaluationTracker.csproj">
+      <Project>{30719007-b7df-42a6-89c0-5f3c6d5137c8}</Project>
+      <Name>UserSelfEvaluationTracker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WindowsActivityTracker\WindowsActivityTracker.csproj">
       <Project>{2b903556-4dd2-41ce-beac-3ddd045f717d}</Project>
       <Name>WindowsActivityTracker</Name>

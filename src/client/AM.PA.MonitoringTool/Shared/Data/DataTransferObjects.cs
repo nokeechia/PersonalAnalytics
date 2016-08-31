@@ -26,6 +26,8 @@ namespace Shared.Data
     {
         public bool? PopUpEnabled { get; set; }
         public int? PopUpInterval { get; set; }
+        public bool? SelfEvaluationPopUpEnabled { get; set; }
+        public int? SelfEvaluationPopUpInterval { get; set; }
         public bool? UserInputTrackerEnabled { get; set; }
         public bool? Office365ApiEnabled { get; set; }
         public bool? OpenRetrospectionInFullScreen { get; set; }
@@ -47,6 +49,12 @@ namespace Shared.Data
         public long Time { get; set; }
     }
 
+    public class SelfEvaluationTimeDto
+    {
+        public int UserEngagement { get; set; }
+        public int UserAttention { get; set; }
+        public long Time { get; set; }
+    }
     public class TasksWorkedOnTimeDto
     {
         public int TasksWorkedOn { get; set; }

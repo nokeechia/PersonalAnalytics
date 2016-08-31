@@ -58,6 +58,7 @@ namespace PersonalAnalytics
             Register(new UserInputTracker.Daemon());
             Register(new MsOfficeTracker.Daemon());
             Register(new MuseTracker.Daemon());
+            Register(new UserSelfEvaluationTracker.Daemon());
             //Register(new TaskSwitchTracker.Daemon();); // implementation not finished
             //Register(new WindowsContextTracker.Daemon();); // implementation not finished
 
@@ -339,6 +340,10 @@ namespace PersonalAnalytics
             m2.Click += (o, i) => ManuallyStartUserSurvey();
             if (_settings.IsUserEfficiencyTrackerEnabled()) TaskbarIcon.ContextMenu.Items.Add(m2);
 
+            var m9 = new System.Windows.Controls.MenuItem { Header = "Self Evaluation now" };
+            m9.Click += (o, i) => ManuallyStartSelfEvaluationSurvey();
+            if (_settings.IsUserSelfEvaluationTrackerEnabled()) TaskbarIcon.ContextMenu.Items.Add(m9);
+
             var m1 = new System.Windows.Controls.MenuItem { Header = "Show Retrospection" };
             m1.Click += (o, i) => Retrospection.Handler.GetInstance().OpenRetrospection();
             TaskbarIcon.ContextMenu.Items.Add(m1);
@@ -464,6 +469,28 @@ namespace PersonalAnalytics
             {
             }
         }
+
+        /// <summary>
+        /// gets the current instance of the selfevaluation tracker and manually starts
+        /// the survey there
+        /// todo: ugly, hardcoded
+        /// </summary>
+        private void ManuallyStartSelfEvaluationSurvey()
+        {
+            try
+            {
+                var selfEvaluationTracker =
+                    _trackers.Where(t => t.GetType() == typeof(UserSelfEvaluationTracker.Daemon))
+                        .Cast<UserSelfEvaluationTracker.Daemon>()
+                        .FirstOrDefault();
+                if (selfEvaluationTracker == null) return;
+                selfEvaluationTracker.ManualTakeSurveyNow();
+            }
+            catch
+            {
+            }
+        }
+
 
         /// <summary>
         /// Updates the taskbar icon tooltip text based on the timer and

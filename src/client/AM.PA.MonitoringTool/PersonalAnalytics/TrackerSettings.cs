@@ -40,6 +40,10 @@ namespace Shared.Data
                 {
                     if (GetUserEfficiencyTracker() != null) GetUserEfficiencyTracker().PopUpIntervalInMins = TimeSpan.FromMinutes(updatedSettings.PopUpInterval.Value);
                 }
+                if (updatedSettings.PopUpInterval.HasValue)
+                {
+                    if (GetUserEfficiencyTracker() != null) GetUserEfficiencyTracker().PopUpIntervalInMins = TimeSpan.FromMinutes(updatedSettings.PopUpInterval.Value);
+                }
                 if (updatedSettings.UserInputTrackerEnabled.HasValue)
                 {
                     if (GetUserInputTracker() != null) GetUserInputTracker().UserInputTrackerEnabled = updatedSettings.UserInputTrackerEnabled.Value;
@@ -77,6 +81,10 @@ namespace Shared.Data
                 var userEfficiencyTracker = GetUserEfficiencyTracker();
                 if (userEfficiencyTracker != null) dto.PopUpEnabled = userEfficiencyTracker.PopUpEnabled;
                 if (userEfficiencyTracker != null) dto.PopUpInterval = (int)userEfficiencyTracker.PopUpIntervalInMins.TotalMinutes;
+
+                var userSelfEvaluationTracker = GetUserSelfEvaluationTracker();
+                if (userSelfEvaluationTracker != null) dto.SelfEvaluationPopUpEnabled = userSelfEvaluationTracker.PopUpEnabled;
+                if (userSelfEvaluationTracker != null) dto.SelfEvaluationPopUpInterval = (int)userSelfEvaluationTracker.PopUpIntervalInMins.TotalMinutes;
 
                 var userInputTracker = GetUserInputTracker();
                 if (userInputTracker != null) dto.UserInputTrackerEnabled = userInputTracker.UserInputTrackerEnabled;
@@ -175,6 +183,20 @@ namespace Shared.Data
             catch { return null; }
         }
 
+        private UserSelfEvaluationTracker.Daemon GetUserSelfEvaluationTracker()
+        {
+            try
+            {
+                var tracker =
+                    _trackers.Where(t => t.GetType() == typeof(UserSelfEvaluationTracker.Daemon))
+                        .Cast<UserSelfEvaluationTracker.Daemon>()
+                        .FirstOrDefault();
+
+                return tracker;
+            }
+            catch { return null; }
+        }
+
         private UserInputTracker.Daemon GetUserInputTracker()
         {
             try
@@ -195,5 +217,13 @@ namespace Shared.Data
             if (tracker != null) return tracker.PopUpEnabled;
             else return false;
         }
+
+        public bool IsUserSelfEvaluationTrackerEnabled()
+        {
+            var tracker = GetUserSelfEvaluationTracker();
+            if (tracker != null) return tracker.PopUpEnabled;
+            else return false;
+        }
+
     }
 }
