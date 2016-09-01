@@ -7,6 +7,8 @@ using UserSelfEvaluationTracker.Models;
 using UserSelfEvaluationTracker.Data;
 using Shared.Data;
 using System.Globalization;
+using UserSelfEvaluationTracker.Visualizations;
+using System.Collections.Generic;
 
 namespace UserSelfEvaluationTracker
 {
@@ -285,6 +287,12 @@ namespace UserSelfEvaluationTracker
         public override void UpdateDatabaseTables(int version)
         {
             // no database updates necessary yet
+        }
+
+        public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
+        {
+            var vis1 = new DaySelfEvaluationTimeLine(date);
+            return new List<IVisualization> { vis1 };
         }
     }
 }

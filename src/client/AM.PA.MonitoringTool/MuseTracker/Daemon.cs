@@ -128,52 +128,39 @@ namespace MuseTracker
 
                 if (blink == 1)
                 {
+                    //Console.Write("##### Blink event");
                     await Task.Run(() => MuseBlinkBuffer.Enqueue(new MuseBlinkEvent(blink)));
-                    //string tmp = String.Format("{0:s}", DateTime.Now);
-                    //if (File.Exists(_blinkFile))
-                    //{
-                    //    using (FileStream fs = new FileStream(Settings.blinkFilePath, FileMode.Append, FileAccess.Write, FileShare.Read))
-                    //    {
-                    //        using (StreamWriter sw = new StreamWriter(fs))
-                    //        {
-                    //            sw.WriteLine(tmp);
-                    //        }
-                    //    }
-                    //}
-                    //Console.WriteLine("+++++" + tmp);
                 }
             }
 
             if (addr == "/muse/elements/alpha_absolute")
             {
+                //Console.Write("##### Alpha abs value");
                 await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.AlphaAbsolute,
                     (float) arguments[0],
                     (float) arguments[1],
                     (float) arguments[2],
                     (float) arguments[3])));
-
-                //writeToFile(Settings.alphaAbsolute, messageArgumentsToString(messageReceived.Arguments));
             }
 
             if (addr == "/muse/elements/beta_absolute")
             {
+               // Console.Write("##### Beta abs value");
                 await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.BetaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
                     (float)arguments[2],
                     (float)arguments[3])));
-
-                //writeToFile(Settings.betaAbsolute, messageArgumentsToString(messageReceived.Arguments));
             }
 
             if (addr == "/muse/elements/theta_absolute")
             {
+                //Console.Write("##### Theta abs value");
                 await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.ThetaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
                     (float)arguments[2],
                     (float)arguments[3])));
-                //writeToFile(Settings.thetaAbsolute, messageArgumentsToString(messageReceived.Arguments));
             }
         }
         #endregion
@@ -195,6 +182,8 @@ namespace MuseTracker
         /// those elements will be safed to the database in the next run of this method)
         /// </summary>
         private static void SaveInputBufferToDatabase() {
+            Console.Write("Save Input Buffer to DB: EEG, Blink, Concent, Mellow" + MuseEEGDataBuffer.Count + " " + MuseBlinkBuffer.Count
+                + " " + MuseConcentrationBuffer.Count + " " + MuseMellowBuffer.Count);
             try
             {
                 if (MuseEEGDataBuffer.Count > 0)
@@ -248,43 +237,6 @@ namespace MuseTracker
 
         #endregion
 
-
-        //private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
-        //{
-        //    using (FileStream fss = new FileStream(Settings.eegbandFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-        //    {
-        //        using (StreamReader sr = new StreamReader(fss))
-        //        {
-        //            string lines = sr.ReadToEnd();
-        //            Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime + lines);
-        //            //Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime + "nr of lines " + lines.Length);
-        //        }
-        //    }
-        //}
-
-        //private string messageArgumentsToString(List<Object> arguments) {
-        //    string bandvalues = "";
-        //    foreach (var arg in arguments)
-        //    {
-        //        bandvalues += arg + ";";
-        //    }
-        //    return bandvalues;
-        //}
-
-        //private void writeToFile(string bandname, string bandvalues)
-        //{
-        //    if (File.Exists(_eegbandFile))
-        //    {
-
-        //        using (FileStream fs = new FileStream(Settings.eegbandFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
-        //        {
-        //            using (StreamWriter sw = new StreamWriter(fs)) // File.AppendText(Settings.eegbandFilePath))
-        //            {
-        //                sw.WriteLine(bandname + ";" + bandvalues + String.Format("{0:s}", DateTime.Now));
-        //            }
-        //        }          
-        //    }
-        //}
         public override void Stop()
         {
             if (_listener != null) {

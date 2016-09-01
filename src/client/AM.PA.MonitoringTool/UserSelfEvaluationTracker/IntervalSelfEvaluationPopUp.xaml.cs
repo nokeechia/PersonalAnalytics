@@ -181,6 +181,7 @@ namespace UserSelfEvaluationTracker
         private void Engagement7_Checked(object sender, RoutedEventArgs e)
         {
             Finishing(7, _attention);
+            Console.Write(Shared.Settings.ExportFilePath);
         }
 
         private void Engagement6_Checked(object sender, RoutedEventArgs e)

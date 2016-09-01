@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserSelfEvaluationTracker.Models;
+using Shared;
 using Shared.Data;
 using System.Globalization;
+using System.Data;
 
 
 namespace UserSelfEvaluationTracker.Data
@@ -103,5 +105,55 @@ namespace UserSelfEvaluationTracker.Data
             }
             return entry;
         }
+
+        /// <summary>
+        /// Returns a dictionary with the attention and engagement on a timeline
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        internal static List<Tuple<DateTime, int, int>> GetSelfEvaluationTimelineData(DateTimeOffset date, VisType type, bool withNonWork = false)
+        {
+            var evalList = new List<Tuple<DateTime, int, int>>();
+
+            try
+            {
+                var filterNonWork = (withNonWork) ? "" : " AND userEngagement <> -1 AND userAttention <> -1";
+
+                var query = "SELECT userEngagement, userAttention, surveyEndTime FROM " + Settings.DbTableIntervalPopup + " " + // end time is the time the participant answered
+                                      "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(type, date, "surveyNotifyTime") + " " + // only show perceived productivity values for the day
+                                      filterNonWork +
+                                      " ORDER BY surveyEndTime;";
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    var time = DateTime.Parse((string)row["surveyEndTime"], CultureInfo.InvariantCulture);
+                    var engagement = Convert.ToInt32(row["userEngagement"], CultureInfo.InvariantCulture);
+                    var attention = Convert.ToInt32(row["userAttention"], CultureInfo.InvariantCulture);
+
+                    // first element
+                    if (evalList.Count == 0)
+                    {
+                        var workDayStartTime = Database.GetInstance().GetUserWorkStart(date);
+                        evalList.Add(new Tuple<DateTime, int, int>(workDayStartTime, engagement, attention));
+                    }
+
+                    // only show if it's from today
+                    if (time.Date == date.Date)
+                    {
+                        evalList.Add(new Tuple<DateTime, int, int>(time, engagement, attention));
+                    }
+                }
+                table.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return evalList;
+        }
     }
+
+
 }

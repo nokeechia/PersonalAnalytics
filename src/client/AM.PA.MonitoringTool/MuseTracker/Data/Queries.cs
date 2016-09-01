@@ -3,6 +3,8 @@ using Shared;
 using Shared.Data;
 using System.Collections.Generic;
 using MuseTracker.Models;
+using System.Globalization;
+using System.Data;
 
 namespace MuseTracker.Data
 {
@@ -12,10 +14,10 @@ namespace MuseTracker.Data
         {
             try
             {
-                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseEEGData + " (id INTEGER PRIMARY KEY, eegType TEXT, avg FLOAT(8,7), channelLeft FLOAT(8,7), channelFrontLeft FLOAT(8,7), channelFrontRight FLOAT(8,7), channelRight FLOAT(8,7), time TEXT, timestamp TEXT)");
+                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseEEGData + " (id INTEGER PRIMARY KEY, eegType TEXT, avg REAL, channelLeft REAL, channelFrontLeft REAL, channelFrontRight REAL, channelRight REAL, time TEXT, timestamp TEXT)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseBlink + " (id INTEGER PRIMARY KEY, blink INTEGER, time TEXT, timestamp TEXT)");
-                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseConcentration + " (id INTEGER PRIMARY KEY, concentration FLOAT(8,7), time TEXT, timestamp TEXT)");
-                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseMellow + " (id INTEGER PRIMARY KEY, mellow FLOAT(8,7), time TEXT, timestamp TEXT)");
+                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseConcentration + " (id INTEGER PRIMARY KEY, concentration REAL, time TEXT, timestamp TEXT)");
+                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseMellow + " (id INTEGER PRIMARY KEY, mellow REAL, time TEXT, timestamp TEXT)");
             }
             catch (Exception e)
             {
@@ -38,26 +40,29 @@ namespace MuseTracker.Data
 
                     if (newQuery)
                     {
-                        query = "INSERT INTO '" + Settings.DbTableMuseEEGData + "' (eegType, avg, channelLeft, channelFrontLeft, channelFrontRight, channelRight, time, timestamp) ";
+                        query = "INSERT INTO '" + Settings.DbTableMuseEEGData + "' (eegType, avg, channelLeft, channelFrontLeft, channelFrontRight, channelRight, time, timestamp) VALUES ";
                         newQuery = false;
                     }
                     else
                     {
-                        query += "UNION ALL ";
+                        query += ", ";
                     }
 
-                    query += Database.GetInstance().Q((item).DataType.ToString()) + "," +
-                             Database.GetInstance().Q((item).Avg.ToString()) + "," +
-                             Database.GetInstance().Q((item).ChannelLeft.ToString()) + "," +
-                             Database.GetInstance().Q((item).ChannelFrontLeft.ToString()) + "," +
-                             Database.GetInstance().Q((item).ChannelFrontRight.ToString()) + "," +
-                             Database.GetInstance().Q((item).ChannelRight.ToString()) + "," +
-                             "SELECT strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
-                             Database.GetInstance().QTime(item.Timestamp) + " ";
+                    query += "(" + 
+                             Database.GetInstance().Q((item).DataType.ToString()) + "," +
+                             Database.GetInstance().Q((item).Avg.ToString(CultureInfo.InvariantCulture)) + "," +
+                             Database.GetInstance().Q((item).ChannelLeft.ToString(CultureInfo.InvariantCulture)) + "," +
+                             Database.GetInstance().Q((item).ChannelFrontLeft.ToString(CultureInfo.InvariantCulture)) + "," +
+                             Database.GetInstance().Q((item).ChannelFrontRight.ToString(CultureInfo.InvariantCulture)) + "," +
+                             Database.GetInstance().Q((item).ChannelRight.ToString(CultureInfo.InvariantCulture)) + "," +
+                             "strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
+                             Database.GetInstance().QTime(item.Timestamp) + 
+                             ")";
 
                     //executing remaining lines
                     if (i != 0 && i % 499 == 0)
                     {
+                        query += ";";
                         Database.GetInstance().ExecuteDefaultQuery(query);
                         newQuery = true;
                         query = string.Empty;
@@ -67,15 +72,16 @@ namespace MuseTracker.Data
                 //executing remaining lines
                 if (i % 499 != 0)
                 {
+                    query += ";";
                     Database.GetInstance().ExecuteDefaultQuery(query);
                 }
             }
             catch (Exception e)
             {
+                Console.WriteLine("## Error In MuseEEGData");
                 Shared.Logger.WriteToLogFile(e);
             }
         }
-
 
         internal static void SaveMuseBlinksToDatabase(IReadOnlyList<IMuseTrackerInput> blinks)
         {
@@ -93,21 +99,24 @@ namespace MuseTracker.Data
 
                     if (newQuery)
                     {
-                        query = "INSERT INTO '" + Settings.DbTableMuseBlink + "' (blink, time, timestamp) ";
+                        query = "INSERT INTO '" + Settings.DbTableMuseBlink + "' (blink, time, timestamp) VALUES";
                         newQuery = false;
                     }
                     else
                     {
-                        query += "UNION ALL ";
+                        query += ", ";
                     }
 
-                    query += Database.GetInstance().Q((item).Blink.ToString()) + "," +
-                             "SELECT strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
-                             Database.GetInstance().QTime(item.Timestamp) + " ";
+                    query += "(" + 
+                            Database.GetInstance().Q((item).Blink.ToString()) + "," +
+                             "strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
+                             Database.GetInstance().QTime(item.Timestamp) +
+                             ")";
 
                     //executing remaining lines
                     if (i != 0 && i % 499 == 0)
                     {
+                        query += ";";
                         Database.GetInstance().ExecuteDefaultQuery(query);
                         newQuery = true;
                         query = string.Empty;
@@ -117,6 +126,7 @@ namespace MuseTracker.Data
                 //executing remaining lines
                 if (i % 499 != 0)
                 {
+                    query += ";";
                     Database.GetInstance().ExecuteDefaultQuery(query);
                 }
             }
@@ -142,21 +152,24 @@ namespace MuseTracker.Data
 
                     if (newQuery)
                     {
-                        query = "INSERT INTO '" + Settings.DbTableMuseConcentration + "' (concentration, time, timestamp) ";
+                        query = "INSERT INTO '" + Settings.DbTableMuseConcentration + "' (concentration, time, timestamp) VALUES";
                         newQuery = false;
                     }
                     else
                     {
-                        query += "UNION ALL ";
+                        query += ", ";
                     }
 
-                    query += Database.GetInstance().Q((item).Concentration.ToString()) + "," +
-                             "SELECT strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
-                             Database.GetInstance().QTime(item.Timestamp) + " ";
+                    query += "(" + 
+                             Database.GetInstance().Q((item).Concentration.ToString()) + "," +
+                             "strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
+                             Database.GetInstance().QTime(item.Timestamp) +
+                             ")";
 
                     //executing remaining lines
                     if (i != 0 && i % 499 == 0)
                     {
+                        query += ";";
                         Database.GetInstance().ExecuteDefaultQuery(query);
                         newQuery = true;
                         query = string.Empty;
@@ -166,6 +179,7 @@ namespace MuseTracker.Data
                 //executing remaining lines
                 if (i % 499 != 0)
                 {
+                    query += ";";
                     Database.GetInstance().ExecuteDefaultQuery(query);
                 }
             }
@@ -191,21 +205,24 @@ namespace MuseTracker.Data
 
                     if (newQuery)
                     {
-                        query = "INSERT INTO '" + Settings.DbTableMuseMellow + "' (mellow, time, timestamp) ";
+                        query = "INSERT INTO '" + Settings.DbTableMuseMellow + "' (mellow, time, timestamp) VALUES";
                         newQuery = false;
                     }
                     else
                     {
-                        query += "UNION ALL ";
+                        query += ", ";
                     }
 
-                    query += Database.GetInstance().Q((item).Mellow.ToString()) + "," +
-                             "SELECT strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
-                             Database.GetInstance().QTime(item.Timestamp) + " ";
+                    query += "(" + 
+                             Database.GetInstance().Q((item).Mellow.ToString()) + "," +
+                             "strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
+                             Database.GetInstance().QTime(item.Timestamp) +
+                             ")";
 
                     //executing remaining lines
                     if (i != 0 && i % 499 == 0)
                     {
+                        query += ";";
                         Database.GetInstance().ExecuteDefaultQuery(query);
                         newQuery = true;
                         query = string.Empty;
@@ -215,6 +232,7 @@ namespace MuseTracker.Data
                 //executing remaining lines
                 if (i % 499 != 0)
                 {
+                    query += ";";
                     Database.GetInstance().ExecuteDefaultQuery(query);
                 }
             }
@@ -224,5 +242,49 @@ namespace MuseTracker.Data
             }
         }
 
+
+        /// <summary>
+        /// Fetches the eze blinks of a user for a given date and prepares the data
+        /// to be visualized as a line chart.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static Dictionary<string, int> GetBlinks(DateTimeOffset date)
+        {
+            var dto = new Dictionary<string, int>();
+
+            try
+            {
+                var query = "SELECT time, count(blink)" +
+                            " FROM " + Settings.DbTableMuseBlink +
+                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
+                            " GROUP BY time;";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    var timestamp = (string)row[0];
+                    var blinkCounter = 0;
+                    int.TryParse(row[1].ToString(), out blinkCounter);
+
+                    if (dto.ContainsKey(timestamp))
+                    {
+                        dto[timestamp] += blinkCounter;
+                    }
+                    else
+                    {
+                        dto.Add(timestamp, blinkCounter);
+                    }
+                }
+                table.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return dto;
+        }
     }
 }
