@@ -311,8 +311,15 @@ namespace Shared.Data
             else if (type == VisType.Week)
             {
                 filter = "( "
-                    + " STRFTIME('%s', DATE(" + datePropertyName + ")) between STRFTIME('%s', DATE('" + Helpers.DateTimeHelper.GetFirstDayOfWeek_Iso8801(date).Date.ToString("u") 
+                    + " STRFTIME('%s', DATE(" + datePropertyName + ")) between STRFTIME('%s', DATE('" + Helpers.DateTimeHelper.GetFirstDayOfWeek_Iso8801(date).Date.ToString("u")
                     + "')) and STRFTIME('%s', DATE('" + Helpers.DateTimeHelper.GetLastDayOfWeek_Iso8801(date).Date.ToString("u") + "')) "
+                    + " ) ";
+            }
+            else if (type == VisType.Month)
+            {
+                filter = "( "
+                    + " STRFTIME('%s', DATE(" + datePropertyName + ")) between STRFTIME('%s', DATE('" + new DateTimeOffset(new DateTime(date.Year, 1, 1)).ToString("u")
+                    + "')) and STRFTIME('%s', DATE('" + new DateTimeOffset(new DateTime(date.Year, 12, 31)).ToString("u") + "')) "
                     + " ) ";
             }
             return filter;

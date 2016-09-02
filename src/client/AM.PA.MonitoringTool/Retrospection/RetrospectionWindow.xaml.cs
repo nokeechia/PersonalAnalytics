@@ -199,6 +199,7 @@ namespace Retrospection
         {
             _currentVisType = VisType.Day;
             SwitchToWeekButton.Visibility = Visibility.Visible;
+            SwitchToMonthButton.Visibility = Visibility.Visible;
             SwitchToDayButton.Visibility = Visibility.Collapsed;
             TodayButton.Content = "Today";
             WebBrowserNavigateTo(Handler.GetInstance().GetDashboardNavigateUriForType(DatePicker.SelectedDate.Value, _currentVisType));
@@ -209,10 +210,20 @@ namespace Retrospection
             _currentVisType = VisType.Week;
             SwitchToWeekButton.Visibility = Visibility.Collapsed;
             SwitchToDayButton.Visibility = Visibility.Visible;
+            SwitchToMonthButton.Visibility = Visibility.Visible;
             TodayButton.Content = "This Week";
             WebBrowserNavigateTo(Handler.GetInstance().GetDashboardNavigateUriForType(DatePicker.SelectedDate.Value, _currentVisType));
         }
 
+        private void SwitchToMonth_Clicked(object sender, RoutedEventArgs e)
+        {
+            _currentVisType = VisType.Month;
+            SwitchToWeekButton.Visibility = Visibility.Visible;
+            SwitchToDayButton.Visibility = Visibility.Visible;
+            SwitchToMonthButton.Visibility = Visibility.Collapsed;
+            TodayButton.Content = "Recent Months";
+            WebBrowserNavigateTo(Handler.GetInstance().GetDashboardNavigateUriForType(DatePicker.SelectedDate.Value, _currentVisType));
+        }
         #endregion
 
         #region Other Options
@@ -247,5 +258,7 @@ namespace Retrospection
         }
 
         #endregion
+
+
     }
 }

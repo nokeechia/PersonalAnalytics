@@ -46,7 +46,8 @@
 
                 <Button x:Name="SwitchToWeekButton" Content="Switch to Weekly Retrospection" Click="SwitchToWeek_Clicked" VerticalAlignment="Center" />
                 <Button x:Name="SwitchToDayButton" Content="Switch to Daily Retrospection" Click="SwitchToDay_Clicked" VerticalAlignment="Center" />
-                
+                <Button x:Name="SwitchToMonthButton" Content="Switch to Monthly Retrospection" Click="SwitchToMonth_Clicked" VerticalAlignment="Center" />
+
                 <Line Stroke="White" X1="0" Y1="31" X2="0" Y2="9" Margin="10 0 10 0" />
                 
                 <Button x:Name="TodayButton" Content="Today" Click="Today_Clicked" VerticalAlignment="Center" Margin="0 0 10 0" />

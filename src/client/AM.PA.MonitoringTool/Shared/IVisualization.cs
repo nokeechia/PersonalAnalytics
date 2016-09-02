@@ -8,13 +8,13 @@ using Shared.Helpers;
 namespace Shared
 {
     /// <summary>
-    /// Currently, only a daily and weekly retrospection is supported.
-    /// a monthly retrospection will be added in the future
+    /// Currently, a daily, weekly and monthly retrospection is supported.
     /// </summary>
     public enum VisType
     {
         Day,
-        Week
+        Week,
+        Month
     }
 
     /// <summary>

@@ -41,6 +41,9 @@ namespace Retrospection
             _server.AddHandler("thumbUpGray.png", OnResource); // load image
             _server.AddHandler("thumbDownBlue.png", OnResource); // load image
             _server.AddHandler("styles.css", OnStylesheets); // load css
+            _server.AddHandler("moment.min.js", OnResource); // load js framework
+            _server.AddHandler("calendar.heatmap.js", OnResource); // load js framework
+            _server.AddHandler("calendar.heatmap.css", OnStylesheets); // load css
 
             try
             {
@@ -147,6 +150,8 @@ namespace Retrospection
                         DateTimeHelper.GetWeekOfYear_Iso8601(date.Date),
                         DateTimeHelper.GetFirstDayOfWeek_Iso8801(date.Date).Date.ToShortDateString(),
                         DateTimeHelper.GetLastDayOfWeek_Iso8801(date.Date).Date.ToShortDateString());
+                case VisType.Month:
+                    return "Your retrospection for the months in " + date.Date.Year;
             }
 
             return VisHelper.Error("Retrospection not supported!");
@@ -172,6 +177,9 @@ namespace Retrospection
                         break;
                     case VisType.Week:
                         visualizations.AddRange(tracker.GetVisualizationsWeek(date).Where(i => i.IsEnabled));
+                        break;
+                    case VisType.Month:
+                        visualizations.AddRange(tracker.GetVisualizationsMonth(date).Where(i => i.IsEnabled));
                         break;
                 }
             }

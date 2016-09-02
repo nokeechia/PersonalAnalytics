@@ -83,6 +83,26 @@ namespace Retrospection.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] calendar_heatmap_css {
+            get {
+                object obj = ResourceManager.GetObject("calendar_heatmap_css", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] calendar_heatmap_js {
+            get {
+                object obj = ResourceManager.GetObject("calendar_heatmap_js", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] d3_min_js {
             get {
                 object obj = ResourceManager.GetObject("d3_min_js", resourceCulture);
@@ -121,6 +141,16 @@ namespace Retrospection.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] moment_min_js {
+            get {
+                object obj = ResourceManager.GetObject("moment_min_js", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
         ///
         ///&lt;!--    Created by André Meyer (ameyer@ifi.uzh.ch) from the University of Zurich
@@ -137,7 +167,7 @@ namespace Retrospection.Properties {
         ///&lt;meta http-equiv=&quot;pragma&quot; content=&quot;no-cache&quot;/&gt; 
         ///&lt;meta http-equiv=&quot;expires&quot; content=&quot;-1&quot;/&gt; 
         ///
-        ///&lt;meta http-equiv=&quot;X [rest of string was truncated]&quot;;.
+        ///&lt;me [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string personalanalytics_html {
             get {

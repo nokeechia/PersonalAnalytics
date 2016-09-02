@@ -124,6 +124,12 @@
   <data name="c3_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>c3_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="calendar_heatmap_css" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>calendar_heatmap_css;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="calendar_heatmap_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>calendar_heatmap_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="d3_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>d3_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -135,6 +141,9 @@
   </data>
   <data name="masonry_pkgd_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>masonry_pkgd_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="moment_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>moment_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="personalanalytics_html" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>personalanalytics.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

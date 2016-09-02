@@ -286,6 +286,42 @@ namespace MuseTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
+        public static List<Tuple<DateTime, int>> GetBlinksByYear(DateTimeOffset date)
+        {
+            var resList = new List<Tuple<DateTime, int>>();
+
+            try
+            {
+                var query = "SELECT time, count(blink)" +
+                            " FROM " + Settings.DbTableMuseBlink +
+                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Month, date, "time") +
+                            " GROUP BY time;";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    var timestamp = (String)row[0];
+                    var blinkCounter = 0;
+                    int.TryParse(row[1].ToString(), out blinkCounter);
+
+                    resList.Add(new Tuple<DateTime, int>(DateTime.ParseExact(timestamp, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), blinkCounter));
+                }
+                table.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return resList;
+        }
+        /// <summary>
+        /// Fetches eye blinks of a user for a given date and prepares the data
+        /// to be visualized as a line chart.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
         public static List<Tuple<DateTime, double>> GetEEGIndex(DateTimeOffset date)
         {
             var resList = new List<Tuple<DateTime, double>>();

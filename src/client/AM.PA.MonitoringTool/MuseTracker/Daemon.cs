@@ -12,6 +12,7 @@ using MuseTracker.Models;
 using MuseTracker.Data;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using MuseTracker.Visualizations;
 
 namespace MuseTracker
 {
@@ -261,5 +262,10 @@ namespace MuseTracker
 
         #endregion
         #endregion
+        public override List<IVisualization> GetVisualizationsMonth(DateTimeOffset date)
+        {
+            var vis1 = new MonthMuseAttentionVisualization(date);
+            return new List<IVisualization> { vis1 };
+        }
     }
 }
