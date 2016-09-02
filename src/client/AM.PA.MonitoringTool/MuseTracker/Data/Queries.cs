@@ -244,14 +244,14 @@ namespace MuseTracker.Data
 
 
         /// <summary>
-        /// Fetches the eze blinks of a user for a given date and prepares the data
+        /// Fetches eye blinks of a user for a given date and prepares the data
         /// to be visualized as a line chart.
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static Dictionary<string, int> GetBlinks(DateTimeOffset date)
+        public static List<Tuple<DateTime, int>> GetBlinks(DateTimeOffset date)
         {
-            var dto = new Dictionary<string, int>();
+            var resList = new List<Tuple<DateTime, int>>();
 
             try
             {
@@ -264,18 +264,11 @@ namespace MuseTracker.Data
 
                 foreach (DataRow row in table.Rows)
                 {
-                    var timestamp = (string)row[0];
+                    var timestamp = (String)row[0];
                     var blinkCounter = 0;
                     int.TryParse(row[1].ToString(), out blinkCounter);
 
-                    if (dto.ContainsKey(timestamp))
-                    {
-                        dto[timestamp] += blinkCounter;
-                    }
-                    else
-                    {
-                        dto.Add(timestamp, blinkCounter);
-                    }
+                    resList.Add(new Tuple<DateTime, int>(DateTime.ParseExact(timestamp, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), blinkCounter));
                 }
                 table.Dispose();
             }
@@ -284,7 +277,85 @@ namespace MuseTracker.Data
                 Logger.WriteToLogFile(e);
             }
 
-            return dto;
+            return resList;
+        }
+
+        /// <summary>
+        /// Fetches eye blinks of a user for a given date and prepares the data
+        /// to be visualized as a line chart.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static List<Tuple<DateTime, double>> GetEEGIndex(DateTimeOffset date)
+        {
+            var resList = new List<Tuple<DateTime, double>>();
+
+            try
+            {
+                var query = "SELECT time, eegType, avg(avg)" +
+                            " FROM " + Settings.DbTableMuseEEGData +
+                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
+                            " GROUP BY time, eegType;";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                var tempDict = new Dictionary<string,  Tuple<double, double, double>> ();
+                foreach (DataRow row in table.Rows)
+                {                    
+                    var timestamp = (String)row[0];
+                    if (tempDict.ContainsKey(timestamp))
+                    {
+                        Tuple<double, double, double> values;
+                        tempDict.TryGetValue(timestamp, out values);
+                        var val = 0.0;
+                        double.TryParse(row[2].ToString(), out val);
+
+                        if ((String)row[1] == "AlphaAbsolute")
+                        {
+                            tempDict[timestamp] = new Tuple<double, double, double>(val, values.Item2, values.Item3);
+                        }
+                        if ((String)row[1] == "BetaAbsolute")
+                        {
+                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, val, values.Item3);
+                        }
+
+                        if ((String)row[1] == "ThetaAbsolute")
+                        {
+                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, values.Item2, val);
+                        }
+
+                    }
+                    else {
+                        var val = 0.0;
+                        double.TryParse(row[2].ToString(), out val);
+                        if ((String)row[1] == "AlphaAbsolute") {
+                            tempDict.Add(timestamp, new Tuple<double, double, double>(val, 0.0, 0.0));
+                        }
+                        if ((String)row[1] == "BetaAbsolute")
+                        {
+                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, val, 0.0));
+                        }
+                        if ((String)row[1] == "ThetaAbsolute")
+                        {
+                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, 0.0, val));
+                        }
+                    }
+                }
+                table.Dispose();
+
+                foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
+                {
+                    Tuple<double, double, double> tempValues = entry.Value;
+                    double eegIndex = tempValues.Item2 / (tempValues.Item1 + tempValues.Item3); //eeg index formula
+                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(entry.Key, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), eegIndex));
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return resList;
         }
     }
 }

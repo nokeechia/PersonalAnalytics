@@ -138,7 +138,7 @@ namespace UserSelfEvaluationTracker.Data
                         evalList.Add(new Tuple<DateTime, int, int>(workDayStartTime, engagement, attention));
                     }
 
-                    // only show if it's from today
+                    // only show if it's from the date
                     if (time.Date == date.Date)
                     {
                         evalList.Add(new Tuple<DateTime, int, int>(time, engagement, attention));

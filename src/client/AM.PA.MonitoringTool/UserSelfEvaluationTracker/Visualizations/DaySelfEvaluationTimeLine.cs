@@ -33,7 +33,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             /////////////////////
             var chartQueryResultsLocal = UserSelfEvaluationTracker.Data.Queries.GetSelfEvaluationTimelineData(_date, VisType.Day);
             var blinks = MuseTracker.Data.Queries.GetBlinks(_date);
-            if (chartQueryResultsLocal.Count < 3 || blinks.Count < 3) // 3 is the minimum number of input-data-items
+            var eegIndexes = MuseTracker.Data.Queries.GetEEGIndex(_date);
+            if (chartQueryResultsLocal.Count < 3 && blinks.Count < 3 && eegIndexes.Count < 3)
             {
                 html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity as you didn't fill out the pop-up often enough. Try to fill it out at least 3 times per day.");
                 return html;
@@ -61,22 +62,22 @@ namespace UserSelfEvaluationTracker.Visualizations
             /////////////////////
             var ticks = CalculateLineChartAxisTicks(_date);
             var timeAxis = chartQueryResultsLocal.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(a.Item1) + ", ")).Trim().TrimEnd(',');
-            Console.WriteLine(timeAxis);
 
-            var timeAxis2 = blinks.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(Convert.ToDateTime(a.Key)) + ", ")).TrimEnd(',');
-            Console.WriteLine(timeAxis2);
+            var timeAxis2 = blinks.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(Convert.ToDateTime(a.Item1)) + ", ")).TrimEnd(',');
+            var timeAxis3 = eegIndexes.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(Convert.ToDateTime(a.Item1)) + ", ")).TrimEnd(',');
 
             var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (p.Item2 + ", ")).Trim().TrimEnd(',');
             var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (p.Item3 + ", ")).Trim().TrimEnd(',');
-
+            var blinkData = blinks.Aggregate("", (current, p) => current + (p.Item2 + ", ")).TrimEnd(',');
+            var eegData = eegIndexes.Aggregate("", (current, p) => current + (p.Item2 + ", ")).TrimEnd(',');
             const string colorPerceivedEngagement = "'User_Input_Level' : '#007acb'";
 
-            var data = "x: 'timeAxis', columns: [['timeAxis', " + timeAxis + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ] ], types: {Engagement:'spline', Attention:'line'  }, colors: { " + colorPerceivedEngagement + " }, axis: { 'PerceivedValues': 'y' } "; // type options: spline, step, line
+            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis3'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['timeAxis3', " + timeAxis3 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'spline', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorPerceivedEngagement + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y2' } "; // type options: spline, step, line
 
             var grid = "y: { lines: [ { value: 1, text: 'not at all' }, { value: 4, text: 'moderately' }, { value: 7, text: 'very strong' } ] } ";
-            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { min: 1, max: 7 }"; // show: false, 
+            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { min: 1, max: 7 }, y2: {show: true}"; // show: false, 
             var tooltip = "show: true, format: { title: function(d) { return 'Pop-Up answered: ' + formatTime(d.getHours(),d.getMinutes()); }}";
-            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 15, right: 0, bottom: -10, top: 0}, legend: { show: false }, axis: { " + axis + " }, grid: { " + grid + " }, tooltip: { " + tooltip + " }, point: { show: true }";
+            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 15, right: 0, bottom: -10, top: 0}, legend: { show: true }, axis: { " + axis + " }, grid: { " + grid + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
 
             html += "<script type='text/javascript'>";
