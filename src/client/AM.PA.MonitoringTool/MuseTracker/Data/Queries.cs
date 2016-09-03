@@ -292,10 +292,10 @@ namespace MuseTracker.Data
 
             try
             {
-                var query = "SELECT time, count(blink)" +
+                var query = "SELECT strftime('%Y-%m-%d',time), count(blink)" +
                             " FROM " + Settings.DbTableMuseBlink +
                             " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Month, date, "time") +
-                            " GROUP BY time;";
+                            " GROUP BY strftime('%Y-%m-%d',time);";
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
 
@@ -305,7 +305,7 @@ namespace MuseTracker.Data
                     var blinkCounter = 0;
                     int.TryParse(row[1].ToString(), out blinkCounter);
 
-                    resList.Add(new Tuple<DateTime, int>(DateTime.ParseExact(timestamp, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), blinkCounter));
+                    resList.Add(new Tuple<DateTime, int>(DateTime.ParseExact(timestamp, "yyyy-MM-dd", CultureInfo.InvariantCulture), blinkCounter));
                 }
                 table.Dispose();
             }

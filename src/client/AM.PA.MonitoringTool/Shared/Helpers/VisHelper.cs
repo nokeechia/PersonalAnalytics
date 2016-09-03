@@ -7,6 +7,7 @@ using Shared.Data;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Shared.Helpers
@@ -131,6 +132,27 @@ namespace Shared.Helpers
                 dto.Add(key, 0);
                 min = key;
             }
+        }
+
+        public class DateElement {
+            public String date;
+            public int count;
+        }
+
+        public static String CreateJavaScriptArrayOfObjects(List<Tuple<DateTime, int>> t)
+        {
+            List<DateElement> dateElements = new List<DateElement>();
+   
+            foreach (Tuple<DateTime, int> i in t)
+            {
+                DateTime jsDate = i.Item1;
+                dateElements.Add(new DateElement() { date = DateTime.jsDate.ToString(), count = i.Item2 });
+
+            }
+
+            var output = dateElements.Aggregate("", (current, b) => current + "{date: " + b.date.ToString() + ", count: " + b.count + "},").Trim().TrimEnd(',');
+
+            return output;
         }
     }
 }

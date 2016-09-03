@@ -31,9 +31,9 @@ namespace MuseTracker.Visualizations
             // fetch data sets
             /////////////////////
             var blinks = Queries.GetBlinksByYear(_date);
-            if (blinks.Count < 3 )
+            if (blinks.Count < 1 ) //Todo: have to set a min limit
             {
-                html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity as you didn't fill out the pop-up often enough. Try to fill it out at least 3 times per day.");
+                html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity.");
                 return html;
             }
 
@@ -53,24 +53,33 @@ namespace MuseTracker.Visualizations
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>";
             html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Interpolates your perceived engagement and attention states, based on your pop-up responses.</p>";
 
-
+            var dataInJSFormat = VisHelper.CreateJavaScriptArrayOfObjects(blinks);
+            
             /////////////////////
             // JS
             /////////////////////
             html += "<script type='text/javascript'>";
-
+            html += "var parseDate = d3.time.format('%Y-%m-%d').parse;";
+            html += "var dataInJSFormat = [" + dataInJSFormat + "];";
             html += "var now = moment().endOf('day').toDate();";
             html += "var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();";
+            html += "var chartData2 = dataInJSFormat.map(function(dateElement) {" +
+                "return {" +
+                "date: parseDate(dateElement.date)," +
+                "count: dateElement.count" +
+                "};" +
+            "});";
+
             html += "var chartData = d3.time.days(yearAgo, now).map(function(dateElement) {" +
                 "return {" +
                 "date: dateElement," +
-          "count:" +
+                "count:" +
                     "(dateElement.getDay() !== 0 && dateElement.getDay() !== 6) ? Math.floor(Math.random() * 60) : Math.floor(Math.random() * 10)" +
                 "};" +
             "});";
 
             html += "var heatmap = calendarHeatmap()" +
-                            ".data(chartData)" +
+                            ".data(chartData2)" +
                             ".selector('#attentionoverview')" +
                             ".tooltipEnabled(true)" +
                             ".colorRange(['#f4f7f7', '#79a8a9'])" +
