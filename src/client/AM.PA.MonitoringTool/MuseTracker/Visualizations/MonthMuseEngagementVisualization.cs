@@ -9,16 +9,17 @@ using MuseTracker.Data;
 
 namespace MuseTracker.Visualizations
 {
-    internal class MonthMuseAttentionVisualization : BaseVisualization, IVisualization
+    internal class MonthMuseEngagementVisualization : BaseVisualization, IVisualization
     {
         private readonly DateTimeOffset _date;
 
-        public MonthMuseAttentionVisualization(DateTimeOffset date) {
+        public MonthMuseEngagementVisualization(DateTimeOffset date)
+        {
             this._date = date;
 
-            Title = "Attention Overview (# blinks)";
+            Title = "Engagement Overview (EEG Index)";
             IsEnabled = true;
-            Order = 1;
+            Order = 2;
             Size = VisSize.Wide;
             Type = VisType.Month;
         }
@@ -30,8 +31,8 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // fetch data sets
             /////////////////////
-            var blinks = Queries.GetBlinksByYear(_date);
-            if (blinks.Count < 1 ) //Todo: have to set a min limit
+            var eegData = Queries.GetEEGIndexOverAYear(_date);
+            if (eegData.Count < 1) //Todo: have to set a min limit
             {
                 html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity.");
                 return html;
@@ -51,10 +52,10 @@ namespace MuseTracker.Visualizations
             // HTML
             /////////////////////
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>";
-            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows number of blinks per day. Less blinks indicate more attention.</p>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows average EEG Index per day which indicates your engagement level.</p>";
 
-            var dataInJSFormat = VisHelper.CreateJavaScriptArrayOfObjects(blinks);
-            
+            var dataInJSFormat = VisHelper.CreateJavaScriptArrayOfObjectsDouble(eegData);
+
             /////////////////////
             // JS
             /////////////////////
@@ -72,9 +73,9 @@ namespace MuseTracker.Visualizations
 
             html += "var heatmap = calendarHeatmap()" +
                             ".data(chartData2)" +
-                            ".selector('#attentionoverview')" +
+                            ".selector('#engagementoverview')" +
                             ".tooltipEnabled(true)" +
-                            ".colorRange(['#f4f7f7', '#79a8a9'])" +
+                            ".colorRange(['#ffcce5', '#ff3399'])" +
                       ".onClick(function(data) {" +
                 "console.log('data', data);" +
             "});";

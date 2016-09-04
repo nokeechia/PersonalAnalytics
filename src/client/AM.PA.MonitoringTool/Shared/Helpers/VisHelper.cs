@@ -134,23 +134,38 @@ namespace Shared.Helpers
             }
         }
 
-        public class DateElement {
+        public class DateElement<T> {
             public String date;
-            public int count;
+            public T count;
         }
 
-        public static String CreateJavaScriptArrayOfObjects(List<Tuple<DateTime, int>> t)
+        public static String CreateJavaScriptArrayOfObjects(List<Tuple<DateTime, int >> t)
         {
-            List<DateElement> dateElements = new List<DateElement>();
-   
-            foreach (Tuple<DateTime, int> i in t)
+            List<DateElement<int>> dateElements = new List<DateElement<int>>();
+              foreach (Tuple<DateTime, int> i in t)
             {
                 DateTime jsDate = i.Item1;
-                dateElements.Add(new DateElement() { date = DateTime.jsDate.ToString(), count = i.Item2 });
+                dateElements.Add(new DateElement<int>() { date = jsDate.ToString(), count = i.Item2 });
 
             }
 
-            var output = dateElements.Aggregate("", (current, b) => current + "{date: " + b.date.ToString() + ", count: " + b.count + "},").Trim().TrimEnd(',');
+            var output = dateElements.Aggregate("", (current, b) => current + "{date: '" + b.date.ToString() + "', count: " + b.count + "},").Trim().TrimEnd(',');
+
+            return output;
+        }
+
+        //todo clean up code no two methods
+        public static String CreateJavaScriptArrayOfObjectsDouble(List<Tuple<DateTime, double>> t)
+        {
+            List<DateElement<double>> dateElements = new List<DateElement<double>>();
+            foreach (Tuple<DateTime, double> i in t)
+            {
+                DateTime jsDate = i.Item1;
+                dateElements.Add(new DateElement<double>() { date = jsDate.ToString(), count = i.Item2 });
+
+            }
+
+            var output = dateElements.Aggregate("", (current, b) => current + "{date: '" + b.date.ToString() + "', count: " + b.count + "},").Trim().TrimEnd(',');
 
             return output;
         }
