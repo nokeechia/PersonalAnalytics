@@ -279,7 +279,6 @@ namespace MuseTracker.Data
 
             return resList;
         }
-
         /// <summary>
         /// Fetches eye blinks of a user for a given date and prepares the data
         /// to be visualized as a line chart.
@@ -306,6 +305,43 @@ namespace MuseTracker.Data
                     int.TryParse(row[1].ToString(), out blinkCounter);
 
                     resList.Add(new Tuple<DateTime, int>(DateTime.ParseExact(timestamp, "yyyy-MM-dd", CultureInfo.InvariantCulture), blinkCounter));
+                }
+                table.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return resList;
+        }
+
+        /// <summary>
+        /// Fetches eye blinks of a user for a given date and prepares the data
+        /// to be visualized as a line chart.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static List<Tuple<DateTime, int>> GetBlinksByHourADay(DateTimeOffset date)
+        {
+            var resList = new List<Tuple<DateTime, int>>();
+
+            try
+            {
+                var query = "SELECT strftime('%Y-%m-%d %H',time), count(blink)" +
+                            " FROM " + Settings.DbTableMuseBlink +
+                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
+                            " GROUP BY strftime('%Y-%m-%d %H',time);";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    var timestamp = (String)row[0];
+                    var blinkCounter = 0;
+                    int.TryParse(row[1].ToString(), out blinkCounter);
+                    string tsdExtended = timestamp + ":00:00";
+                    resList.Add(new Tuple<DateTime, int>(DateTime.ParseExact(tsdExtended, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), blinkCounter));
                 }
                 table.Dispose();
             }
@@ -384,6 +420,88 @@ namespace MuseTracker.Data
                     Tuple<double, double, double> tempValues = entry.Value;
                     double eegIndex = tempValues.Item2 / (tempValues.Item1 + tempValues.Item3); //eeg index formula
                     resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(entry.Key, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), eegIndex));
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return resList;
+        }
+
+
+        /// <summary>
+        /// Fetches eye blinks of a user for a given date and prepares the data
+        /// to be visualized as a line chart.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static List<Tuple<DateTime, double>> GetEEGIndexByHourADay(DateTimeOffset date)
+        {
+            var resList = new List<Tuple<DateTime, double>>();
+
+            try
+            {
+                var query = "SELECT strftime('%Y-%m-%d %H',time), eegType, avg(avg)" +
+                            " FROM " + Settings.DbTableMuseEEGData +
+                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
+                            " GROUP BY strftime('%Y-%m-%d %H',time), eegType;";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                var tempDict = new Dictionary<string, Tuple<double, double, double>>();
+                foreach (DataRow row in table.Rows)
+                {
+                    var timestamp = (String)row[0];
+                    if (tempDict.ContainsKey(timestamp))
+                    {
+                        Tuple<double, double, double> values;
+                        tempDict.TryGetValue(timestamp, out values);
+                        var val = 0.0;
+                        double.TryParse(row[2].ToString(), out val);
+
+                        if ((String)row[1] == "AlphaAbsolute")
+                        {
+                            tempDict[timestamp] = new Tuple<double, double, double>(val, values.Item2, values.Item3);
+                        }
+                        if ((String)row[1] == "BetaAbsolute")
+                        {
+                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, val, values.Item3);
+                        }
+
+                        if ((String)row[1] == "ThetaAbsolute")
+                        {
+                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, values.Item2, val);
+                        }
+
+                    }
+                    else
+                    {
+                        var val = 0.0;
+                        double.TryParse(row[2].ToString(), out val);
+                        if ((String)row[1] == "AlphaAbsolute")
+                        {
+                            tempDict.Add(timestamp, new Tuple<double, double, double>(val, 0.0, 0.0));
+                        }
+                        if ((String)row[1] == "BetaAbsolute")
+                        {
+                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, val, 0.0));
+                        }
+                        if ((String)row[1] == "ThetaAbsolute")
+                        {
+                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, 0.0, val));
+                        }
+                    }
+                }
+                table.Dispose();
+
+                foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
+                {
+                    Tuple<double, double, double> tempValues = entry.Value;
+                    double eegIndex = tempValues.Item2 / (tempValues.Item1 + tempValues.Item3); //eeg index formula
+                    string tsdExtended = entry.Key + ":00:00";
+                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(tsdExtended, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), eegIndex));
                 }
             }
             catch (Exception e)

@@ -161,7 +161,7 @@ namespace Shared.Helpers
             foreach (Tuple<DateTime, double> i in t)
             {
                 DateTime jsDate = i.Item1;
-                dateElements.Add(new DateElement<double>() { date = jsDate.ToString(), count = i.Item2 });
+                dateElements.Add(new DateElement<double>() { date = jsDate.ToString(), count = Math.Round(i.Item2,2) });
 
             }
 

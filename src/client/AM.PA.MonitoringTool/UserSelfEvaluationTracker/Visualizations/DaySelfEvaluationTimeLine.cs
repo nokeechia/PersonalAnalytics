@@ -69,15 +69,15 @@ namespace UserSelfEvaluationTracker.Visualizations
             var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (p.Item2 + ", ")).Trim().TrimEnd(',');
             var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (p.Item3 + ", ")).Trim().TrimEnd(',');
             var blinkData = blinks.Aggregate("", (current, p) => current + (p.Item2 + ", ")).TrimEnd(',');
-            var eegData = eegIndexes.Aggregate("", (current, p) => current + (p.Item2 + ", ")).TrimEnd(',');
+            var eegData = eegIndexes.Aggregate("", (current, p) => current + (Math.Round(p.Item2, 2) + ", ")).TrimEnd(',');
             const string colorPerceivedEngagement = "'User_Input_Level' : '#007acb'";
 
-            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis3'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['timeAxis3', " + timeAxis3 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'spline', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorPerceivedEngagement + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y2' } "; // type options: spline, step, line
+            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorPerceivedEngagement + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y2' } "; // type options: spline, step, line
 
-            var grid = "y: { lines: [ { value: 1, text: 'not at all' }, { value: 4, text: 'moderately' }, { value: 7, text: 'very strong' } ] } ";
+            //var grid = "y: { lines: [ { value: 1, text: 'not at all' }, { value: 4, text: 'moderately' }, { value: 7, text: 'very strong' } ] } ";
             var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { min: 1, max: 7 }, y2: {show: true}"; // show: false, 
-            var tooltip = "show: true, format: { title: function(d) { return 'Pop-Up answered: ' + formatTime(d.getHours(),d.getMinutes()); }}";
-            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 15, right: 0, bottom: -10, top: 0}, legend: { show: true }, axis: { " + axis + " }, grid: { " + grid + " }, tooltip: { " + tooltip + " }, point: { show: true }";
+            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); }}";
+            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 45, right: 45, bottom: -10, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
 
             html += "<script type='text/javascript'>";

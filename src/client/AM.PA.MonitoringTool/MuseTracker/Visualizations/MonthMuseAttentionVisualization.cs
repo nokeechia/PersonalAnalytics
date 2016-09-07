@@ -74,6 +74,7 @@ namespace MuseTracker.Visualizations
                             ".data(chartData2)" +
                             ".selector('#attentionoverview')" +
                             ".tooltipEnabled(true)" +
+                            ".tooltipUnit('#Blink')" +
                             ".colorRange(['#f4f7f7', '#79a8a9'])" +
                       ".onClick(function(data) {" +
                 "console.log('data', data);" +

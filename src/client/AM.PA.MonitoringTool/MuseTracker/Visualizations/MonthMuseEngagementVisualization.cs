@@ -75,6 +75,7 @@ namespace MuseTracker.Visualizations
                             ".data(chartData2)" +
                             ".selector('#engagementoverview')" +
                             ".tooltipEnabled(true)" +
+                            ".tooltipUnit('Avg EEG Indice')" +
                             ".colorRange(['#ffcce5', '#ff3399'])" +
                       ".onClick(function(data) {" +
                 "console.log('data', data);" +
