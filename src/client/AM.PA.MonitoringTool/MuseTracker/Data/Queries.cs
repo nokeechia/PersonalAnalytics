@@ -518,7 +518,7 @@ namespace MuseTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static List<Tuple<DateTime, double>> GetEEGIndexOverAYear(DateTimeOffset date)
+        public static List<Tuple<DateTime, double>> GetEEGIndexOfMonth(DateTimeOffset date)
         {
             var resList = new List<Tuple<DateTime, double>>();
 

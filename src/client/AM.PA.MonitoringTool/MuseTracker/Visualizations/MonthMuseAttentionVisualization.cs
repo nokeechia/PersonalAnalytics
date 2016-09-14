@@ -19,7 +19,7 @@ namespace MuseTracker.Visualizations
             Title = "Attention Overview (# blinks)";
             IsEnabled = true;
             Order = 1;
-            Size = VisSize.Wide;
+            Size = VisSize.Square;
             Type = VisType.Month;
         }
 
@@ -59,7 +59,7 @@ namespace MuseTracker.Visualizations
             // JS
             /////////////////////
             html += "<script type='text/javascript'>";
-            html += "var parseDate = d3.time.format('%d/%m/%Y %H:%M:%S').parse;";
+            html += "var parseDate = d3.time.format('%m/%d/%Y %H:%M:%S %p').parse;";
             html += "var dataInJSFormat = [" + dataInJSFormat + "];";
             html += "var now = moment().endOf('day').toDate();";
             html += "var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();";

@@ -275,7 +275,7 @@ namespace UserEfficiencyTracker.Data
         /// <param name="date"></param>
         /// <param name="maxNumberOfPrograms"></param>
         /// <returns></returns>
-        private static List<string> GetTopProgramsUsed(DateTimeOffset date, VisType type, int maxNumberOfPrograms)
+        public static List<string> GetTopProgramsUsed(DateTimeOffset date, VisType type, int maxNumberOfPrograms)
         {
             var list = new List<string>();
 

@@ -1,6 +1,6 @@
 function calendarHeatmap() {
   // defaults
-  var width = 750;
+  var width = 350;
   var height = 110;
   var legendWidth = 150;
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -10,7 +10,7 @@ function calendarHeatmap() {
   var SQUARE_PADDING = 2;
   var MONTH_LABEL_PADDING = 6;
   var now = moment().endOf('day').toDate();
-  var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();
+  var yearAgo = moment().startOf('day').subtract(1, 'month').toDate(); //MONICA CHANGE REFACTOR
   var data = [];
   var colorRange = ['#D8E6E7', '#218380'];
   var tooltipEnabled = true;

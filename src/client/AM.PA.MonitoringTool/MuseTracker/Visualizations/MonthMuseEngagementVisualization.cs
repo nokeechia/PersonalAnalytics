@@ -20,7 +20,7 @@ namespace MuseTracker.Visualizations
             Title = "Engagement Overview (EEG Index)";
             IsEnabled = true;
             Order = 2;
-            Size = VisSize.Wide;
+            Size = VisSize.Square;
             Type = VisType.Month;
         }
 
@@ -31,7 +31,7 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // fetch data sets
             /////////////////////
-            var eegData = Queries.GetEEGIndexOverAYear(_date);
+            var eegData = Queries.GetEEGIndexOfMonth(_date);
             if (eegData.Count < 1) //Todo: have to set a min limit
             {
                 html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity.");
@@ -60,10 +60,10 @@ namespace MuseTracker.Visualizations
             // JS
             /////////////////////
             html += "<script type='text/javascript'>";
-            html += "var parseDate = d3.time.format('%d/%m/%Y %H:%M:%S').parse;";
+            html += "var parseDate = d3.time.format('%m/%d/%Y %H:%M:%S %p').parse;";
             html += "var dataInJSFormat = [" + dataInJSFormat + "];";
             html += "var now = moment().endOf('day').toDate();";
-            html += "var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();";
+            html += "var yearAgo = moment().startOf('day').subtract(1, 'month').toDate();";
             html += "var chartData2 = dataInJSFormat.map(function(dateElement) {" +
                 "return {" +
                 "date: parseDate(dateElement.date)," +

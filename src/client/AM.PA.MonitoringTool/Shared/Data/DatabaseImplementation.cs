@@ -318,9 +318,17 @@ namespace Shared.Data
             else if (type == VisType.Month)
             {
                 filter = "( "
-                    + " STRFTIME('%s', DATE(" + datePropertyName + ")) between STRFTIME('%s', DATE('" + new DateTimeOffset(new DateTime(date.Year, 1, 1)).ToString("u")
-                    + "')) and STRFTIME('%s', DATE('" + new DateTimeOffset(new DateTime(date.Year, 12, 31)).ToString("u") + "')) "
+                    + " STRFTIME('%s', DATE(" + datePropertyName + ")) between STRFTIME('%s', DATE('" + new DateTime(date.Year, date.Month, date.Day).Subtract(TimeSpan.FromDays(30)).ToString("u")
+                    + "')) and STRFTIME('%s', DATE('" + new DateTime(date.Year, date.Month, date.Day).AddHours(24).ToString("u") + "')) "
                     + " ) ";
+            }
+            else if (type == VisType.Hour)
+            {
+                filter = "( "
+                    + " STRFTIME('%s', " + datePropertyName + ") between STRFTIME('%s', '" + new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second).Subtract(new TimeSpan(0, 15, 0)).ToString("u")
+                    + "') and STRFTIME('%s', '" + new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second).AddMinutes(15).ToString("u") + "') "
+                    + " ) ";
+
             }
             return filter;
         }

@@ -269,10 +269,10 @@ namespace MuseTracker
             return new List<IVisualization> { vis1, vis2 };
         }
 
-        public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
-        {
-            var vis = new DayMuseVisualizationTimeline(date);
-            return new List<IVisualization> { vis };
-        }
+        //public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
+        //{
+        //    var vis = new DayMuseVisualizationTimeline(date);
+        //    return new List<IVisualization> { vis };
+        //}
     }
 }
