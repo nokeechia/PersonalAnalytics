@@ -13,6 +13,7 @@ using MuseTracker.Data;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using MuseTracker.Visualizations;
+using System.Diagnostics;
 
 namespace MuseTracker
 {
@@ -22,19 +23,14 @@ namespace MuseTracker
         private bool _disposed = false;
         private Timer _saveToDatabaseTimer;
         private UDPListener _listener;
-        //private string _blinkFile = Settings.blinkFilePath;
-        //private string _eegbandFile = Settings.eegbandFilePath;
-        //private static StreamWriter w;
-        //private static StreamReader sr;
+
+        private int _pid = 0;
 
         // buffers for user input, they are emptied every 60s (Settings.IntervalSaveToDatabaseInSeconds)
         private static readonly ConcurrentQueue<MuseEEGDataEvent> MuseEEGDataBuffer = new ConcurrentQueue<MuseEEGDataEvent>();
         private static readonly ConcurrentQueue<MuseBlinkEvent> MuseBlinkBuffer = new ConcurrentQueue<MuseBlinkEvent>();
         private static readonly ConcurrentQueue<MuseConcentrationEvent> MuseConcentrationBuffer = new ConcurrentQueue<MuseConcentrationEvent>();
         private static readonly ConcurrentQueue<MuseMellowEvent> MuseMellowBuffer = new ConcurrentQueue<MuseMellowEvent>();
-
-        //private static FileStream fs;
-        //private static Timer atimer;
 
         #endregion
         
@@ -82,6 +78,10 @@ namespace MuseTracker
 
         public override void Start()
         {
+            // Run cmd command to start MuseIo
+            System.Diagnostics.Process.Start("CMD.exe", Settings.CmdToRunMuseIo);
+
+
             // Register Save-To-Database Timer
             if (_saveToDatabaseTimer != null)
                 Stop();
@@ -253,6 +253,20 @@ namespace MuseTracker
 
             IsRunning = false;
             Console.Write("++++ muse tracker stopped");
+
+            try
+            {
+                Process[] proc = Process.GetProcessesByName("muse-io");
+                foreach (Process p in proc) {
+                    Console.Write("### Muse: Process stopped!!");
+                    p.Kill();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Write("### Muse: No processes to stop " +  e);
+            }
+
         }
 
         public override void UpdateDatabaseTables(int version)
