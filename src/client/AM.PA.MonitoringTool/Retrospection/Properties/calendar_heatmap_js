@@ -1,12 +1,12 @@
 function calendarHeatmap() {
   // defaults
-  var width = 350;
-  var height = 110;
-  var legendWidth = 150;
+  var width = 150; //MONICA CHANGE PREV 350
+  var height = 180; //MONICA change prev 110
+  var legendWidth = 150; //MONICA CHANGE, PREV: 150
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   var selector = 'body';
-  var SQUARE_LENGTH = 11;
+  var SQUARE_LENGTH = 22; //MONICA CHANGE, PREV: 150
   var SQUARE_PADDING = 2;
   var MONTH_LABEL_PADDING = 6;
   var now = moment().endOf('day').toDate();
@@ -68,12 +68,13 @@ function calendarHeatmap() {
     var dateRange = d3.time.days(yearAgo, now); // generates an array of date objects within the specified range
     var monthRange = d3.time.months(moment(yearAgo).startOf('month').toDate(), now); // it ignores the first month if the 1st date is after the start of the month
     var firstDate = moment(dateRange[0]);
-    var max = d3.max(chart.data(), function (d) { return d.count; }); // max data value
-
+    var max = d3.max(chart.data(), function (d) { if(d.count < 1) {return d.count*100} else {return d.count}; }); // max data value //MONICA CHANGE BECAUSE VALUES < 0
+    var min = d3.min(chart.data(), function (d) { if(d.count < 1) {return d.count*100} else {return 0}; }); // min data value //MONICA CHANGE BECAUSE VALUES < 0
+    	
     // color range
     var color = d3.scale.linear()
       .range(chart.colorRange())
-      .domain([0, max]);
+      .domain([min, max]);
 
     var tooltip;
     var dayRects;
@@ -125,10 +126,18 @@ function calendarHeatmap() {
       }
 
       if (chart.legendEnabled()) {
-        var colorRange = [color(0)];
-        for (var i = 3; i > 0; i--) {
-          colorRange.push(color(max / i));
-        }
+	if(min === 0) {
+        	var colorRange = [color(0)];
+        	for (var i = 3; i > 0; i--) {
+          		colorRange.push(color(max / i));
+        	}
+	}else{
+        	var colorRange = [color(min)];
+        	for (var i = 3; i > 0; i--) {
+          		colorRange.push(color((max-min) / i + min));
+        	}
+	}
+
 
         var legendGroup = svg.append('g');
         legendGroup.selectAll('.calendar-heatmap-legend')
@@ -138,19 +147,19 @@ function calendarHeatmap() {
             .attr('class', 'calendar-heatmap-legend')
             .attr('width', SQUARE_LENGTH)
             .attr('height', SQUARE_LENGTH)
-            .attr('x', function (d, i) { return (width - legendWidth) + (i + 1) * 13; })
+            .attr('x', function (d, i) { return (width - legendWidth) + (i + 1) * 24; }) // MONICA before it was 13
             .attr('y', height + SQUARE_PADDING)
             .attr('fill', function (d) { return d; });
 
         legendGroup.append('text')
           .attr('class', 'calendar-heatmap-legend-text')
-          .attr('x', width - legendWidth - 13)
+          .attr('x', width - legendWidth - 24) // MONICA before it was 13
           .attr('y', height + SQUARE_LENGTH)
           .text('Less');
 
         legendGroup.append('text')
           .attr('class', 'calendar-heatmap-legend-text')
-          .attr('x', (width - legendWidth + SQUARE_PADDING) + (colorRange.length + 1) * 13)
+          .attr('x', (width - legendWidth + SQUARE_PADDING) + (colorRange.length + 1) * 24) // MONICA before it was 13
           .attr('y', height + SQUARE_LENGTH)
           .text('More');
       }
@@ -179,7 +188,7 @@ function calendarHeatmap() {
         if (index % 2) {
           svg.append('text')
             .attr('class', 'day-initial')
-            .attr('transform', 'translate(-8,' + (SQUARE_LENGTH + SQUARE_PADDING) * (index + 1) + ')')
+            .attr('transform', 'translate(-18,' + (SQUARE_LENGTH + SQUARE_PADDING) * (index + 1) + ')')
             .style('text-anchor', 'middle')
             .attr('dy', '2')
             .text(day);
@@ -211,7 +220,7 @@ function calendarHeatmap() {
     dayRects.filter(function (d) {
       return daysOfChart.indexOf(d.toDateString()) > -1;
     }).attr('fill', function (d, i) {
-      return color(chart.data()[i].count);
+      if(chart.data()[i].count < 1) {return color(chart.data()[i].count*100);} else {return color(chart.data()[i].count);} //MONICA CHANGE
     });
   }
 

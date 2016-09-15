@@ -20,7 +20,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             Title = "Daily Engagement and Attention Overview";
             IsEnabled = true;
             Order = 9;
-            Size = VisSize.Square;
+            Size = VisSize.Wide;
             Type = VisType.Day;
         }
 
@@ -54,7 +54,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             // HTML
             /////////////////////
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>";
-            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Interpolates your perceived engagement and attention states, based on your pop-up responses.</p>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Interpolates your perceived engagement and attention (from pop-ups) states and calculated EEGIndex and Blinks.</p>";
 
 
             /////////////////////
@@ -80,10 +80,10 @@ namespace UserSelfEvaluationTracker.Visualizations
 
             var usedProgramsPerceivedData = programsUsedAtTimes.Aggregate("", (current, p) => current + (p.Item2.Aggregate("Most used pgms: ", (c, s) => c + " and " + s).ToString() + ", ")).Trim().TrimEnd(',');
 
-            const string colorPerceivedEngagement = "'User_Input_Level' : '#007acb'";
+            const string colorPerceivedEngagement = "Engagement: '#0AFF7C', Attention: '#FF7F0E', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
-            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorPerceivedEngagement + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y'} "; // type options: spline, step, line
-            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true }, y2: { show: true }";
+            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area-spline', EEGIndex:'area-spline'  }, colors: { " + colorPerceivedEngagement + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y'} "; // type options: spline, step, line
+            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'EEG Index, Pop-Up Attention & Engagement', position: 'outer-middle'} }, y2: { show: true , label: {text: 'Blinks', position: 'outer-middle'} }";
             var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); }}, tooltip_contents: {function (d, defaultTitleFormat, defaultValueFormat, color) {return '<div>Show what you want</div>';} }";
             var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 45, right: 45, bottom: -10, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
