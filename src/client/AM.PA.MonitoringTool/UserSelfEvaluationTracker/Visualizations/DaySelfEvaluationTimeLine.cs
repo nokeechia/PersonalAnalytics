@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Shared;
 using Shared.Helpers;
-using UserSelfEvaluationTracker.Data;
-using MuseTracker.Data;
-using UserEfficiencyTracker.Data;
 namespace UserSelfEvaluationTracker.Visualizations
 {
 
@@ -80,7 +77,7 @@ namespace UserSelfEvaluationTracker.Visualizations
 
             var usedProgramsPerceivedData = programsUsedAtTimes.Aggregate("", (current, p) => current + (p.Item2.Aggregate("Most used pgms: ", (c, s) => c + " and " + s).ToString() + ", ")).Trim().TrimEnd(',');
 
-            const string colorPerceivedEngagement = "Engagement: '#0AFF7C', Attention: '#FF7F0E', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
+            const string colorPerceivedEngagement = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
             var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area-spline', EEGIndex:'area-spline'  }, colors: { " + colorPerceivedEngagement + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y'} "; // type options: spline, step, line
             var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'EEG Index, Pop-Up Attention & Engagement', position: 'outer-middle'} }, y2: { show: true , label: {text: 'Blinks', position: 'outer-middle'} }";
