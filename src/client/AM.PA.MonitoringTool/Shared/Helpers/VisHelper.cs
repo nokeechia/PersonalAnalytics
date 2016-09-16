@@ -170,9 +170,11 @@ namespace Shared.Helpers
             return output;
         }
 
-        public static double Rescale(int val, int min, int max, int newMin, int newMax)
+        public static double Rescale(int x, int min, int max, int newMin, int newMax)
         {
-            return Math.Round(newMin + (double)(val - min) / (max - min) * (newMax - newMin), 2);
+            //f(x) = (x-min) / (max-min)            
+            return Math.Round((double)(x - min) / (max - min), 2);
         }
+
     }
 }

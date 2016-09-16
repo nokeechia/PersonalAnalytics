@@ -78,8 +78,11 @@ namespace MuseTracker
 
         public override void Start()
         {
-            // Run cmd command to start MuseIo
-            System.Diagnostics.Process.Start("CMD.exe", Settings.CmdToRunMuseIo);
+            Process[] proc = Process.GetProcessesByName("muse-io");
+            if (proc.Length < 1) {
+                // Run cmd command to start MuseIo if new muse process exists
+                System.Diagnostics.Process.Start("CMD.exe", Settings.CmdToRunMuseIo);
+            }
 
 
             // Register Save-To-Database Timer

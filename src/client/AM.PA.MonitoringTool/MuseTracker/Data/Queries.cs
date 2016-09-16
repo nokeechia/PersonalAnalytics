@@ -537,7 +537,7 @@ namespace MuseTracker.Data
                 foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
                 {
                     Tuple<double, double, double> tempValues = entry.Value;
-                    double eegIndex = tempValues.Item2 / (tempValues.Item1 + tempValues.Item3); //eeg index formula
+                    double eegIndex = Math.Pow(10,tempValues.Item2) / ( Math.Pow(10, tempValues.Item1) + Math.Pow(10, tempValues.Item3) ); //eeg index formula: beta / (alpha + Theta)
                     resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(entry.Key, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), eegIndex));
                 }
             }

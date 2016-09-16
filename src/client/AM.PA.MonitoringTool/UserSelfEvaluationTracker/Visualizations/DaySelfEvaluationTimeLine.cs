@@ -29,7 +29,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             // fetch data sets
             /////////////////////
             var chartQueryResultsLocal = UserSelfEvaluationTracker.Data.Queries.GetSelfEvaluationTimelineData(_date, VisType.Day);
-            var minutesInterval = 5;
+            var minutesInterval = 1;
             var blinks = MuseTracker.Data.Queries.GetBlinksByMinutesInterval(_date, minutesInterval);
             var eegIndexes = MuseTracker.Data.Queries.GetEEGIndexByMinutesInterval(_date, minutesInterval);
             if (chartQueryResultsLocal.Count < 3 && blinks.Count < 3 && eegIndexes.Count < 3)
@@ -65,8 +65,12 @@ namespace UserSelfEvaluationTracker.Visualizations
             // Transform data into arrays for visualization
             var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item2,1,7,0,1) + ", ")).Trim().TrimEnd(',');
             var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item3, 1, 7, 0, 1) + ", ")).Trim().TrimEnd(',');
-            var blinkData = blinks.Aggregate("", (current, p) => current + (p.Item2 + ", ")).TrimEnd(',');
-            var eegData = eegIndexes.Aggregate("", (current, p) => current + (Math.Round(p.Item2, 2) + ", ")).TrimEnd(',');
+            List<int> reverseBlinks = blinks.Select(i => i.Item2 * -1).ToList();
+            var minBlinks = reverseBlinks.Min(i => i);
+            var maxBlinks = reverseBlinks.Max(i => i);
+
+            var blinkData = reverseBlinks.Aggregate("", (current, p) => current + (VisHelper.Rescale(p, minBlinks, maxBlinks, 0, 1) + ", ")).Trim().TrimEnd(',');
+            var eegData = eegIndexes.Aggregate("", (current, p) => current + (Math.Round(p.Item2, 2) + ", ")).Trim().TrimEnd(',');
 
             var tsdFromPerceivedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (p.Item1 + ", ")).Trim().TrimEnd(',');
 
@@ -81,9 +85,10 @@ namespace UserSelfEvaluationTracker.Visualizations
             const string colorPerceivedEngagement = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
             var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area-spline', EEGIndex:'area-spline'  }, colors: { " + colorPerceivedEngagement + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y'} "; // type options: spline, step, line
-            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'EEG Index, Pop-Up Attention & Engagement', position: 'outer-middle'} }, y2: { show: true , label: {text: 'Blinks', position: 'outer-middle'} }";
+            var names = "Blinks: 'Calc. Attention', EEGIndex: 'Calc. Engagement'";
+            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'Calc. Task Engagement(EEG Index), Pop-Up Attention & Engagement', position: 'outer-middle'} }, y2: { show: true , label: {text: 'Calc. Attention (#Blinks)', position: 'outer-middle'} }";
             var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); }}, tooltip_contents: {function (d, defaultTitleFormat, defaultValueFormat, color) {return '<div>Show what you want</div>';} }";
-            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 45, right: 45, bottom: -10, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
+            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, names: {" + names + "}, padding: { left: 45, right: 45, bottom: -10, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
 
             html += "<script type='text/javascript'>";
