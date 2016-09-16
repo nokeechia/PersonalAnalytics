@@ -29,11 +29,12 @@ namespace UserSelfEvaluationTracker.Visualizations
             // fetch data sets
             /////////////////////
             var chartQueryResultsLocal = UserSelfEvaluationTracker.Data.Queries.GetSelfEvaluationTimelineData(_date, VisType.Day);
-            var blinks = MuseTracker.Data.Queries.GetBlinks(_date);
-            var eegIndexes = MuseTracker.Data.Queries.GetEEGIndex(_date);
+            var minutesInterval = 5;
+            var blinks = MuseTracker.Data.Queries.GetBlinksByMinutesInterval(_date, minutesInterval);
+            var eegIndexes = MuseTracker.Data.Queries.GetEEGIndexByMinutesInterval(_date, minutesInterval);
             if (chartQueryResultsLocal.Count < 3 && blinks.Count < 3 && eegIndexes.Count < 3)
             {
-                html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity as you didn't fill out the pop-up often enough. Try to fill it out at least 3 times per day.");
+                html += VisHelper.NotEnoughData("It is not possible to give you insights into your attention and engagement levels as you didn't fill out the pop-up often enough or not enough data from device is available. Try to fill it out at least 3 times per day and to wear the headband device.");
                 return html;
             }
 
