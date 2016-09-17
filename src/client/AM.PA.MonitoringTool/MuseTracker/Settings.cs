@@ -9,8 +9,6 @@ namespace MuseTracker
     public static class Settings
     {
         public static bool IsEnabledByDefault = true;
-        public const string MuseBlinkDataTable = "museBlinkData";
-        public const string MuseEEGIndexDataTable = "museEEGIndexData";
 
         public const int museIoPort = 5000;
         public const string blinkFilePath = @"C:\Users\seal\blinkFile.txt";
@@ -24,6 +22,8 @@ namespace MuseTracker
 
 
         public const string DbTableMuseEEGData = "muse_input_eeg";
+        public const string DbTableMuseEEGDataQuality = "muse_input_eeg_quality";
+
         public const string DbTableMuseBlink = "muse_input_blink";
         public const string DbTableMuseConcentration = "muse_input_concentration";
         public const string DbTableMuseMellow = "muse_input_mellow";

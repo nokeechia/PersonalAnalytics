@@ -28,6 +28,7 @@ namespace MuseTracker
 
         // buffers for user input, they are emptied every 60s (Settings.IntervalSaveToDatabaseInSeconds)
         private static readonly ConcurrentQueue<MuseEEGDataEvent> MuseEEGDataBuffer = new ConcurrentQueue<MuseEEGDataEvent>();
+        private static readonly ConcurrentQueue<MuseEEGDataQuality> MuseEEGDataQualityBuffer = new ConcurrentQueue<MuseEEGDataQuality>();
         private static readonly ConcurrentQueue<MuseBlinkEvent> MuseBlinkBuffer = new ConcurrentQueue<MuseBlinkEvent>();
         private static readonly ConcurrentQueue<MuseConcentrationEvent> MuseConcentrationBuffer = new ConcurrentQueue<MuseConcentrationEvent>();
         private static readonly ConcurrentQueue<MuseMellowEvent> MuseMellowBuffer = new ConcurrentQueue<MuseMellowEvent>();
@@ -166,6 +167,17 @@ namespace MuseTracker
                     (float)arguments[2],
                     (float)arguments[3])));
             }
+
+            //check data quality
+            if (addr == "/muse/elements/is_good")
+            {
+                //Console.WriteLine("##### Data quality " + (int)arguments[0]+ (int)arguments[1]+(int)arguments[2]+(int)arguments[3]);
+                await Task.Run(() => MuseEEGDataQualityBuffer.Enqueue(new MuseEEGDataQuality(
+                    (int)arguments[0],
+                    (int)arguments[1],
+                    (int)arguments[2],
+                    (int)arguments[3])));
+            }
         }
         #endregion
 
@@ -198,6 +210,16 @@ namespace MuseTracker
                         MuseEEGDataBuffer.TryDequeue(out museEEGData[i]);
                     }
                     Queries.SaveMuseEEGDataToDatabase(museEEGData);
+                }
+
+                if (MuseEEGDataQualityBuffer.Count > 0)
+                {
+                    var museEEGDataQuality = new MuseEEGDataQuality[MuseEEGDataQualityBuffer.Count];
+                    for (var i = 0; i < MuseEEGDataQualityBuffer.Count; i++)
+                    {
+                        MuseEEGDataQualityBuffer.TryDequeue(out museEEGDataQuality[i]);
+                    }
+                    Queries.SaveMuseEEGDataQualityToDatabase(museEEGDataQuality);
                 }
 
                 if (MuseBlinkBuffer.Count > 0)

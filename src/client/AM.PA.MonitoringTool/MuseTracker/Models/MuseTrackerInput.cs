@@ -66,6 +66,25 @@ namespace MuseTracker.Models
         }
     }
 
+    class MuseEEGDataQuality : IMuseTrackerInput
+    {
+        public DateTime Timestamp { get; protected set; }
+        public int QualityChannelLeft { get; protected set; }
+        public int QualityChannelFrontLeft { get; protected set; }
+        public int QualityChannelFrontRight { get; protected set; }
+        public int QualityChannelRight { get; protected set; }
+
+
+        public MuseEEGDataQuality(int qualityChannelLeft, int qualityChannelFrontLeft, int qualityChannelFrontRight, int qualityChannelRight)
+        {
+            Timestamp = DateTime.Now;
+            QualityChannelLeft = qualityChannelLeft;
+            QualityChannelFrontLeft = qualityChannelFrontLeft;
+            QualityChannelFrontRight = qualityChannelFrontRight;
+            QualityChannelRight = qualityChannelRight;
+        }
+   }
+
     class MuseBlinkEvent : IMuseTrackerInput
     {
         public DateTime Timestamp { get; protected set; }

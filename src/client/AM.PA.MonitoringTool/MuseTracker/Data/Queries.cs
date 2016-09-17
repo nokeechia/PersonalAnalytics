@@ -15,6 +15,7 @@ namespace MuseTracker.Data
             try
             {
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseEEGData + " (id INTEGER PRIMARY KEY, eegType TEXT, avg REAL, channelLeft REAL, channelFrontLeft REAL, channelFrontRight REAL, channelRight REAL, time TEXT, timestamp TEXT)");
+                Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseEEGDataQuality + " (id INTEGER PRIMARY KEY, qualityChannelLeft INTEGER, qualityChannelFrontLeft INTEGER, qualityChannelFrontRight INTEGER, qualityChannelRight INTEGER, time TEXT, timestamp TEXT)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseBlink + " (id INTEGER PRIMARY KEY, blink INTEGER, time TEXT, timestamp TEXT)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseConcentration + " (id INTEGER PRIMARY KEY, concentration REAL, time TEXT, timestamp TEXT)");
                 Database.GetInstance().ExecuteDefaultQuery("CREATE TABLE IF NOT EXISTS " + Settings.DbTableMuseMellow + " (id INTEGER PRIMARY KEY, mellow REAL, time TEXT, timestamp TEXT)");
@@ -79,6 +80,63 @@ namespace MuseTracker.Data
             catch (Exception e)
             {
                 Console.WriteLine("## Error In MuseEEGData");
+                Shared.Logger.WriteToLogFile(e);
+            }
+        }
+
+
+        internal static void SaveMuseEEGDataQualityToDatabase(IReadOnlyList<IMuseTrackerInput> eegData)
+        {
+            try
+            {
+                if (eegData == null || eegData.Count == 0) return;
+                var newQuery = true;
+                var query = "";
+                int i;
+                for (i = 0; i < eegData.Count; i++)
+                {
+                    var item = (MuseEEGDataQuality)eegData[i];
+                    if (item == null) continue;
+
+                    if (newQuery)
+                    {
+                        query = "INSERT INTO '" + Settings.DbTableMuseEEGDataQuality + "' (qualityChannelLeft, qualityChannelFrontLeft, qualityChannelFrontRight, qualityChannelRight, time, timestamp) VALUES ";
+                        newQuery = false;
+                    }
+                    else
+                    {
+                        query += ", ";
+                    }
+
+                    query += "(" +
+                             Database.GetInstance().Q((item).QualityChannelLeft.ToString(CultureInfo.InvariantCulture)) + "," +
+                             Database.GetInstance().Q((item).QualityChannelFrontLeft.ToString(CultureInfo.InvariantCulture)) + "," +
+                             Database.GetInstance().Q((item).QualityChannelFrontRight.ToString(CultureInfo.InvariantCulture)) + "," +
+                             Database.GetInstance().Q((item).QualityChannelRight.ToString(CultureInfo.InvariantCulture)) + "," +
+                             "strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'), " +
+                             Database.GetInstance().QTime(item.Timestamp) +
+                             ")";
+
+                    //executing remaining lines
+                    if (i != 0 && i % 499 == 0)
+                    {
+                        query += ";";
+                        Database.GetInstance().ExecuteDefaultQuery(query);
+                        newQuery = true;
+                        query = string.Empty;
+                    }
+                }
+
+                //executing remaining lines
+                if (i % 499 != 0)
+                {
+                    query += ";";
+                    Database.GetInstance().ExecuteDefaultQuery(query);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("## Error In MuseEEGDataQuality");
                 Shared.Logger.WriteToLogFile(e);
             }
         }
