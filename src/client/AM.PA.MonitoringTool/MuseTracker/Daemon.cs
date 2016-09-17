@@ -14,6 +14,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using MuseTracker.Visualizations;
 using System.Diagnostics;
+using System.Linq;
 
 namespace MuseTracker
 {
@@ -33,10 +34,12 @@ namespace MuseTracker
         private static readonly ConcurrentQueue<MuseConcentrationEvent> MuseConcentrationBuffer = new ConcurrentQueue<MuseConcentrationEvent>();
         private static readonly ConcurrentQueue<MuseMellowEvent> MuseMellowBuffer = new ConcurrentQueue<MuseMellowEvent>();
 
+        private static Func<double, int> ZeroOrOne = (x => x > 0.5 ? 1 : 0);
+
         #endregion
-        
+
         #region METHODS
-        
+
         #region ITracker Stuff
 
         public Daemon()
@@ -73,14 +76,16 @@ namespace MuseTracker
             return true;
         }
 
-        public bool MuseTrackerEnabled() {
+        public bool MuseTrackerEnabled()
+        {
             return true;
         }
 
         public override void Start()
         {
             Process[] proc = Process.GetProcessesByName("muse-io");
-            if (proc.Length < 1) {
+            if (proc.Length < 1)
+            {
                 // Run cmd command to start MuseIo if new muse process exists
                 System.Diagnostics.Process.Start("CMD.exe", Settings.CmdToRunMuseIo);
             }
@@ -121,7 +126,7 @@ namespace MuseTracker
             IsRunning = true;
             Console.Write("++++ muse tracker started");
 
-       }
+        }
 
         #region Daemon Tracker: Save to Buffer
         private static async void SaveToBuffer(String addr, List<Object> arguments)
@@ -142,15 +147,15 @@ namespace MuseTracker
             {
                 //Console.Write("##### Alpha abs value");
                 await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.AlphaAbsolute,
-                    (float) arguments[0],
-                    (float) arguments[1],
-                    (float) arguments[2],
-                    (float) arguments[3])));
+                    (float)arguments[0],
+                    (float)arguments[1],
+                    (float)arguments[2],
+                    (float)arguments[3])));
             }
 
             if (addr == "/muse/elements/beta_absolute")
             {
-               // Console.Write("##### Beta abs value");
+                // Console.Write("##### Beta abs value");
                 await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.BetaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
@@ -197,39 +202,80 @@ namespace MuseTracker
         /// (it can happen that more elements are added to the end of the queue while this happens,
         /// those elements will be safed to the database in the next run of this method)
         /// </summary>
-        private static void SaveInputBufferToDatabase() {
+        private static void SaveInputBufferToDatabase()
+        {
+            DateTime Timestamp = DateTime.Now;
+
             Console.Write("Save Input Buffer to DB: EEG, Blink, Concent, Mellow" + MuseEEGDataBuffer.Count + " " + MuseBlinkBuffer.Count
                 + " " + MuseConcentrationBuffer.Count + " " + MuseMellowBuffer.Count);
             try
             {
                 if (MuseEEGDataBuffer.Count > 0)
                 {
-                    var museEEGData = new MuseEEGDataEvent[MuseEEGDataBuffer.Count];
+                    List<MuseEEGDataEvent> museData = new List<MuseEEGDataEvent>();
+                    MuseEEGDataEvent museEvent = null;
                     for (var i = 0; i < MuseEEGDataBuffer.Count; i++)
                     {
-                        MuseEEGDataBuffer.TryDequeue(out museEEGData[i]);
+                        MuseEEGDataBuffer.TryDequeue(out museEvent);
+                        museData.Add(museEvent);
                     }
-                    Queries.SaveMuseEEGDataToDatabase(museEEGData);
+                    var alphaAvgChannelLeft = museData.Where(x => x.DataType == MuseDataType.AlphaAbsolute).Average(x => x.ChannelLeft);
+                    var alphaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseDataType.AlphaAbsolute).Average(x => x.ChannelFrontLeft);
+                    var alphaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseDataType.AlphaAbsolute).Average(x => x.ChannelFrontRight);
+                    var alphaAvgChannelRight = museData.Where(x => x.DataType == MuseDataType.AlphaAbsolute).Average(x => x.ChannelRight);
+
+
+                    var betaAvgChannelLeft = museData.Where(x => x.DataType == MuseDataType.BetaAbsolute).Average(x => x.ChannelLeft);
+                    var betaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseDataType.BetaAbsolute).Average(x => x.ChannelFrontLeft);
+                    var betaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseDataType.BetaAbsolute).Average(x => x.ChannelFrontRight);
+                    var betaAvgChannelRight = museData.Where(x => x.DataType == MuseDataType.BetaAbsolute).Average(x => x.ChannelRight);
+
+                    var thetaAvgChannelLeft = museData.Where(x => x.DataType == MuseDataType.ThetaAbsolute).Average(x => x.ChannelLeft);
+                    var thetaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseDataType.ThetaAbsolute).Average(x => x.ChannelFrontLeft);
+                    var thetaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseDataType.ThetaAbsolute).Average(x => x.ChannelFrontRight);
+                    var thetaAvgChannelRight = museData.Where(x => x.DataType == MuseDataType.ThetaAbsolute).Average(x => x.ChannelRight);
+
+                    MuseEEGDataEvent[] museEEGArrayAggr = {
+                        new MuseEEGDataEvent(MuseDataType.AlphaAbsolute, alphaAvgChannelLeft, alphaAvgChannelFrontLeft, alphaAvgChannelFrontRight, alphaAvgChannelRight),
+                        new MuseEEGDataEvent(MuseDataType.BetaAbsolute, betaAvgChannelLeft, betaAvgChannelFrontLeft, betaAvgChannelFrontRight, betaAvgChannelRight),
+                        new MuseEEGDataEvent(MuseDataType.ThetaAbsolute, thetaAvgChannelLeft, thetaAvgChannelFrontLeft, thetaAvgChannelFrontRight, thetaAvgChannelRight)
+                    };
+
+                    Queries.SaveMuseEEGDataToDatabase(museEEGArrayAggr);
                 }
 
                 if (MuseEEGDataQualityBuffer.Count > 0)
                 {
+                    List<MuseEEGDataQuality> museDataQuality = new List<MuseEEGDataQuality>();
+                    MuseEEGDataQuality museDataQualityEvent = null;
                     var museEEGDataQuality = new MuseEEGDataQuality[MuseEEGDataQualityBuffer.Count];
                     for (var i = 0; i < MuseEEGDataQualityBuffer.Count; i++)
                     {
-                        MuseEEGDataQualityBuffer.TryDequeue(out museEEGDataQuality[i]);
+                        MuseEEGDataQualityBuffer.TryDequeue(out museDataQualityEvent);
+                        museDataQuality.Add(museDataQualityEvent);
                     }
+
+                    var avgChannelLeft = museDataQuality.Average(x => x.QualityChannelLeft);
+                    var avgChannelFrontLeft = museDataQuality.Average(x => x.QualityChannelFrontLeft);
+                    var avgChannelFrontRight = museDataQuality.Average(x => x.QualityChannelFrontRight);
+                    var avgChannelRight = museDataQuality.Average(x => x.QualityChannelRight);
+
+                    MuseEEGDataQuality[] museEEGQualityArray = { new MuseEEGDataQuality(ZeroOrOne(avgChannelLeft), ZeroOrOne(avgChannelFrontLeft), ZeroOrOne(avgChannelFrontRight), ZeroOrOne(avgChannelRight)) };
                     Queries.SaveMuseEEGDataQualityToDatabase(museEEGDataQuality);
                 }
 
                 if (MuseBlinkBuffer.Count > 0)
                 {
-                    var museBlink = new MuseBlinkEvent[MuseBlinkBuffer.Count];
+                    List<MuseBlinkEvent> museBlink = new List<MuseBlinkEvent>();
+                    MuseBlinkEvent blinkEvent = null;
                     for (var i = 0; i < MuseBlinkBuffer.Count; i++)
                     {
-                        MuseBlinkBuffer.TryDequeue(out museBlink[i]);
+                        MuseBlinkBuffer.TryDequeue(out blinkEvent);
+                        museBlink.Add(blinkEvent);
                     }
-                    Queries.SaveMuseBlinksToDatabase(museBlink);
+
+                    MuseBlinkEvent[] museBlinkArrayAggr = { new MuseBlinkEvent(museBlink.Sum(x => x.Blink), Timestamp) };
+                    Queries.SaveMuseBlinksToDatabase(museBlinkArrayAggr);
                 }
 
 
@@ -265,7 +311,8 @@ namespace MuseTracker
 
         public override void Stop()
         {
-            if (_listener != null) {
+            if (_listener != null)
+            {
                 _listener.Close();
             }
 
@@ -282,14 +329,15 @@ namespace MuseTracker
             try
             {
                 Process[] proc = Process.GetProcessesByName("muse-io");
-                foreach (Process p in proc) {
+                foreach (Process p in proc)
+                {
                     Console.Write("### Muse: Process stopped!!");
                     p.Kill();
                 }
             }
             catch (Exception e)
             {
-                Console.Write("### Muse: No processes to stop " +  e);
+                Console.Write("### Muse: No processes to stop " + e);
             }
 
         }

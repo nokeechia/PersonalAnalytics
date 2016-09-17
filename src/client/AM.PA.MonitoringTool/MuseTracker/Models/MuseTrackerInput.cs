@@ -94,6 +94,12 @@ namespace MuseTracker.Models
             Timestamp = DateTime.Now;
             Blink = blink;
         }
+
+        public MuseBlinkEvent(int blink, DateTime now)
+        {
+            Timestamp = now;
+            Blink = blink;
+        }
     }
 
     class MuseMellowEvent : IMuseTrackerInput
