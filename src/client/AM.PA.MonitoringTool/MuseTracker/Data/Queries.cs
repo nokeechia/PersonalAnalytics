@@ -313,7 +313,7 @@ namespace MuseTracker.Data
 
             try
             {
-                var query = "SELECT time, count(blink)" +
+                var query = "SELECT time, sum(blink)" +
                             " FROM " + Settings.DbTableMuseBlink +
                             " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
                             " GROUP BY time;";
@@ -349,7 +349,7 @@ namespace MuseTracker.Data
 
             try
             {
-                var query = "SELECT strftime('%Y-%m-%d',time), count(blink)" +
+                var query = "SELECT strftime('%Y-%m-%d',time), sum(blink)" +
                             " FROM " + Settings.DbTableMuseBlink +
                             " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Month, date, "time") +
                             " GROUP BY strftime('%Y-%m-%d',time);";
@@ -386,7 +386,7 @@ namespace MuseTracker.Data
 
             try
             {
-                var query = "SELECT strftime('%Y-%m-%d %H',time), count(blink)" +
+                var query = "SELECT strftime('%Y-%m-%d %H',time), sum(blink)" +
                             " FROM " + Settings.DbTableMuseBlink +
                             " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
                             " GROUP BY strftime('%Y-%m-%d %H',time);";
@@ -423,7 +423,7 @@ namespace MuseTracker.Data
 
             try
             {
-                var query = "SELECT strftime('%Y-%m-%d %H:%M:%S',time), count(blink)" +
+                var query = "SELECT strftime('%Y-%m-%d %H:%M:%S',time), sum(blink)" +
                             " FROM " + Settings.DbTableMuseBlink +
                             " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
                             " GROUP BY strftime('%Y-%m-%d %H',time), strftime('%M', time)/" + intervalInMinutes + ";";
