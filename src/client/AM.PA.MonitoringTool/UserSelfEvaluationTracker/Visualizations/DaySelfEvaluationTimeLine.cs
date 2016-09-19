@@ -72,23 +72,23 @@ namespace UserSelfEvaluationTracker.Visualizations
             var blinkData = reverseBlinks.Aggregate("", (current, p) => current + (VisHelper.Rescale(p, minBlinks, maxBlinks, 0, 1) + ", ")).Trim().TrimEnd(',');
             var eegData = eegIndexes.Aggregate("", (current, p) => current + (Math.Round(p.Item2, 2) + ", ")).Trim().TrimEnd(',');
 
-            var tsdFromPerceivedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (p.Item1 + ", ")).Trim().TrimEnd(',');
+            //var tsdFromPerceivedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (p.Item1 + ", ")).Trim().TrimEnd(',');
 
-            List<Tuple<DateTime, List<String>>> programsUsedAtTimes = new List<Tuple<DateTime, List<string>>>();
-            foreach (Tuple<DateTime, int, int> t in chartQueryResultsLocal) {
-                List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
-                programsUsedAtTimes.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
-            }
+            //List<Tuple<DateTime, List<String>>> programsUsedAtTimes = new List<Tuple<DateTime, List<string>>>();
+            //foreach (Tuple<DateTime, int, int> t in chartQueryResultsLocal) {
+            //    List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
+            //    programsUsedAtTimes.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
+            //}
 
-            var usedProgramsPerceivedData = programsUsedAtTimes.Aggregate("", (current, p) => current + (p.Item2.Aggregate("Most used pgms: ", (c, s) => c + " and " + s).ToString() + ", ")).Trim().TrimEnd(',');
+            //var usedProgramsPerceivedData = programsUsedAtTimes.Aggregate("", (current, p) => current + (p.Item2.Aggregate("Most used pgms: ", (c, s) => c + " and " + s).ToString() + ", ")).Trim().TrimEnd(',');
 
-            const string colorPerceivedEngagement = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
+            const string colorsUsed = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
-            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area-spline', EEGIndex:'area-spline'  }, colors: { " + colorPerceivedEngagement + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y'} "; // type options: spline, step, line
+            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area-spline', EEGIndex:'area-spline'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y2', EEGIndex:'y'} "; // type options: spline, step, line
             var names = "Blinks: 'Calc. Attention', EEGIndex: 'Calc. Engagement'";
             var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'Calc. Task Engagement(EEG Index), Pop-Up Attention & Engagement', position: 'outer-middle'} }, y2: { show: true , label: {text: 'Calc. Attention (#Blinks)', position: 'outer-middle'} }";
-            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); }}, tooltip_contents: {function (d, defaultTitleFormat, defaultValueFormat, color) {return '<div>Show what you want</div>';} }";
-            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, names: {" + names + "}, padding: { left: 45, right: 45, bottom: -10, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
+            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); }}";
+            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, names: {" + names + "},padding: { left: 45, right: 45, bottom: -10, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
 
             html += "<script type='text/javascript'>";

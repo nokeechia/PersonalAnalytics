@@ -12,10 +12,10 @@ namespace Shared
     /// </summary>
     public enum VisType
     {
-        Hour,
         Day,
         Week,
-        Month
+        Month,
+        Hour
     }
 
     /// <summary>
