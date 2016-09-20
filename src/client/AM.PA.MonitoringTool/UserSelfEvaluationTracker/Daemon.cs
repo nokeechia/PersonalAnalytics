@@ -100,20 +100,10 @@ namespace UserSelfEvaluationTracker
         /// </summary>
         private void TimerTick(object sender, EventArgs args)
         {
-            // daily survey
-            //if (DateTime.Now.Date != _lastDailyPopUpResponse.Date &&  // no pop-up today yet
-            //    DateTime.Now.TimeOfDay >= Settings.DailyPopUpEarliestMoment && // not before 04.00 am
-            //    Queries.GetPreviousDailyPopUpResponse() != DateTime.Now.Date) // only if there is a previous work day
-            //{
-            //    RunSurvey(SurveyMode.DailyPopUp);
-            //    return; // don't immediately show interval survey
-            //}
-
             // inverval survey
             if (_timeRemainingUntilNextSurvey > Settings.SurveyCheckerInterval)
             {
                 _timeRemainingUntilNextSurvey = _timeRemainingUntilNextSurvey.Subtract(Settings.SurveyCheckerInterval);
-                return; // not necessary
             }
             else
             {

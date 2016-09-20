@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace UserSelfEvaluationTracker
 {
     public static class Settings
     {
         public static bool DefaultPopUpIsEnabled = true;
-        public const int DefaultPopUpInterval = 60; // in minutes
+        public const int DefaultPopUpInterval = 1; // in minutes
 
         public const string DbTableIntervalPopup = "user_self_evaluation_survey";
 

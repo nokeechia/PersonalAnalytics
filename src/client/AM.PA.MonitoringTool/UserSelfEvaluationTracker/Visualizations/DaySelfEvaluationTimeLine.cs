@@ -66,8 +66,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item2,1,7,0,1) + ", ")).Trim().TrimEnd(',');
             var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item3, 1, 7, 0, 1) + ", ")).Trim().TrimEnd(',');
             List<int> reverseBlinks = blinks.Select(i => i.Item2 * -1).ToList();
-            var minBlinks = reverseBlinks.Min(i => i);
-            var maxBlinks = reverseBlinks.Max(i => i);
+            var minBlinks = reverseBlinks.DefaultIfEmpty(0).Min(i => i);
+            var maxBlinks = reverseBlinks.DefaultIfEmpty(0).Max(i => i);
 
             var blinkData = reverseBlinks.Aggregate("", (current, p) => current + (VisHelper.Rescale(p, minBlinks, maxBlinks, 0, 1) + ", ")).Trim().TrimEnd(',');
             var eegData = eegIndexes.Aggregate("", (current, p) => current + (Math.Round(p.Item2, 2) + ", ")).Trim().TrimEnd(',');
