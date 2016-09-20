@@ -87,7 +87,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             var names = "Blinks: 'Attention(#Blinks)', EEGIndex: 'Engagement(EEGIndex)'";
             var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area-spline', EEGIndex:'area-spline'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y2', Blinks:'y2', EEGIndex:'y'} , names: {" + names + "}"; // type options: spline, step, line
             var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, min:0, max:1, label: {text: 'Engagement', position: 'outer-middle'} }, y2: { show: true , min:0, max:1, label: {text: 'Attention', position: 'outer-middle'} }";
-            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); }}";
+            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); }, value: function (value, ratio, id) { var format = id === 'Blinks' ? d3.format(',') : d3.format('$'); return format(value);}, tooltip_onshow: function() { alert('scheisse');} }";
             var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 55, right: 55, bottom: 0, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
 
@@ -96,6 +96,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             html += "var formatTime = function(hours, minutes) { var minFormatted = minutes; if (minFormatted < 10) minFormatted = '0' + minFormatted; var suffix = 'AM'; if (hours >= 12) { suffix = 'PM'; hours = hours - 12; } if (hours == 0) { hours = 12; } if (hours < 10) return '0' + hours + ':' + minFormatted + ' ' + suffix; else return hours + ':' + minFormatted + ' ' + suffix; };";
 
             html += "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ " + parameters + " });";
+
             html += "</script>";
 
             return html;

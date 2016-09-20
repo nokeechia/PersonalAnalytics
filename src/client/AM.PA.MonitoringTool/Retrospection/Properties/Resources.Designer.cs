@@ -103,6 +103,16 @@ namespace Retrospection.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] custom_d3_tooltip_js {
+            get {
+                object obj = ResourceManager.GetObject("custom_d3_tooltip_js", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] d3_min_js {
             get {
                 object obj = ResourceManager.GetObject("d3_min_js", resourceCulture);

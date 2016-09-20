@@ -44,6 +44,8 @@ namespace Retrospection
             _server.AddHandler("moment.min.js", OnResource); // load js framework
             _server.AddHandler("calendar.heatmap.js", OnResource); // load js framework
             _server.AddHandler("calendar.heatmap.css", OnStylesheets); // load css
+            _server.AddHandler("custom.d3.tooltip.js", OnResource); // load js framework
+
 
             try
             {

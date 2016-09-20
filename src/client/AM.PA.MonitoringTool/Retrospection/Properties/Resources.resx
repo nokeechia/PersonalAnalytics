@@ -130,6 +130,9 @@
   <data name="calendar_heatmap_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>calendar_heatmap_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="custom_d3_tooltip_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>custom_d3_tooltip_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="d3_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>d3_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
