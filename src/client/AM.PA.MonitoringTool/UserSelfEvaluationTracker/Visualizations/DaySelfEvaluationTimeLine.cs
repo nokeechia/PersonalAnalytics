@@ -72,31 +72,30 @@ namespace UserSelfEvaluationTracker.Visualizations
             var blinkData = reverseBlinks.Aggregate("", (current, p) => current + (VisHelper.Rescale(p, minBlinks, maxBlinks, 0, 1) + ", ")).Trim().TrimEnd(',');
             var eegData = eegIndexes.Aggregate("", (current, p) => current + (Math.Round(p.Item2, 2) + ", ")).Trim().TrimEnd(',');
 
-            //var tsdFromPerceivedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (p.Item1 + ", ")).Trim().TrimEnd(',');
 
-            //List<Tuple<DateTime, List<String>>> programsUsedAtTimes = new List<Tuple<DateTime, List<string>>>();
-            //foreach (Tuple<DateTime, int, int> t in chartQueryResultsLocal) {
-            //    List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
-            //    programsUsedAtTimes.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
-            //}
+            List<Tuple<DateTime, List<String>>> programsUsedAtTimes = new List<Tuple<DateTime, List<string>>>();
+            //List contains same time points as for engagementFormattedData and attentionFormatted Data(timeAxis)
+            foreach (Tuple<DateTime, int, int> t in chartQueryResultsLocal) {
+                List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
+                programsUsedAtTimes.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
+            }
 
-            //var usedProgramsPerceivedData = programsUsedAtTimes.Aggregate("", (current, p) => current + (p.Item2.Aggregate("Most used pgms: ", (c, s) => c + " and " + s).ToString() + ", ")).Trim().TrimEnd(',');
+            var usedPgmsT1 = programsUsedAtTimes.Aggregate("", (current, a) => current + ("{tsd:" + DateTimeHelper.JavascriptTimestampFromDateTime(a.Item1) + ", value:[" + string.Concat(a.Item2.Select(n => "'" + n + "',")).TrimEnd(',') + "]}, ")).Trim().TrimEnd(',');
 
             const string colorsUsed = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
             var names = "Blinks: 'Attention(#Blinks)', EEGIndex: 'Engagement(EEGIndex)'";
             var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area-spline', EEGIndex:'area-spline'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y2', Blinks:'y2', EEGIndex:'y'} , names: {" + names + "}"; // type options: spline, step, line
             var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, min:0, max:1, label: {text: 'Engagement', position: 'outer-middle'} }, y2: { show: true , min:0, max:1, label: {text: 'Attention', position: 'outer-middle'} }";
-            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); }, value: function (value, ratio, id) { var format = id === 'Blinks' ? d3.format(',') : d3.format('$'); return format(value);}, tooltip_onshow: function() { alert('scheisse');} }";
+            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); } }, contents: function(d, defaultTitleFormat, defaultValueFormat, color){ return createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, [" + usedPgmsT1 + "]);} ";
             var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 55, right: 55, bottom: 0, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
 
             html += "<script type='text/javascript'>";
-            html += "var formatDate = function(hours) { var suffix = 'AM'; if (hours >= 12) { suffix = 'PM'; hours = hours - 12; } if (hours == 0) { hours = 12; } if (hours < 10) return '0' + hours + ' ' + suffix; else return hours + ' ' + suffix; };";
-            html += "var formatTime = function(hours, minutes) { var minFormatted = minutes; if (minFormatted < 10) minFormatted = '0' + minFormatted; var suffix = 'AM'; if (hours >= 12) { suffix = 'PM'; hours = hours - 12; } if (hours == 0) { hours = 12; } if (hours < 10) return '0' + hours + ':' + minFormatted + ' ' + suffix; else return hours + ':' + minFormatted + ' ' + suffix; };";
+            html += "var formatDate = function(hours) { var suffix = 'AM';\n if (hours >= 12) { suffix = 'PM'; hours = hours - 12; } \n if (hours == 0) { hours = 12; } \n if (hours < 10) return '0' + hours + ' ' + suffix; \n else return hours + ' ' + suffix; };\n";
+            html += "var formatTime = function(hours, minutes) { var minFormatted = minutes; if (minFormatted < 10) minFormatted = '0' + minFormatted; var suffix = 'AM'; if (hours >= 12) { suffix = 'PM'; hours = hours - 12; } if (hours == 0) { hours = 12; } if (hours < 10) return '0' + hours + ':' + minFormatted + ' ' + suffix; else return hours + ':' + minFormatted + ' ' + suffix; };\n";
 
-            html += "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ " + parameters + " });";
-
+            html += "var " + VisHelper.CreateChartHtmlTitle(Title) + " = c3.generate({ " + parameters + " });\n";
             html += "</script>";
 
             return html;

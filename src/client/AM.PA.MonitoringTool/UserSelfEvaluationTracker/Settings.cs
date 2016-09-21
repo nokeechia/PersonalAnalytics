@@ -6,7 +6,7 @@ namespace UserSelfEvaluationTracker
     public static class Settings
     {
         public static bool DefaultPopUpIsEnabled = true;
-        public const int DefaultPopUpInterval = 1; // in minutes
+        public const int DefaultPopUpInterval = 10; // in minutes
 
         public const string DbTableIntervalPopup = "user_self_evaluation_survey";
 

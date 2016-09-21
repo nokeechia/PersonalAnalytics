@@ -1,3 +1,60 @@
-$(function() {
-	var tooltipContainer = $('#dailyengagementandattentionoverview').find('.c3-tooltip-container');
-});
+function formatThat(value, ratio, id) {
+	return id ==='Attention' ? value + '<tr class="c3-tooltip-name--Pgm"><td class="name"><span style="background-color:#990654"></span>Pgms</td><td class="value">Visual Studio, IE </td></tr>' : value;
+}
+
+function triggerMyHandler(){
+	$('#dailyengagementandattentionoverview').trigger("extendedTooltip");
+}
+
+function appendTooltip() {
+	var tooltipContent = $('#dailyengagementandattentionoverview').find('.c3-tooltip-container').find('table');
+	var tooltipTable = $('#dailyengagementandattentionoverview').find('.c3-tooltip-container').find('table > tbody:last-child');
+	if(tooltipTable && $('#dailyengagementandattentionoverview').find('.c3-tooltip-container').find('table tr').length < 4){
+		var datetime = $('#dailyengagementandattentionoverview').find('.c3-tooltip-container').find('table > tbody > tr:first-child').text();
+		tooltipTable.append('<tr class="c3-tooltip-name--Pgm"><td class="name"><span style="background-color:#990654"></span>Pgms</td><td class="value">Visual Studio, IE' + datetime + '</td></tr>');
+		console.log("asdf");
+	}
+}
+
+function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, pgmsT1) {
+          var $$ = dailyengagementandattentionoverview, config = $$.internal.config,
+              titleFormat = config.tooltip_format_title || defaultTitleFormat,
+              nameFormat = config.tooltip_format_name || function (name) { return name; },
+              valueFormat = config.tooltip_format_value || defaultValueFormat,
+              text, i, title, value, name, bgcolor;
+	  var current_tsd;
+          for (i = 0; i < d.length; i++) {
+              if (! (d[i] && (d[i].value || d[i].value === 0))) { continue; }
+
+              if (! text) {
+                  title = titleFormat ? titleFormat(d[i].x) : d[i].x;
+                  text = "<table class='" + $$.internal.CLASS.tooltip + "'>" + (title || title === 0 ? "<tr><th colspan='2'>" + title + "</th></tr>" : "");
+              }
+
+	      current_tsd = d[i].x;
+              name = nameFormat(d[i].name);
+              value = valueFormat(d[i].value, d[i].ratio, d[i].id, d[i].index);
+              bgcolor = $$.levelColor ? $$.levelColor(d[i].value) : color(d[i].id);
+
+              text += "<tr class='" + $$.internal.CLASS.tooltipName + "-" + d[i].id + "'>";
+              text += "<td class='name'><span style='background-color:" + bgcolor + "'></span>" + name + "</td>";
+              text += "<td class='value'>" + value + "</td>";
+              text += "</tr>";
+          }
+	  
+		
+	  //add custom row for top used pgms
+          text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgms" + "'>";
+          text += "<td class='name'><span style='background-color:" + "#06980E" + "'></span>" + "Top Used Pgms" + "</td>";
+          text += "<td class='value'>" + "Visual Studio, IE, Notepad" + "</td>";
+          text += "</tr>";	  
+
+	  //add custom row for number of pgm switches
+          text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgmswitches" + "'>";
+          text += "<td class='name'><span style='background-color:" + "#789806" + "'></span>" + "Nr of Switches within 10 min" + "</td>";
+          text += "<td class='value'>" + "3" + "</td>";
+          text += "</tr>";	  
+          return text + "</table>";
+}
+	
+	
