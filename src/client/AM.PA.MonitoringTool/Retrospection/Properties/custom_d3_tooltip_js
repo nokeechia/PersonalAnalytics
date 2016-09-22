@@ -16,13 +16,13 @@ function appendTooltip() {
 	}
 }
 
-function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, pgmsT1) {
+function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, pgmsT1, pgmsT2) {
           var $$ = dailyengagementandattentionoverview, config = $$.internal.config,
               titleFormat = config.tooltip_format_title || defaultTitleFormat,
               nameFormat = config.tooltip_format_name || function (name) { return name; },
               valueFormat = config.tooltip_format_value || defaultValueFormat,
               text, i, title, value, name, bgcolor;
-	  var current_tsd;
+		  var current_tsd;
           for (i = 0; i < d.length; i++) {
               if (! (d[i] && (d[i].value || d[i].value === 0))) { continue; }
 
@@ -31,7 +31,7 @@ function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, p
                   text = "<table class='" + $$.internal.CLASS.tooltip + "'>" + (title || title === 0 ? "<tr><th colspan='2'>" + title + "</th></tr>" : "");
               }
 
-	      current_tsd = d[i].x;
+		      current_tsd = d[i].x;
               name = nameFormat(d[i].name);
               value = valueFormat(d[i].value, d[i].ratio, d[i].id, d[i].index);
               bgcolor = $$.levelColor ? $$.levelColor(d[i].value) : color(d[i].id);
@@ -42,14 +42,29 @@ function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, p
               text += "</tr>";
           }
 	  
-		
-	  //add custom row for top used pgms
-          text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgms" + "'>";
-          text += "<td class='name'><span style='background-color:" + "#06980E" + "'></span>" + "Top Used Pgms" + "</td>";
-          text += "<td class='value'>" + "Visual Studio, IE, Notepad" + "</td>";
-          text += "</tr>";	  
+          if(name === "Attention" || name === "Engagement") {
+			for (i = 0; i < pgmsT1.length; i++) {
+				if(pgmsT1[i].tsd === current_tsd.getTime()) {
+					//add custom row for top used pgms
+					text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgms" + "'>";
+        			text += "<td class='name'><span style='background-color:" + "#06980E" + "'></span>" + "Top Used Pgms" + "</td>";
+          			text += "<td class='value'>" + pgmsT1[i].value.join(); + "</td>";
+          			text += "</tr>";	  
+				}
+			}
+          }else {
+			for (i = 0; i < pgmsT2.length; i++) {
+				if(pgmsT2[i].tsd === current_tsd.getTime()) {
+					//add custom row for top used pgms
+					text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgms" + "'>";
+        			text += "<td class='name'><span style='background-color:" + "#06980E" + "'></span>" + "Top Used Pgms" + "</td>";
+          			text += "<td class='value'>" + pgmsT2[i].value.join(); + "</td>";
+          			text += "</tr>";	  
+				}
+			}		  
+		  }
 
-	  //add custom row for number of pgm switches
+		  //add custom row for number of pgm switches
           text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgmswitches" + "'>";
           text += "<td class='name'><span style='background-color:" + "#789806" + "'></span>" + "Nr of Switches within 10 min" + "</td>";
           text += "<td class='value'>" + "3" + "</td>";
