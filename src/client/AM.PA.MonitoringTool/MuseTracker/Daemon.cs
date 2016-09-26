@@ -352,8 +352,7 @@ namespace MuseTracker
         public override List<IVisualization> GetVisualizationsMonth(DateTimeOffset date)
         {
             var vis1 = new MonthMuseAttentionVisualization(date);
-            var vis2 = new MonthMuseEngagementVisualization(date);
-            return new List<IVisualization> { vis1, vis2 };
+            return new List<IVisualization> { vis1 };
         }
 
         //public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)

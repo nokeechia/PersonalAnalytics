@@ -16,10 +16,10 @@ namespace MuseTracker.Visualizations
         public MonthMuseAttentionVisualization(DateTimeOffset date) {
             this._date = date;
 
-            Title = "Attention Overview (# blinks)";
+            Title = "Attention Overview (# blinks) and Engagement Overview (EEG Index) ";
             IsEnabled = true;
             Order = 1;
-            Size = VisSize.Square;
+            Size = VisSize.Wide;
             Type = VisType.Month;
         }
 
@@ -31,6 +31,8 @@ namespace MuseTracker.Visualizations
             // fetch data sets
             /////////////////////
             var blinks = Queries.GetBlinksByYear(_date);
+            var eegData = Queries.GetEEGIndexOfMonth(_date);
+
             if (blinks.Count < 1 ) //Todo: have to set a min limit
             {
                 html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity.");
@@ -50,28 +52,31 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // HTML
             /////////////////////
-            html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>";
-            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows number of blinks per day. Less blinks indicate more attention.</p>";
+            html += "<div id='attentionoverview' style='width:50%; display:inline-block;' align='center'></div>";
+            html += "<div id='engagementoverview' style='width:50%; display:inline-block;' align='center'></div>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows attention via reverse number of blinks per day. Less blinks indicate more attention and average EEG Index per day which indicates your engagement level.</p>";
 
-            var dataInJSFormat = VisHelper.CreateJavaScriptArrayOfObjects(blinks);
-            
+
+            var dataInJSFormatBlinks = VisHelper.CreateJavaScriptArrayOfObjects(blinks);
+            var dataInJSFormatEEG = VisHelper.CreateJavaScriptArrayOfObjectsDouble(eegData);
+
             /////////////////////
             // JS
             /////////////////////
             html += "<script type='text/javascript'>";
             html += "var parseDate = d3.time.format('%m/%d/%Y %H:%M:%S %p').parse;";
-            html += "var dataInJSFormat = [" + dataInJSFormat + "];";
+            html += "var dataInJSFormatBlinks = [" + dataInJSFormatBlinks + "];";
             html += "var now = moment().endOf('day').toDate();";
             html += "var yearAgo = moment().startOf('day').subtract(1, 'year').toDate();";
-            html += "var chartData2 = dataInJSFormat.map(function(dateElement) {" +
+            html += "var chartDataBlinks = dataInJSFormatBlinks.map(function(dateElement) {" +
                 "return {" +
                 "date: parseDate(dateElement.date)," +
                 "count: dateElement.count" +
                 "};" +
             "});";
 
-            html += "var heatmap = calendarHeatmap()" +
-                            ".data(chartData2)" +
+            html += "var heatmapBlinks = calendarHeatmap()" +
+                            ".data(chartDataBlinks)" +
                             ".selector('#attentionoverview')" +
                             ".tooltipEnabled(true)" +
                             ".tooltipUnit('#Blink')" +
@@ -79,7 +84,28 @@ namespace MuseTracker.Visualizations
                       ".onClick(function(data) {" +
                 "console.log('data', data);" +
             "});";
-            html += "heatmap();  // render the chart";
+            html += "heatmapBlinks();";
+
+            //render EEG chart
+            html += "var dataInJSFormatEEG = [" + dataInJSFormatEEG + "];";
+            html += "var chartDataEEG = dataInJSFormatEEG.map(function(dateElement) {" +
+                "return {" +
+                "date: parseDate(dateElement.date)," +
+                "count: dateElement.count" +
+                "};" +
+            "});";
+
+            html += "var heatmapEEG = calendarHeatmap()" +
+                            ".data(chartDataEEG)" +
+                            ".selector('#engagementoverview')" +
+                            ".tooltipEnabled(true)" +
+                            ".tooltipUnit('Avg EEG Indice')" +
+                            ".colorRange(['#ffcee8', '#FF0A8D'])" +
+                      ".onClick(function(data) {" +
+                "console.log('data', data);" +
+            "});";
+            html += "heatmapEEG();";
+
 
             html += "</script>";
 
