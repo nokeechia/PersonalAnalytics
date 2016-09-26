@@ -9,11 +9,11 @@ using MuseTracker.Data;
 
 namespace MuseTracker.Visualizations
 {
-    internal class MonthMuseAttentionVisualization : BaseVisualization, IVisualization
+    internal class MonthMuseVisualization : BaseVisualization, IVisualization
     {
         private readonly DateTimeOffset _date;
 
-        public MonthMuseAttentionVisualization(DateTimeOffset date) {
+        public MonthMuseVisualization(DateTimeOffset date) {
             this._date = date;
 
             Title = "Attention Overview (# blinks) and Engagement Overview (EEG Index) ";
