@@ -34,5 +34,12 @@ namespace MuseTracker
 
         private const int IntervalSaveToDatabaseInSeconds = 60;
         public static TimeSpan SaveToDatabaseInterval = TimeSpan.FromSeconds(IntervalSaveToDatabaseInSeconds);
+
+        public const string attentionBlinkColor = "#007acb";
+        public const string engagementEEGColor = "#ff0a8d";
+
+        public const string negativeTrendColor = "#cb5100";
+        public const string positiveTrendColor = "#00cb51";
+        public const string neutralTrendColor = "#007acb";
     }
 }

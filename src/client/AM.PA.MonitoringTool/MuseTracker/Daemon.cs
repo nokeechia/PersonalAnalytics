@@ -146,7 +146,7 @@ namespace MuseTracker
             if (addr == "/muse/elements/alpha_absolute")
             {
                 //Console.Write("##### Alpha abs value");
-                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.AlphaAbsolute,
+                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseEEGDataType.AlphaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
                     (float)arguments[2],
@@ -156,7 +156,7 @@ namespace MuseTracker
             if (addr == "/muse/elements/beta_absolute")
             {
                 // Console.Write("##### Beta abs value");
-                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.BetaAbsolute,
+                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseEEGDataType.BetaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
                     (float)arguments[2],
@@ -166,7 +166,7 @@ namespace MuseTracker
             if (addr == "/muse/elements/theta_absolute")
             {
                 //Console.Write("##### Theta abs value");
-                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseDataType.ThetaAbsolute,
+                await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseEEGDataType.ThetaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
                     (float)arguments[2],
@@ -219,26 +219,26 @@ namespace MuseTracker
                         MuseEEGDataBuffer.TryDequeue(out museEvent);
                         museData.Add(museEvent);
                     }
-                    var alphaAvgChannelLeft = museData.Where(x => x.DataType == MuseDataType.AlphaAbsolute).Average(x => x.ChannelLeft);
-                    var alphaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseDataType.AlphaAbsolute).Average(x => x.ChannelFrontLeft);
-                    var alphaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseDataType.AlphaAbsolute).Average(x => x.ChannelFrontRight);
-                    var alphaAvgChannelRight = museData.Where(x => x.DataType == MuseDataType.AlphaAbsolute).Average(x => x.ChannelRight);
+                    var alphaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute).Average(x => x.ChannelLeft);
+                    var alphaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute).Average(x => x.ChannelFrontLeft);
+                    var alphaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute).Average(x => x.ChannelFrontRight);
+                    var alphaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute).Average(x => x.ChannelRight);
 
 
-                    var betaAvgChannelLeft = museData.Where(x => x.DataType == MuseDataType.BetaAbsolute).Average(x => x.ChannelLeft);
-                    var betaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseDataType.BetaAbsolute).Average(x => x.ChannelFrontLeft);
-                    var betaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseDataType.BetaAbsolute).Average(x => x.ChannelFrontRight);
-                    var betaAvgChannelRight = museData.Where(x => x.DataType == MuseDataType.BetaAbsolute).Average(x => x.ChannelRight);
+                    var betaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute).Average(x => x.ChannelLeft);
+                    var betaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute).Average(x => x.ChannelFrontLeft);
+                    var betaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute).Average(x => x.ChannelFrontRight);
+                    var betaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute).Average(x => x.ChannelRight);
 
-                    var thetaAvgChannelLeft = museData.Where(x => x.DataType == MuseDataType.ThetaAbsolute).Average(x => x.ChannelLeft);
-                    var thetaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseDataType.ThetaAbsolute).Average(x => x.ChannelFrontLeft);
-                    var thetaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseDataType.ThetaAbsolute).Average(x => x.ChannelFrontRight);
-                    var thetaAvgChannelRight = museData.Where(x => x.DataType == MuseDataType.ThetaAbsolute).Average(x => x.ChannelRight);
+                    var thetaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute).Average(x => x.ChannelLeft);
+                    var thetaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute).Average(x => x.ChannelFrontLeft);
+                    var thetaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute).Average(x => x.ChannelFrontRight);
+                    var thetaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute).Average(x => x.ChannelRight);
 
                     MuseEEGDataEvent[] museEEGArrayAggr = {
-                        new MuseEEGDataEvent(MuseDataType.AlphaAbsolute, alphaAvgChannelLeft, alphaAvgChannelFrontLeft, alphaAvgChannelFrontRight, alphaAvgChannelRight),
-                        new MuseEEGDataEvent(MuseDataType.BetaAbsolute, betaAvgChannelLeft, betaAvgChannelFrontLeft, betaAvgChannelFrontRight, betaAvgChannelRight),
-                        new MuseEEGDataEvent(MuseDataType.ThetaAbsolute, thetaAvgChannelLeft, thetaAvgChannelFrontLeft, thetaAvgChannelFrontRight, thetaAvgChannelRight)
+                        new MuseEEGDataEvent(MuseEEGDataType.AlphaAbsolute, alphaAvgChannelLeft, alphaAvgChannelFrontLeft, alphaAvgChannelFrontRight, alphaAvgChannelRight),
+                        new MuseEEGDataEvent(MuseEEGDataType.BetaAbsolute, betaAvgChannelLeft, betaAvgChannelFrontLeft, betaAvgChannelFrontRight, betaAvgChannelRight),
+                        new MuseEEGDataEvent(MuseEEGDataType.ThetaAbsolute, thetaAvgChannelLeft, thetaAvgChannelFrontLeft, thetaAvgChannelFrontRight, thetaAvgChannelRight)
                     };
 
                     Queries.SaveMuseEEGDataToDatabase(museEEGArrayAggr);
@@ -360,6 +360,12 @@ namespace MuseTracker
             var vis = new WeekMuseVisualization(date);
 
             return new List<IVisualization> { vis };
+        }
+
+        public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
+        {
+            var vis1 = new DayMuseInsightCompareYesterday(date);
+            return new List<IVisualization> { vis1 };
         }
     }
 }

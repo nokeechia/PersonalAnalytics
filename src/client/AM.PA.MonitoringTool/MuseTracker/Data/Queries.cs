@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using MuseTracker.Models;
 using System.Globalization;
 using System.Data;
+using System.Linq;
 
 namespace MuseTracker.Data
 {
@@ -339,6 +340,38 @@ namespace MuseTracker.Data
         }
 
         /// <summary>
+        /// Fetches average eye blinks of a user for a given date
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static double GetAvgBlinksByDate(DateTimeOffset date)
+        {
+            var avg = 0.0;
+
+            try
+            {
+                var query = "SELECT avg(blink) as avgblinks" +
+                            " FROM " + Settings.DbTableMuseBlink +
+                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) +
+                            ";";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    avg = Convert.ToDouble(row["avgblinks"]);
+                }
+                table.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return avg;
+        }
+
+        /// <summary>
         /// Fetches eye blinks of a user for a given date and prepares the data from current week
         /// to be visualized.
         /// </summary>
@@ -485,6 +518,17 @@ namespace MuseTracker.Data
             return resList;
         }
 
+        /// <summary>
+        /// Fetches eeg data of a user for a given date and prepares the data
+        /// aggregated by date.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static double GetAvgEEGIndexByDate(DateTimeOffset date)
+        {
+            var eegIndices = GetEEGIndex(date);
+            return eegIndices.Count > 0 ? eegIndices.Average(i => i.Item2) : 0.0;            
+        }
 
         /// <summary>
         /// Fetches eeg data of a user for a given date and prepares the data
@@ -552,7 +596,7 @@ namespace MuseTracker.Data
                 foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
                 {
                     Tuple<double, double, double> tempValues = entry.Value;
-                    double eegIndex = tempValues.Item2 / (tempValues.Item1 + tempValues.Item3); //eeg index formula
+                    double eegIndex = Math.Pow(10,tempValues.Item2) / (Math.Pow(10.0, tempValues.Item1) + Math.Pow(10.0, tempValues.Item3)); //eeg index formula, pow because of absolute values are log scaled
                     resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(entry.Key, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), eegIndex));
                 }
             }

@@ -3,7 +3,19 @@
 
 namespace MuseTracker.Models
 {
+    public enum MuseMetric
+    {
+        Attention,
+        Engagement
+    }
+
     public enum MuseDataType
+    {
+        Blinks,
+        EEG
+    }
+
+    public enum MuseEEGDataType
     {
         AlphaAbsolute,
         BetaAbsolute,
@@ -13,14 +25,14 @@ namespace MuseTracker.Models
     class MuseEEGDataEvent : IMuseTrackerInput
     {
         public DateTime Timestamp { get; protected set; }
-        public MuseDataType DataType { get; protected set; }
+        public MuseEEGDataType DataType { get; protected set; }
         public float Avg { get; protected set; }
         public float ChannelLeft { get; protected set; }
         public float ChannelFrontLeft { get; protected set; }
         public float ChannelFrontRight { get; protected set; }
         public float ChannelRight { get; protected set; }
 
-        public MuseEEGDataEvent(MuseDataType dataType, float channelLeft, float channelFrontLeft, float channelFrontRight, float channelRight) {
+        public MuseEEGDataEvent(MuseEEGDataType dataType, float channelLeft, float channelFrontLeft, float channelFrontRight, float channelRight) {
             Timestamp = DateTime.Now;
             DataType = dataType;
             int count = 0;
