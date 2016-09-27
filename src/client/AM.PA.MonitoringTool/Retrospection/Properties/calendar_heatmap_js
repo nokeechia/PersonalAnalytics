@@ -8,7 +8,7 @@ function calendarHeatmap() {
   var selector = 'body';
   var SQUARE_LENGTH = 22; //MONICA CHANGE, PREV: 150
   var SQUARE_PADDING = 2;
-  var MONTH_LABEL_PADDING = 6;
+  var MONTH_LABEL_PADDING = 2; //MONICA CHANGE prev 6
   var now = moment().endOf('day').toDate();
   var yearAgo = moment().startOf('day').subtract(1, 'month').toDate(); //MONICA CHANGE REFACTOR
   var data = [];
@@ -58,6 +58,18 @@ function calendarHeatmap() {
   chart.onClick = function (value) {
     if (!arguments.length) { return onClick(); }
     onClick = value;
+    return chart;
+  };
+
+  chart.begin = function (value) {
+    if (!arguments.length) { return yearAgo; }
+    yearAgo = value;
+    return chart;
+  };
+
+  chart.end = function (value) {
+    if (!arguments.length) { return now; }
+    now = value;
     return chart;
   };
 
@@ -117,7 +129,7 @@ function calendarHeatmap() {
             .append('div')
             .attr('class', 'day-cell-tooltip')
             .html(tooltipHTMLForDate(d))
-            .style('left', function () { return Math.floor(i / 7) * SQUARE_LENGTH + 'px'; })
+//            .style('left', function () { return Math.floor(i / 7) * SQUARE_LENGTH + 'px'; })
             .style('top', function () { return d.getDay() * (SQUARE_LENGTH + SQUARE_PADDING) + MONTH_LABEL_PADDING * 3 + 'px'; });
         })
         .on('mouseout', function (d, i) {

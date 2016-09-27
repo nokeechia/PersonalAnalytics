@@ -29,7 +29,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             // fetch data sets
             /////////////////////
             var chartQueryResultsLocal = UserSelfEvaluationTracker.Data.Queries.GetSelfEvaluationTimelineData(_date, VisType.Day);
-            var minutesInterval = 2;
+            var minutesInterval = 15;
             var blinks = MuseTracker.Data.Queries.GetBlinksByMinutesInterval(_date, minutesInterval);
             var eegIndexes = MuseTracker.Data.Queries.GetEEGIndexByMinutesInterval(_date, minutesInterval);
             if (chartQueryResultsLocal.Count < 3 && blinks.Count < 3 && eegIndexes.Count < 3)
@@ -74,30 +74,42 @@ namespace UserSelfEvaluationTracker.Visualizations
 
 
             List<Tuple<DateTime, List<String>>> programsUsedAtTimes = new List<Tuple<DateTime, List<string>>>();
+            List<Tuple<DateTime, int>> pgmSwitchesAtTimesT1 = new List<Tuple<DateTime, int>>();
             //List contains same time points as for engagementFormattedData and attentionFormattedData (timeAxis)
             foreach (Tuple<DateTime, int, int> t in chartQueryResultsLocal) {
                 List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
                 programsUsedAtTimes.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
+                int switches = UserEfficiencyTracker.Data.Queries.GetNrOfProgramSwitches(t.Item1, VisType.Hour);
+                pgmSwitchesAtTimesT1.Add(new Tuple<DateTime, int>(t.Item1, switches));
+
             }
 
             var usedPgmsT1 = programsUsedAtTimes.Aggregate("", (current, a) => current + ("{tsd:" + DateTimeHelper.JavascriptTimestampFromDateTime(a.Item1) + ", value:[" + string.Concat(a.Item2.Select(n => "'" + n + "',")).TrimEnd(',') + "]}, ")).Trim().TrimEnd(',');
+            var switchesT1 = pgmSwitchesAtTimesT1.Aggregate("", (current, a) => current + ("{tsd:" + DateTimeHelper.JavascriptTimestampFromDateTime(a.Item1) + ", value:'"+ a.Item2 + "'}, ")).Trim().TrimEnd(',');
 
             List<Tuple<DateTime, List<String>>> programsUsedAtTimesT2 = new List<Tuple<DateTime, List<string>>>();
+            List<Tuple<DateTime, int>> pgmSwitchesAtTimesT2 = new List<Tuple<DateTime, int>>();
+
             //List contains same time points as for blinkData and eegData (timeAxis2)
             foreach (Tuple<DateTime, int> t in blinks)
             {
                 List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
                 programsUsedAtTimesT2.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
+                int switches = UserEfficiencyTracker.Data.Queries.GetNrOfProgramSwitches(t.Item1, VisType.Hour);
+                pgmSwitchesAtTimesT2.Add(new Tuple<DateTime, int>(t.Item1, switches));
             }
 
             var usedPgmsT2 = programsUsedAtTimesT2.Aggregate("", (current, a) => current + ("{tsd:" + DateTimeHelper.JavascriptTimestampFromDateTime(a.Item1) + ", value:[" + string.Concat(a.Item2.Select(n => "'" + n + "',")).TrimEnd(',') + "]}, ")).Trim().TrimEnd(',');
+            var switchesT2 = pgmSwitchesAtTimesT2.Aggregate("", (current, a) => current + ("{tsd:" + DateTimeHelper.JavascriptTimestampFromDateTime(a.Item1) + ", value:'" + a.Item2 + "'}, ")).Trim().TrimEnd(',');
+
+
 
             const string colorsUsed = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
             var names = "Blinks: 'Attention(#Blinks)', EEGIndex: 'Engagement(EEGIndex)'";
             var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area-spline', EEGIndex:'area-spline'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y2', Blinks:'y2', EEGIndex:'y'} , names: {" + names + "}"; // type options: spline, step, line
             var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, min:0, max:1, label: {text: 'Engagement', position: 'outer-middle'} }, y2: { show: true , min:0, max:1, label: {text: 'Attention', position: 'outer-middle'} }";
-            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); } }, contents: function(d, defaultTitleFormat, defaultValueFormat, color){ return createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, [" + usedPgmsT1 + "], [" + usedPgmsT2 + "]);} ";
+            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); } }, contents: function(d, defaultTitleFormat, defaultValueFormat, color){ return createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, [" + usedPgmsT1 + "], [" + usedPgmsT2 + "], [" + switchesT1 + "], [" + switchesT2 + "]);} ";
             var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 55, right: 55, bottom: 0, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
 

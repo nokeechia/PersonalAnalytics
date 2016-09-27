@@ -55,6 +55,7 @@
     <Compile Include="Visualizations\DayMuseVisualizationTimeline.cs" />
     <Compile Include="Visualizations\MonthMuseVisualization.cs" />
     <Compile Include="Visualizations\MonthMuseEngagementVisualization.cs" />
+    <Compile Include="Visualizations\WeekMuseVisualization.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj">

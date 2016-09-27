@@ -16,7 +16,7 @@ function appendTooltip() {
 	}
 }
 
-function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, pgmsT1, pgmsT2) {
+function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, pgmsT1, pgmsT2, switchesT1, switchesT2) {
           var $$ = dailyengagementandattentionoverview, config = $$.internal.config,
               titleFormat = config.tooltip_format_title || defaultTitleFormat,
               nameFormat = config.tooltip_format_name || function (name) { return name; },
@@ -52,6 +52,17 @@ function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, p
           			text += "</tr>";	  
 				}
 			}
+
+			for (i = 0; i < switchesT1.length; i++) {
+				if(switchesT1[i].tsd === current_tsd.getTime()) {
+					//add custom row for pgm switches 
+					text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgmswitches" + "'>";
+        			text += "<td class='name'><span style='background-color:" + "#789806" + "'></span>" + "Nr of Switches within 15 min" + "</td>";
+          			text += "<td class='value'>" + switchesT1[i].value + "</td>";
+          			text += "</tr>";	  
+				}
+			}
+
           }else {
 			for (i = 0; i < pgmsT2.length; i++) {
 				if(pgmsT2[i].tsd === current_tsd.getTime()) {
@@ -62,13 +73,17 @@ function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, p
           			text += "</tr>";	  
 				}
 			}		  
-		  }
 
-		  //add custom row for number of pgm switches
-          text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgmswitches" + "'>";
-          text += "<td class='name'><span style='background-color:" + "#789806" + "'></span>" + "Nr of Switches within 10 min" + "</td>";
-          text += "<td class='value'>" + "3" + "</td>";
-          text += "</tr>";	  
+			for (i = 0; i < switchesT2.length; i++) {
+				if(switchesT2[i].tsd === current_tsd.getTime()) {
+					//add custom row for pgm switches 
+					text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgmswitches" + "'>";
+        			text += "<td class='name'><span style='background-color:" + "#789806" + "'></span>" + "Nr of Switches within 15 min" + "</td>";
+          			text += "<td class='value'>" + switchesT2[i].value + "</td>";
+          			text += "</tr>";	  
+				}
+			}
+		  }
           return text + "</table>";
 }
 	

@@ -9,18 +9,19 @@ using MuseTracker.Data;
 
 namespace MuseTracker.Visualizations
 {
-    internal class MonthMuseVisualization : BaseVisualization, IVisualization
+    internal class WeekMuseVisualization : BaseVisualization, IVisualization
     {
         private readonly DateTimeOffset _date;
 
-        public MonthMuseVisualization(DateTimeOffset date) {
+        public WeekMuseVisualization(DateTimeOffset date)
+        {
             this._date = date;
 
             Title = "Attention Overview (# blinks) and Engagement Overview (EEG Index) ";
             IsEnabled = true;
             Order = 1;
-            Size = VisSize.Wide;
-            Type = VisType.Month;
+            Size = VisSize.Square;
+            Type = VisType.Week;
         }
 
         public override string GetHtml()
@@ -30,10 +31,10 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // fetch data sets
             /////////////////////
-            var blinks = Queries.GetBlinksByYear(_date);
-            var eegData = Queries.GetEEGIndexOfMonth(_date);
+            var blinks = Queries.GetBlinksOfWeek(_date);
+            var eegData = Queries.GetEEGIndexOfWeek(_date);
 
-            if (blinks.Count < 1 ) //Todo: have to set a min limit
+            if (blinks.Count < 1 && eegData.Count < 1) //Todo: have to set a min limit
             {
                 html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity.");
                 return html;
@@ -66,8 +67,8 @@ namespace MuseTracker.Visualizations
             html += "<script type='text/javascript'>";
             html += "var parseDate = d3.time.format('%m/%d/%Y %H:%M:%S %p').parse;";
             html += "var dataInJSFormatBlinks = [" + dataInJSFormatBlinks + "];";
-            html += "var beginDate = moment(parseDate('" + _date.DateTime + "')).startOf('month');";
-            html += "var endDate = moment(parseDate('" + _date.DateTime + "')).endOf('month');";
+            html += "var beginDate = moment(parseDate('"+ _date.DateTime + "')).isoWeekday(1);";
+            html += "var endDate = moment(parseDate('" + _date.DateTime + "')).isoWeekday(7);";
             html += "var chartDataBlinks = dataInJSFormatBlinks.map(function(dateElement) {" +
                 "return {" +
                 "date: parseDate(dateElement.date)," +
@@ -83,7 +84,7 @@ namespace MuseTracker.Visualizations
                             ".colorRange(['#cce4f4', '#007acb'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +
-                      ".onClick(function(data) {" +
+                            ".onClick(function(data) {" +
                 "console.log('data', data);" +
             "});";
             html += "heatmapBlinks();";

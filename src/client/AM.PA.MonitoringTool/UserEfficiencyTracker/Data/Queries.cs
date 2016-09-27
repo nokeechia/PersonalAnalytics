@@ -314,6 +314,53 @@ namespace UserEfficiencyTracker.Data
             return list;
         }
 
+
+        /// <summary>
+        /// get the number of program switches of all programs, withing a 10 minutes time range.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static int GetNrOfProgramSwitches(DateTimeOffset date, VisType type)
+        {
+            var list = new List<string>();
+            var nrOfSwitches = 0;
+
+            try
+            {
+                var query = "SELECT count(process) as switches "
+                            + "FROM ( "
+                            + "SELECT process, sum(difference) / 60.0  as 'durInMins' "
+                            + "FROM (	"
+                            + "SELECT t1.process, (strftime('%s', t2.time) - strftime('%s', t1.time)) as 'difference' "
+                            + "FROM " + Shared.Settings.WindowsActivityTable + " t1 LEFT JOIN " + Shared.Settings.WindowsActivityTable + " t2 on t1.id + 1 = t2.id "
+                            + "WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(type, date, "t1.time") + " and " + Database.GetInstance().GetDateFilteringStringForQuery(type, date, "t2.time") + " "
+                            + "GROUP BY t1.id, t1.time "
+                            + ") "
+                            + "WHERE difference > 0 and process <> '" + Dict.Idle + "' "
+                            + "GROUP BY process "
+                            + "ORDER BY durInMins DESC "
+                            + ") "
+                            + "WHERE durInMins > 2 " // hint; assumption!
+                            + ";";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+                foreach (DataRow row in table.Rows)
+                {
+                    var switchesFromDB = Convert.ToInt32(row["switches"]);
+                    if (switchesFromDB > 0) {
+                        nrOfSwitches = switchesFromDB - 1;
+                    } 
+                }
+                table.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return nrOfSwitches;
+        }
+
         /// <summary>
         /// For a given process and date, list all times a user was active
         /// </summary>

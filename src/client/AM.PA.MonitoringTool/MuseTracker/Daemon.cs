@@ -351,14 +351,15 @@ namespace MuseTracker
         #endregion
         public override List<IVisualization> GetVisualizationsMonth(DateTimeOffset date)
         {
-            var vis1 = new MonthMuseVisualization(date);
-            return new List<IVisualization> { vis1 };
+            var vis = new MonthMuseVisualization(date);
+            return new List<IVisualization> { vis };
         }
 
-        //public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
-        //{
-        //    var vis = new DayMuseVisualizationTimeline(date);
-        //    return new List<IVisualization> { vis };
-        //}
+        public override List<IVisualization> GetVisualizationsWeek(DateTimeOffset date)
+        {
+            var vis = new WeekMuseVisualization(date);
+
+            return new List<IVisualization> { vis };
+        }
     }
 }

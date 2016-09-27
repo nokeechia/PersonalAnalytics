@@ -324,6 +324,7 @@ namespace Shared.Data
             }
             else if (type == VisType.Hour)
             {
+                //time span of 15 minutes implemented (guess)
                 filter = "( "
                     + " STRFTIME('%s', " + datePropertyName + ") between STRFTIME('%s', '" + new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second).Subtract(new TimeSpan(0, 15, 0)).ToString("u")
                     + "') and STRFTIME('%s', '" + new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second).AddMinutes(15).ToString("u") + "') "
