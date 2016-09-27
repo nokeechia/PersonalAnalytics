@@ -42,15 +42,16 @@ namespace MuseTracker.Visualizations
             // HTML
             /////////////////////
 
-            var msg = CreateMessageIfNoValues(avgBlinks, avgBlinkReference, MuseDataType.Blinks);
-            if (msg.Length > 0) html += msg;
+            var msgBlinks = CreateMessageIfNoValues(avgBlinks, avgBlinkReference, MuseMetric.Attention);
+            var msgEEG = CreateMessageIfNoValues(avgEEG, avgEEGReference, MuseMetric.Engagement);
+
+            if (msgBlinks.Length > 0) html += msgBlinks;
             else
             {
                 var insightBlinks = InsightBuilder(avgBlinks, avgBlinkReference, MuseDataType.Blinks);
                 html += "<p style='text-align: center; margin-top:-0.7em;'>" + insightBlinks + "</p>";
             }
 
-            var msgEEG = CreateMessageIfNoValues(avgEEG, avgEEGReference, MuseDataType.EEG);
 
             if (msgEEG.Length > 0) html += msgEEG; else 
             {
@@ -61,21 +62,25 @@ namespace MuseTracker.Visualizations
             return html;
         }
 
-        private String CreateMessageIfNoValues(double value, double referenceValue, MuseDataType type)
+        private String CreateMessageIfNoValues(double value, double referenceValue, MuseMetric m)
         {
+            var msg = "";
             if (value == 0.0 && referenceValue == 0.0)
             {
-                return VisHelper.NotEnoughData(type.ToString() + " : It is not possible to compare the dates because no data was found.");
+                msg = "It is not possible to compare the dates because no data was found.";
             }
             else if (value == 0.0)
             {
-                return VisHelper.NotEnoughData(type.ToString() + ": It is not possible to compare the dates because no data was found for today.");
+                msg = "It is not possible to compare the dates because no data was found for today.";
             }
             else if (referenceValue == 0.0)
             {
-                return VisHelper.NotEnoughData(type.ToString() + ": It is not possible to compare the dates because no data was found for yesterday.");
+                msg = "It is not possible to compare the dates because no data was found for yesterday.";
             }
 
+            if (msg.Length > 0) {
+                return "<p style = 'text-align: center; margin-top:-0.7em; font-size: 0.66em;' >" + m.ToString() + ": " + msg + "</p>";
+            }
             return "";
         }
 
