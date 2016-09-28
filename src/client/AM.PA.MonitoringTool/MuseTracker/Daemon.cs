@@ -365,7 +365,8 @@ namespace MuseTracker
         public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
         {
             var vis1 = new DayMuseInsightCompareYesterday(date);
-            return new List<IVisualization> { vis1 };
+            var vis2 = new DayInsightTopPgmAndMuseDataTrends(date);
+            return new List<IVisualization> { vis1, vis2 };
         }
     }
 }

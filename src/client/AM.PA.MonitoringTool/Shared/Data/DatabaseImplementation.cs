@@ -334,6 +334,16 @@ namespace Shared.Data
             return filter;
         }
 
+        public string GetDateFilteringStringForQuery(DateTime dateFrom, DateTime dateTo, string datePropertyName = "time")
+        {
+            var filter = "( "
+                    + " STRFTIME('%s', " + datePropertyName + ") between STRFTIME('%s', '" + dateFrom.ToString("u")
+                    + "') and STRFTIME('%s', '" + dateTo.ToString("u") + "') "
+                    + " ) ";
+
+            return filter;
+        }
+
         public DateTime GetUserWorkStart(DateTimeOffset date)
         {
             var firstEntryDateTime = DateTime.Now; // default value

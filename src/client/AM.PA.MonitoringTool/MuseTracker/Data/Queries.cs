@@ -6,6 +6,7 @@ using MuseTracker.Models;
 using System.Globalization;
 using System.Data;
 using System.Linq;
+using UserEfficiencyTracker.Data;
 
 namespace MuseTracker.Data
 {
@@ -372,6 +373,39 @@ namespace MuseTracker.Data
         }
 
         /// <summary>
+        /// Fetches average eye blinks of a user for a given time range
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static double GetBlinksWithinTimerange(DateTime date, List<TopProgramTimeDto> dtoList)
+        {
+            var avg = 0.0;
+
+            try
+            {
+                var query = "SELECT avg(blink) as avgblinks" +
+                            " FROM " + Settings.DbTableMuseBlink +
+                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) +
+                            " AND (" + buildORClause(dtoList) + ")" +
+                            ";";
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    avg = Convert.ToDouble(row["avgblinks"]);
+                }
+                table.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return avg;
+        }
+
+        /// <summary>
         /// Fetches eye blinks of a user for a given date and prepares the data from current week
         /// to be visualized.
         /// </summary>
@@ -451,7 +485,7 @@ namespace MuseTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static List<Tuple<DateTime, int>> GetBlinksByHourADay(DateTimeOffset date)
+        public static List<Tuple<DateTime, int>> GetBlinksGroupedByHour(DateTimeOffset date)
         {
             var resList = new List<Tuple<DateTime, int>>();
 
@@ -530,6 +564,136 @@ namespace MuseTracker.Data
             return eegIndices.Count > 0 ? eegIndices.Average(i => i.Item2) : 0.0;            
         }
 
+
+        /// <summary>
+        /// Fetches eeg data of a user between given from and to dates.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static List<Tuple<DateTime, double>> GetEEGIndexWithinTimerange(DateTime date, List<TopProgramTimeDto> dtoList)
+        {
+            var query = "SELECT time, eegType, avg(avg)" +
+                        " FROM " + Settings.DbTableMuseEEGData +
+                        " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
+                        " AND (" + buildORClause(dtoList) + ")" +
+                        " GROUP BY time, eegType;";
+
+            return ExecuteInstructions(query);
+        }
+
+        private static String buildORClause(List<TopProgramTimeDto> dtos)
+        {
+            var clause = "";
+            foreach (TopProgramTimeDto dto in dtos)
+            {
+                clause += Database.GetInstance().GetDateFilteringStringForQuery(dto.From, dto.To, "time");
+                clause += " OR ";
+            }
+            return clause.Substring(0, clause.Length-3); // remove last OR
+        }
+        private static List<Tuple<DateTime, double>> ExecuteInstructions(String query)
+        {
+            var result = new List<Tuple<DateTime, double>>();
+
+            try
+            {
+
+                var table = Database.GetInstance().ExecuteReadQuery(query);
+                result = FromDictToList(FromTableToDict(table));
+                table.Dispose();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToLogFile(e);
+            }
+
+            return result;
+        }
+
+        private static Dictionary<string, Tuple<double, double, double>> FromTableToDict(DataTable table)
+        {
+            var tempDict = new Dictionary<string, Tuple<double, double, double>>();
+            foreach (DataRow row in table.Rows)
+            {
+                var timestamp = (String)row[0];
+                if (tempDict.ContainsKey(timestamp))
+                {
+                    Tuple<double, double, double> values;
+                    tempDict.TryGetValue(timestamp, out values);
+                    var val = 0.0;
+                    double.TryParse(row[2].ToString(), out val);
+
+                    if ((String)row[1] == "AlphaAbsolute")
+                    {
+                        tempDict[timestamp] = new Tuple<double, double, double>(val, values.Item2, values.Item3);
+                    }
+                    if ((String)row[1] == "BetaAbsolute")
+                    {
+                        tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, val, values.Item3);
+                    }
+
+                    if ((String)row[1] == "ThetaAbsolute")
+                    {
+                        tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, values.Item2, val);
+                    }
+
+                }
+                else
+                {
+                    var val = 0.0;
+                    double.TryParse(row[2].ToString(), out val);
+                    if ((String)row[1] == "AlphaAbsolute")
+                    {
+                        tempDict.Add(timestamp, new Tuple<double, double, double>(val, 0.0, 0.0));
+                    }
+                    if ((String)row[1] == "BetaAbsolute")
+                    {
+                        tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, val, 0.0));
+                    }
+                    if ((String)row[1] == "ThetaAbsolute")
+                    {
+                        tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, 0.0, val));
+                    }
+                }
+            }
+            return tempDict;
+        }
+
+        private static List<Tuple<DateTime, double>> FromDictToList(Dictionary<string, Tuple<double, double, double>> dict)
+        {
+            var resList = new List<Tuple<DateTime, double>>();
+            foreach (KeyValuePair<string, Tuple<double, double, double>> entry in dict)
+            {
+                Tuple<double, double, double> tempValues = entry.Value;
+                double eegIndex = computeEEGIndex(tempValues.Item2, tempValues.Item1, tempValues.Item3); //eeg index formula
+                var tsd = "";
+
+                //format string according to later parsing
+                if (entry.Key.Length == ("yyyy-MM-dd HH").Length)
+                {
+                    tsd = entry.Key + ":00:00";
+                }
+                else
+                {
+                    tsd = entry.Key;
+                }
+
+                resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(tsd, getDateTimeFormat(tsd), CultureInfo.InvariantCulture), eegIndex));
+            }
+            return resList;
+
+        }
+
+        private static String getDateTimeFormat(String strDateTime)
+        {
+            if (strDateTime.Length == "yyyy-MM-dd".Length)
+            {
+                return "yyyy-MM-dd";
+            }
+
+            return "yyyy-MM-dd HH:mm:ss";
+        }
+
         /// <summary>
         /// Fetches eeg data of a user for a given date and prepares the data
         /// to be visualized as a line chart.
@@ -538,74 +702,12 @@ namespace MuseTracker.Data
         /// <returns></returns>
         public static List<Tuple<DateTime, double>> GetEEGIndex(DateTimeOffset date)
         {
-            var resList = new List<Tuple<DateTime, double>>();
+            var query = "SELECT time, eegType, avg(avg)" +
+                        " FROM " + Settings.DbTableMuseEEGData +
+                        " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
+                        " GROUP BY time, eegType;";
 
-            try
-            {
-                var query = "SELECT time, eegType, avg(avg)" +
-                            " FROM " + Settings.DbTableMuseEEGData +
-                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
-                            " GROUP BY time, eegType;";
-
-                var table = Database.GetInstance().ExecuteReadQuery(query);
-
-                var tempDict = new Dictionary<string,  Tuple<double, double, double>> ();
-                foreach (DataRow row in table.Rows)
-                {                    
-                    var timestamp = (String)row[0];
-                    if (tempDict.ContainsKey(timestamp))
-                    {
-                        Tuple<double, double, double> values;
-                        tempDict.TryGetValue(timestamp, out values);
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(val, values.Item2, values.Item3);
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, val, values.Item3);
-                        }
-
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, values.Item2, val);
-                        }
-
-                    }
-                    else {
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-                        if ((String)row[1] == "AlphaAbsolute") {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(val, 0.0, 0.0));
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, val, 0.0));
-                        }
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, 0.0, val));
-                        }
-                    }
-                }
-                table.Dispose();
-
-                foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
-                {
-                    Tuple<double, double, double> tempValues = entry.Value;
-                    double eegIndex = Math.Pow(10,tempValues.Item2) / (Math.Pow(10.0, tempValues.Item1) + Math.Pow(10.0, tempValues.Item3)); //eeg index formula, pow because of absolute values are log scaled
-                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(entry.Key, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), eegIndex));
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.WriteToLogFile(e);
-            }
-
-            return resList;
+            return ExecuteInstructions(query);
         }
 
         /// <summary>
@@ -614,79 +716,15 @@ namespace MuseTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static List<Tuple<DateTime, double>> GetEEGIndexByMinutesInterval(DateTimeOffset date, int intervalInMinutes)
+        public static List<Tuple<DateTime, double>> GetEEGIndexGroupedByMinutesInterval(DateTimeOffset date, int intervalInMinutes)
         {
-            var resList = new List<Tuple<DateTime, double>>();
+            var query = "SELECT strftime('%Y-%m-%d %H:%M:%S',time), eegType, avg(avg)" +
+                        " FROM " + Settings.DbTableMuseEEGData +
+                        " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
+                        " GROUP BY strftime('%Y-%m-%d %H',time), strftime('%M', time)/" + intervalInMinutes +
+                        ", eegType;";
 
-            try
-            {
-                var query = "SELECT strftime('%Y-%m-%d %H:%M:%S',time), eegType, avg(avg)" +
-                            " FROM " + Settings.DbTableMuseEEGData +
-                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
-                            " GROUP BY strftime('%Y-%m-%d %H',time), strftime('%M', time)/" + intervalInMinutes +
-                            ", eegType;";
-
-                var table = Database.GetInstance().ExecuteReadQuery(query);
-
-                var tempDict = new Dictionary<string, Tuple<double, double, double>>();
-                foreach (DataRow row in table.Rows)
-                {
-                    var timestamp = (String)row[0];
-                    if (tempDict.ContainsKey(timestamp))
-                    {
-                        Tuple<double, double, double> values;
-                        tempDict.TryGetValue(timestamp, out values);
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(val, values.Item2, values.Item3);
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, val, values.Item3);
-                        }
-
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, values.Item2, val);
-                        }
-
-                    }
-                    else
-                    {
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(val, 0.0, 0.0));
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, val, 0.0));
-                        }
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, 0.0, val));
-                        }
-                    }
-                }
-                table.Dispose();
-
-                foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
-                {
-                    Tuple<double, double, double> tempValues = entry.Value;
-                    double eegIndex = Math.Pow(10,tempValues.Item2) / ( Math.Pow(10, tempValues.Item1) + Math.Pow(10, tempValues.Item3) ); //eeg index formula: beta / (alpha + Theta)
-                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(entry.Key, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), eegIndex));
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.WriteToLogFile(e);
-            }
-
-            return resList;
+            return ExecuteInstructions(query);
         }
 
 
@@ -696,79 +734,14 @@ namespace MuseTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static List<Tuple<DateTime, double>> GetEEGIndexByHourADay(DateTimeOffset date)
+        public static List<Tuple<DateTime, double>> GetEEGIndexGroupedByHourADay(DateTimeOffset date)
         {
-            var resList = new List<Tuple<DateTime, double>>();
+            var query = "SELECT strftime('%Y-%m-%d %H',time), eegType, avg(avg)" +
+                        " FROM " + Settings.DbTableMuseEEGData +
+                        " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
+                        " GROUP BY strftime('%Y-%m-%d %H',time), eegType;";
 
-            try
-            {
-                var query = "SELECT strftime('%Y-%m-%d %H',time), eegType, avg(avg)" +
-                            " FROM " + Settings.DbTableMuseEEGData +
-                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date, "time") +
-                            " GROUP BY strftime('%Y-%m-%d %H',time), eegType;";
-
-                var table = Database.GetInstance().ExecuteReadQuery(query);
-
-                var tempDict = new Dictionary<string, Tuple<double, double, double>>();
-                foreach (DataRow row in table.Rows)
-                {
-                    var timestamp = (String)row[0];
-                    if (tempDict.ContainsKey(timestamp))
-                    {
-                        Tuple<double, double, double> values;
-                        tempDict.TryGetValue(timestamp, out values);
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(val, values.Item2, values.Item3);
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, val, values.Item3);
-                        }
-
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, values.Item2, val);
-                        }
-
-                    }
-                    else
-                    {
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(val, 0.0, 0.0));
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, val, 0.0));
-                        }
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, 0.0, val));
-                        }
-                    }
-                }
-                table.Dispose();
-
-                foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
-                {
-                    Tuple<double, double, double> tempValues = entry.Value;
-                    double eegIndex = tempValues.Item2 / (tempValues.Item1 + tempValues.Item3); //eeg index formula
-                    string tsdExtended = entry.Key + ":00:00";
-                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(tsdExtended, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), eegIndex));
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.WriteToLogFile(e);
-            }
-
-            return resList;
+            return ExecuteInstructions(query);
         }
 
         /// <summary>
@@ -779,76 +752,12 @@ namespace MuseTracker.Data
         /// <returns></returns>
         public static List<Tuple<DateTime, double>> GetEEGIndexOfWeek(DateTimeOffset date)
         {
-            var resList = new List<Tuple<DateTime, double>>();
+            var query = "SELECT strftime('%Y-%m-%d',time), eegType, avg(avg)" +
+                        " FROM " + Settings.DbTableMuseEEGData +
+                        " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Week, date, "time") +
+                        " GROUP BY strftime('%Y-%m-%d',time), eegType;";
 
-            try
-            {
-                var query = "SELECT strftime('%Y-%m-%d',time), eegType, avg(avg)" +
-                            " FROM " + Settings.DbTableMuseEEGData +
-                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Week, date, "time") +
-                            " GROUP BY strftime('%Y-%m-%d',time), eegType;";
-
-                var table = Database.GetInstance().ExecuteReadQuery(query);
-
-                var tempDict = new Dictionary<string, Tuple<double, double, double>>();
-                foreach (DataRow row in table.Rows)
-                {
-                    var timestamp = (String)row[0];
-                    if (tempDict.ContainsKey(timestamp))
-                    {
-                        Tuple<double, double, double> values;
-                        tempDict.TryGetValue(timestamp, out values);
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(val, values.Item2, values.Item3);
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, val, values.Item3);
-                        }
-
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, values.Item2, val);
-                        }
-
-                    }
-                    else
-                    {
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(val, 0.0, 0.0));
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, val, 0.0));
-                        }
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, 0.0, val));
-                        }
-                    }
-                }
-                table.Dispose();
-
-                foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
-                {
-                    Tuple<double, double, double> tempValues = entry.Value;
-                    double eegIndex = tempValues.Item2 / (tempValues.Item1 + tempValues.Item3); //eeg index formula
-                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(entry.Key, "yyyy-MM-dd", CultureInfo.InvariantCulture), eegIndex));
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.WriteToLogFile(e);
-            }
-
-            return resList;
+            return ExecuteInstructions(query);
         }
 
         /// <summary>
@@ -859,77 +768,23 @@ namespace MuseTracker.Data
         /// <returns></returns>
         public static List<Tuple<DateTime, double>> GetEEGIndexOfMonth(DateTimeOffset date)
         {
-            var resList = new List<Tuple<DateTime, double>>();
+            var query = "SELECT strftime('%Y-%m-%d',time), eegType, avg(avg)" +
+                        " FROM " + Settings.DbTableMuseEEGData +
+                        " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Month, date, "time") +
+                        " GROUP BY strftime('%Y-%m-%d',time), eegType;";
 
-            try
-            {
-                var query = "SELECT strftime('%Y-%m-%d',time), eegType, avg(avg)" +
-                            " FROM " + Settings.DbTableMuseEEGData +
-                            " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Month, date, "time") +
-                            " GROUP BY strftime('%Y-%m-%d',time), eegType;";
-
-                var table = Database.GetInstance().ExecuteReadQuery(query);
-
-                var tempDict = new Dictionary<string, Tuple<double, double, double>>();
-                foreach (DataRow row in table.Rows)
-                {
-                    var timestamp = (String)row[0];
-                    if (tempDict.ContainsKey(timestamp))
-                    {
-                        Tuple<double, double, double> values;
-                        tempDict.TryGetValue(timestamp, out values);
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(val, values.Item2, values.Item3);
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, val, values.Item3);
-                        }
-
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict[timestamp] = new Tuple<double, double, double>(values.Item1, values.Item2, val);
-                        }
-
-                    }
-                    else
-                    {
-                        var val = 0.0;
-                        double.TryParse(row[2].ToString(), out val);
-                        if ((String)row[1] == "AlphaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(val, 0.0, 0.0));
-                        }
-                        if ((String)row[1] == "BetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, val, 0.0));
-                        }
-                        if ((String)row[1] == "ThetaAbsolute")
-                        {
-                            tempDict.Add(timestamp, new Tuple<double, double, double>(0.0, 0.0, val));
-                        }
-                    }
-                }
-                table.Dispose();
-
-                foreach (KeyValuePair<string, Tuple<double, double, double>> entry in tempDict)
-                {
-                    Tuple<double, double, double> tempValues = entry.Value;
-                    double eegIndex = tempValues.Item2 / (tempValues.Item1 + tempValues.Item3); //eeg index formula
-                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact(entry.Key, "yyyy-MM-dd", CultureInfo.InvariantCulture), eegIndex));
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.WriteToLogFile(e);
-            }
-
-            return resList;
+            return ExecuteInstructions(query);
         }
 
+        /// <summary>
+        /// Computes EEG Index by receiving absolute (log scaled) values
+        /// </summary>
+        /// <param name="beta"></param>
+        /// <param name="alpha"></param>
+        /// <param name="theta"></param>
+        /// <returns></returns>
+        private static double computeEEGIndex(double beta, double alpha, double theta) {
+            return Math.Pow(10, beta) / (Math.Pow(10, alpha) + Math.Pow(10, theta));
+        }
     }
 }

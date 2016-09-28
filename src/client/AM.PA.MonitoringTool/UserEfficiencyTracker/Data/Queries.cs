@@ -246,7 +246,7 @@ namespace UserEfficiencyTracker.Data
         /// <param name="date"></param>
         /// <param name="maxNumberOfPrograms"></param>
         /// <returns></returns>
-        internal static Dictionary<string, List<TopProgramTimeDto>> GetTopProgramsUsedWithTimes(DateTimeOffset date, VisType type, int maxNumberOfPrograms)
+        public static Dictionary<string, List<TopProgramTimeDto>> GetTopProgramsUsedWithTimes(DateTimeOffset date, VisType type, int maxNumberOfPrograms)
         {
             var dto = new Dictionary<string, List<TopProgramTimeDto>>();
 
@@ -404,7 +404,7 @@ namespace UserEfficiencyTracker.Data
         }
     }
 
-    internal class TopProgramTimeDto
+    public class TopProgramTimeDto
     {
         public DateTime From { get; private set; }
         public DateTime To { get; private set; }
