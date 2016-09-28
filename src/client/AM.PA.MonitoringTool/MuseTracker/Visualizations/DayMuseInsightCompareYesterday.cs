@@ -14,7 +14,7 @@ namespace MuseTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Attention & Engagement<br/>today vs. yesterday";
+            Title = "Attention & Engagement<br/>Review";
             IsEnabled = true;
             Order = 21;
             Size = VisSize.Small;
@@ -42,6 +42,7 @@ namespace MuseTracker.Visualizations
             // HTML
             /////////////////////
 
+            html += "<div>";
             var msgBlinks = CreateMessageIfNoValues(avgBlinks, avgBlinkReference, MuseMetric.Attention);
             var msgEEG = CreateMessageIfNoValues(avgEEG, avgEEGReference, MuseMetric.Engagement);
 
@@ -49,16 +50,26 @@ namespace MuseTracker.Visualizations
             else
             {
                 var insightBlinks = InsightBuilder(avgBlinks, avgBlinkReference, MuseDataType.Blinks);
-                html += "<p style='text-align: center; margin-top:-0.7em;'>" + insightBlinks + "</p>";
+                html += "<p style='text-align: center; margin-top:-0.7em; margin-bottom:-0.7em;'>" + insightBlinks + "</p>";
             }
 
 
             if (msgEEG.Length > 0) html += msgEEG; else 
             {
-                var insightBlinks = InsightBuilder(avgEEG, avgEEGReference, MuseDataType.EEG);
-                html += "<p style='text-align: center; margin-top:-0.7em;'>" + insightBlinks + "</p>";
-            }
+                var insightEEG = InsightBuilder(avgEEG, avgEEGReference, MuseDataType.EEG);
+                if (html.Contains("lower") && insightEEG.Contains("lower") || html.Contains("higher") && insightEEG.Contains("higher"))
+                {
+                    html += "<p style='text-align: center; margin-top:-0.7em; margin-bottom:-0.7em;'>" + " and " + "</p>";
+                }
+                else {
+                    html += "<p style='text-align: center; margin-top:0.4em; margin-bottom:0.4em;'>" + " but " + "</p>";
 
+                }
+                html += "<p style='text-align: center; margin-top:-0.7em; margin-bottom:-0.7em;'>" + insightEEG + "</p>";            
+        }
+
+
+            html += "</div>";
             return html;
         }
 
@@ -125,7 +136,7 @@ namespace MuseTracker.Visualizations
             return "";
         }
         private String ConstructText(MuseMetric metric, String adj, String prep, String metricColor, String trendColor) {
-            return "Your average <strong style='color:" + metricColor + ";'>" + metric.ToString().ToLower() + "</strong> is <strong style='font-size:1.25em; color:" + trendColor + ";'>" + adj + "</strong> " + prep + " yesterday";
+            return "Your average <strong style='color:" + metricColor + ";'>" + metric.ToString().ToLower() + "</strong> is <strong style='font-size:1.15em; color:" + trendColor + ";'>" + adj + "</strong> " + prep + " yesterday";
         }
     }
 }

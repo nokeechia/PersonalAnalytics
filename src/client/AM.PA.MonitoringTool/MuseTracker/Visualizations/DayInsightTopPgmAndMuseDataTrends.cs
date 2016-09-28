@@ -83,17 +83,17 @@ namespace MuseTracker.Visualizations
                 html += "<tr>";
                 html += "<td>" + ProcessNameHelper.GetFileDescription(p.Item1) + "</td>";
 
-                var blink = avgBlinksPerPgm.Find(x => x.Item1.Equals(p)).Item2;
+                var blink = avgBlinksPerPgm.Find(x => x.Item1.Equals(p.Item1)).Item2;
                 var percBlink = ((blink / avgBlinks) - 1) * 100;
 
                 //blinks are reverse -> better attention when less blinks
                 if (percBlink > 0)
                 {
-                    html += "<td style='color:green;'>" + "<strong>&#8600; </strong>" + "-" + Math.Round(percBlink) + "%</td>";
+                    html += "<td style='color:red;'>" + "<strong>&#8600; </strong>" + "-" + Math.Round(percBlink) + "%</td>";
                 }
                 else if (percBlink < 0)
                 {
-                    html += "<td style='color:red;'>" + "<strong>&#8599; </strong> +" + -1*Math.Round(percBlink) + "%</td>";
+                    html += "<td style='color:green;'>" + "<strong>&#8599; </strong> +" + -1*Math.Round(percBlink) + "%</td>";
                 }
                 else
                 {
