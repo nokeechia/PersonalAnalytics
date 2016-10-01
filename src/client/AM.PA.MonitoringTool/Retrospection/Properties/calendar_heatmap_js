@@ -5,18 +5,20 @@ function calendarHeatmap() {
   var legendWidth = 150; //MONICA CHANGE, PREV: 150
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var daysShortForWeekMode = ['M', 'T', 'W', 'T', 'F', 'S', 'S']; //customized by monica
   var selector = 'body';
   var SQUARE_LENGTH = 22; //MONICA CHANGE, PREV: 150
   var SQUARE_PADDING = 2;
   var MONTH_LABEL_PADDING = 2; //MONICA CHANGE prev 6
-  var now = moment().endOf('day').toDate();
-  var yearAgo = moment().startOf('day').subtract(1, 'month').toDate(); //MONICA CHANGE REFACTOR
+  var endDate = moment().endOf('day').toDate();
+  var beginDate = moment().startOf('day').subtract(1, 'month').toDate(); //MONICA CHANGE REFACTOR
   var data = [];
   var colorRange = ['#D8E6E7', '#218380'];
   var tooltipEnabled = true;
   var tooltipUnit = 'contribution';
   var legendEnabled = true;
   var onClick = null;
+  var mode = 'MONTH';
 
   // setters and getters
   chart.data = function (value) {
@@ -62,14 +64,20 @@ function calendarHeatmap() {
   };
 
   chart.begin = function (value) {
-    if (!arguments.length) { return yearAgo; }
-    yearAgo = value;
+    if (!arguments.length) { return beginDate; }
+    beginDate = value;
     return chart;
   };
 
   chart.end = function (value) {
-    if (!arguments.length) { return now; }
-    now = value;
+    if (!arguments.length) { return endDate; }
+    endDate = value;
+    return chart;
+  };
+
+  chart.mode = function (value) {
+    if (!arguments.length) { return mode; }
+    mode = value;
     return chart;
   };
 
@@ -77,12 +85,11 @@ function calendarHeatmap() {
 
     d3.select(chart.selector()).selectAll('svg.calendar-heatmap').remove(); // remove the existing chart, if it exists
 
-    var dateRange = d3.time.days(yearAgo, now); // generates an array of date objects within the specified range
-    var monthRange = d3.time.months(moment(yearAgo).startOf('month').toDate(), now); // it ignores the first month if the 1st date is after the start of the month
+    var dateRange = d3.time.days(beginDate, moment(endDate).endOf('day').toDate()); // generates an array of date objects within the specified range
+    var monthRange = d3.time.months(moment(beginDate).startOf('month').toDate(), endDate); // it ignores the first month if the 1st date is after the start of the month
     var firstDate = moment(dateRange[0]);
-    var max = d3.max(chart.data(), function (d) { if(d.count < 1) {return d.count*100} else {return d.count}; }); // max data value //MONICA CHANGE BECAUSE VALUES < 0
-    var min = d3.min(chart.data(), function (d) { if(d.count < 1) {return d.count*100} else {return 0}; }); // min data value //MONICA CHANGE BECAUSE VALUES < 0
-    	
+	var min = 0;
+	var max = 1;    	
     // color range
     var color = d3.scale.linear()
       .range(chart.colorRange())
@@ -93,33 +100,69 @@ function calendarHeatmap() {
 
     drawChart();
 
+	//customized by monica
     function drawChart() {
       var svg = d3.select(chart.selector())
         .append('svg')
-        .attr('width', width)
+        .attr('width', function(){
+			if(mode === 'WEEK') {
+				return 250;
+			}else {
+				return width;
+			}
+		})
         .attr('class', 'calendar-heatmap')
-        .attr('height', height)
+        .attr('height', function(){
+			if(mode === 'WEEK') {
+				return 50;
+			}else {
+				return height;
+			}		
+		})
         .style('padding', '36px');
 
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
 
+	  //customized by monica
       dayRects.enter().append('rect')
         .attr('class', 'day-cell')
         .attr('width', SQUARE_LENGTH)
         .attr('height', SQUARE_LENGTH)
         .attr('fill', 'gray')
         .attr('x', function (d, i) {
-          var cellDate = moment(d);
-          var result = cellDate.week() - firstDate.week() + (firstDate.weeksInYear() * (cellDate.weekYear() - firstDate.weekYear()));
-          return result * (SQUARE_LENGTH + SQUARE_PADDING);
+	      var cellDate = moment(d);
+		  var result;
+		  if(mode === 'WEEK') {
+		    if(d.getDay() === 0) {
+				day = 7; //necessary to position sunday at the bottom of the week
+			}else {
+				day = d.getDay();
+			}
+
+			return MONTH_LABEL_PADDING + day * (SQUARE_LENGTH + SQUARE_PADDING);
+
+		  }else {
+	        result = cellDate.week() - firstDate.week() + (firstDate.weeksInYear() * (cellDate.weekYear() - firstDate.weekYear()));		
+			return result * (SQUARE_LENGTH + SQUARE_PADDING);  
+		  }
+          
         })
-        .attr('y', function (d, i) { return MONTH_LABEL_PADDING + d.getDay() * (SQUARE_LENGTH + SQUARE_PADDING); });
+        .attr('y', function (d, i) { 
+		  var day = 0;
+		  if(mode === 'WEEK') {
+		   return 0;
+		  }else {
+	        day = d.getDay();	  
+		    return  MONTH_LABEL_PADDING + day * (SQUARE_LENGTH + SQUARE_PADDING); 
+		  }
+
+		});
 
       if (typeof onClick === 'function') {
         dayRects.on('click', function (d) {
           var count = countForDate(d);
-          onClick({ date: d, count: count});
+          onClick({ date: d, count: count });
         });
       }
 
@@ -137,17 +180,17 @@ function calendarHeatmap() {
         });
       }
 
-      if (chart.legendEnabled()) {
-	if(min === 0) {
-        	var colorRange = [color(0)];
-        	for (var i = 3; i > 0; i--) {
-          		colorRange.push(color(max / i));
-        	}
-	}else{
-        	var colorRange = [color(min)];
-        	for (var i = 3; i > 0; i--) {
-          		colorRange.push(color((max-min) / i + min));
-        	}
+    if (chart.legendEnabled()) {
+		if(min === 0) {
+        		var colorRange = [color(0)];
+        		for (var i = 3; i > 0; i--) {
+          			colorRange.push(color(max / i));
+        		}
+		}else{
+        		var colorRange = [color(min)];
+        		for (var i = 3; i > 0; i--) {
+          			colorRange.push(color((max-min) / i + min));
+        		}
 	}
 
 
@@ -183,7 +226,11 @@ function calendarHeatmap() {
           .attr('class', 'month-name')
           .style()
           .text(function (d) {
-            return months[d.getMonth()];
+		    if(mode === 'WEEK' && $('.month-name').text().length > 0) {
+			  return 'and ' + months[d.getMonth()]; //if at the end of the month we show e.g., Sept and Oct as header
+			} else {
+              return months[d.getMonth()];
+			}
           })
           .attr('x', function (d, i) {
             var matchIndex = 0;
@@ -192,47 +239,88 @@ function calendarHeatmap() {
               return moment(d).isSame(element, 'month') && moment(d).isSame(element, 'year');
             });
 
-            return Math.floor(matchIndex / 7) * (SQUARE_LENGTH + SQUARE_PADDING);
+			if(mode === 'WEEK' && matchIndex > 0){
+			  return (SQUARE_LENGTH + SQUARE_PADDING);				
+			}else {
+              return Math.floor(matchIndex / 7) * (SQUARE_LENGTH + SQUARE_PADDING);			
+			}
           })
           .attr('y', 0);  // fix these to the top
 
-      days.forEach(function (day, index) {
-        if (index % 2) {
+
+	//customized by monica
+	  if(mode === 'WEEK'){
+		daysShortForWeekMode.forEach(function (day, index) {
+		  var i = 0;
+		  if(index === 0) {
+			i = 7;
+		  } else {
+			i = index;		  
+		  }
+
           svg.append('text')
             .attr('class', 'day-initial')
-            .attr('transform', 'translate(-18,' + (SQUARE_LENGTH + SQUARE_PADDING) * (index + 1) + ')')
+            .attr('transform', 'translate(' + (SQUARE_LENGTH + 4) * (index + 1) + ', -10)')
             .style('text-anchor', 'middle')
-            .attr('dy', '2')
+			.attr('dx', '2')
             .text(day);
-        }
-      });
+		});
+	  }else {
+		  days.forEach(function (day, index) {
+			if (index % 2) {
+			  svg.append('text')
+				.attr('class', 'day-initial')
+				.attr('transform', 'translate(-18,' + (SQUARE_LENGTH + SQUARE_PADDING) * (index + 1) + ')')
+				.style('text-anchor', 'middle')
+				.attr('dy', '2')
+				.text(day);
+			}
+		  });	  
+	  
+	  }
     }
 
+	//Customized by Monica
     function tooltipHTMLForDate(d) {
       var dateStr = moment(d).format('ddd, MMM Do YYYY');
       var count = countForDate(d);
-      return '<span><strong>' + (count ? count : 'No') + ' ' + tooltipUnit + (count === 1 ? '' : 's') + '</strong> on ' + dateStr + '</span>';
+	  var info = extraInfoForDate(d);
+      return '<span>On ' + dateStr + '<br>' + (count ? count : 'No') + ' ' + tooltipUnit + '</span><br>' +  '<span>' + (info ? JSON.parse(info).switches + ' nr of switches' : "") + '</span>' + '<br>' + '<span>' + (info ? 'Top programs: ' + JSON.parse(info).topPgms : "") + '</span>';
     }
 
+	//Customized by Monica
     function countForDate(d) {
       var count = 0;
       var match = chart.data().find(function (element, index) {
         return moment(element.date).isSame(d, 'day');
       });
       if (match) {
-        count = match.count;
+        count = match.tp.original;
       }
       return count;
+    }
+
+	//Newly created by Monica
+    function extraInfoForDate(d) {
+      var info = 0;
+      var match = chart.data().find(function (element, index) {
+        return moment(element.date).isSame(d, 'day');
+      });
+      if (match) {
+        info = match.tp.extra_info;
+      }
+      return info;
     }
 
     var daysOfChart = chart.data().map(function (day) {
       return day.date.toDateString();
     });
 
+	//customized by monica
     dayRects.filter(function (d) {
       return daysOfChart.indexOf(d.toDateString()) > -1;
     }).attr('fill', function (d, i) {
-      if(chart.data()[i].count < 1) {return color(chart.data()[i].count*100);} else {return color(chart.data()[i].count);} //MONICA CHANGE
+       return color(chart.data()[i].count);
     });
   }
 

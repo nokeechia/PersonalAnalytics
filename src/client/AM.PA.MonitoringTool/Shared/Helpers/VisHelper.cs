@@ -134,11 +134,25 @@ namespace Shared.Helpers
             }
         }
 
-        public class DateElement<T> {
+        public class DateElement<T>
+        {
             public String date;
             public T count;
         }
 
+        public class DateElementExtended<T>
+        {
+            public String date;
+            public T normalizedvalue;
+            public T originalvalue;
+            public String extraInfo;
+        }
+
+        public class ExtraInfo
+        {
+            public int switches { get; set; }
+            public string topPgms { get; set; }
+        }
         public static String CreateJavaScriptArrayOfObjects(List<Tuple<DateTime, int >> t)
         {
             List<DateElement<int>> dateElements = new List<DateElement<int>>();
@@ -170,7 +184,12 @@ namespace Shared.Helpers
             return output;
         }
 
-        public static double Rescale(int x, int min, int max, int newMin, int newMax)
+        public static String CreateJavaScriptArrayOfObjectsDoubleWithAddtionalInfo(List<DateElementExtended<double>> d)
+        {
+            return d.Aggregate("", (current, b) => current + "{date: '" + b.date.ToString() + "', normalizedvalue: '" + b.normalizedvalue + "', originalvalue: '" + b.originalvalue + "', extraInfo: '" + b.extraInfo + "'},").Trim().TrimEnd(','); 
+        }
+
+        public static double Rescale(double x, double min, double max, double newMin, double newMax)
         {
             //f(x) = (x-min) / (max-min)            
             return Math.Round((double)(x - min) / (max - min), 2);

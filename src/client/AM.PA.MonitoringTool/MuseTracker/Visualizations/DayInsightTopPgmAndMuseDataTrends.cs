@@ -23,7 +23,7 @@ namespace MuseTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Trends while using Programs";
+            Title = "Attention & Engagement per Top Used Programs ";
             this._date = date;
             this._type = VisType.Day;
             IsEnabled = true; 
@@ -89,15 +89,15 @@ namespace MuseTracker.Visualizations
                 //blinks are reverse -> better attention when less blinks
                 if (percBlink > 0)
                 {
-                    html += "<td style='color:red;'>" + "<strong>&#8600; </strong>" + "-" + Math.Round(percBlink) + "%</td>";
+                    html += "<td style='color:red;'>" + "<strong>&#9730; </strong>" + "-" + Math.Round(percBlink) + "%</td>";
                 }
                 else if (percBlink < 0)
                 {
-                    html += "<td style='color:green;'>" + "<strong>&#8599; </strong> +" + -1*Math.Round(percBlink) + "%</td>";
+                    html += "<td style='color:green;'>" + "<strong>&#9728; </strong> +" + -1*Math.Round(percBlink) + "%</td>";
                 }
                 else
                 {
-                    html += "<td>" + "<strong>&#8594; </strong>" + Math.Round(percBlink) + "%</td>";
+                    html += "<td>" + "<strong>&#9729; </strong>" + Math.Round(percBlink) + "%</td>";
                 }
 
                 var eeg = Math.Round(p.Item2, 2);
@@ -105,19 +105,22 @@ namespace MuseTracker.Visualizations
 
                 if (percentage > 0)
                 {
-                     html += "<td style='color:green;'>" + "<strong>&#8599; </strong>" + "+"+Math.Round(percentage) + "%</td>";
+                     html += "<td style='color:green;'>" + "<strong>&#9728; </strong>" + "+"+Math.Round(percentage) + "%</td>";
                 }
                 else if (percentage < 0)
                 {
-                    html += "<td style='color:red;'>" + "<strong>&#8600; </strong>" + Math.Round(percentage) + "%</td>";
+                    html += "<td style='color:red;'>" + "<strong>&#9730; </strong>" + Math.Round(percentage) + "%</td>";
                 }
                 else {
-                    html += "<td>" + "<strong>&#8594; </strong>" + Math.Round(percentage) + "%</td>";
+                    html += "<td>" + "<strong>&#9729; </strong>" + Math.Round(percentage) + "%</td>";
                 }
                 html += "</tr>";
             }
             html += "</tbody>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Compares daily average values with average values per program of this date.</p>";
+
             html += "</table>";
+
 
             /////////////////////
             // create & add javascript

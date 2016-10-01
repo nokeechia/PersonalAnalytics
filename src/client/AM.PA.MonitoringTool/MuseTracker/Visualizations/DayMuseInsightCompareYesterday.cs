@@ -14,7 +14,7 @@ namespace MuseTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Attention & Engagement<br/>Review";
+            Title = "Attention & Engagement<br/>Today vs. Yesterday";
             IsEnabled = true;
             Order = 21;
             Size = VisSize.Small;
@@ -42,7 +42,6 @@ namespace MuseTracker.Visualizations
             // HTML
             /////////////////////
 
-            html += "<div>";
             var msgBlinks = CreateMessageIfNoValues(avgBlinks, avgBlinkReference, MuseMetric.Attention);
             var msgEEG = CreateMessageIfNoValues(avgEEG, avgEEGReference, MuseMetric.Engagement);
 
@@ -69,7 +68,6 @@ namespace MuseTracker.Visualizations
         }
 
 
-            html += "</div>";
             return html;
         }
 
@@ -136,7 +134,7 @@ namespace MuseTracker.Visualizations
             return "";
         }
         private String ConstructText(MuseMetric metric, String adj, String prep, String metricColor, String trendColor) {
-            return "Your average <strong style='color:" + metricColor + ";'>" + metric.ToString().ToLower() + "</strong> is <strong style='font-size:1.15em; color:" + trendColor + ";'>" + adj + "</strong> " + prep + " yesterday";
+            return "Your average <strong style='color:" + metricColor + ";'>" + metric.ToString().ToLower() + "</strong> is <strong style='color:" + trendColor + ";'>" + adj + "</strong> " + prep + " yesterday";
         }
     }
 }

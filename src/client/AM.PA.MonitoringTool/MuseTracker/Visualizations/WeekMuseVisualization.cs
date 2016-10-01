@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Shared;
 using Shared.Helpers;
 using MuseTracker.Data;
+using static Shared.Helpers.VisHelper;
+using System.Web.Script.Serialization;
 
 namespace MuseTracker.Visualizations
 {
@@ -17,7 +17,7 @@ namespace MuseTracker.Visualizations
         {
             this._date = date;
 
-            Title = "Attention Overview (# blinks) and Engagement Overview (EEG Index) ";
+            Title = "Attention Overview (#blinks) and Engagement Overview (EEG Index) ";
             IsEnabled = true;
             Order = 1;
             Size = VisSize.Square;
@@ -34,11 +34,27 @@ namespace MuseTracker.Visualizations
             var blinks = Queries.GetBlinksOfWeek(_date);
             var eegData = Queries.GetEEGIndexOfWeek(_date);
 
-            if (blinks.Count < 1 && eegData.Count < 1) //Todo: have to set a min limit
+            if (blinks.Count < 1 && eegData.Count < 1)
             {
-                html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity.");
+                html += VisHelper.NotEnoughData("It is not possible to give you insights. Either because of no blink or EEG data.");
                 return html;
             }
+
+            /////////////////////
+            // normalize data sets
+            /////////////////////
+
+            //because more blinks indicate less attention we have to reverse the values
+            List<Tuple<DateTime, double>> logblinks = blinks.Select(i => new Tuple<DateTime, double>(i.Item1, Math.Log10(i.Item2)*-1)).ToList(); //log transform because of huge differences in ranges, -1 because reverse blinks indicate more attention
+            var minBlinks = logblinks.Min(i => i.Item2);
+            var maxBlinks = logblinks.Max(i => i.Item2);
+            
+         
+            List<DateElementExtended<double>> normalizedBlinks = logblinks.Select(i => new DateElementExtended<double> { date = i.Item1.ToString(),
+                normalizedvalue = Math.Round(VisHelper.Rescale(i.Item2, minBlinks, maxBlinks, 0.0, 1.0), 2),
+                originalvalue = Math.Pow(10, i.Item2*-1), //because log befored
+                extraInfo = new JavaScriptSerializer().Serialize(FromDateToExtraInfo(i.Item1))
+            }).ToList();
 
 
             /////////////////////
@@ -53,12 +69,12 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // HTML
             /////////////////////
-            html += "<div id='attentionoverview' style='width:50%; display:inline-block;' align='center'></div>";
-            html += "<div id='engagementoverview' style='width:50%; display:inline-block;' align='center'></div>";
+            html += "<div id='attentionoverview' align='center'></div>";
+            html += "<div id='engagementoverview' align='center'></div>";
             html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows attention via reverse number of blinks per day. Less blinks indicate more attention and average EEG Index per day which indicates your engagement level.</p>";
 
 
-            var dataInJSFormatBlinks = VisHelper.CreateJavaScriptArrayOfObjects(blinks);
+            var dataInJSFormatBlinks = VisHelper.CreateJavaScriptArrayOfObjectsDoubleWithAddtionalInfo(normalizedBlinks);
             var dataInJSFormatEEG = VisHelper.CreateJavaScriptArrayOfObjectsDouble(eegData);
 
             /////////////////////
@@ -72,7 +88,8 @@ namespace MuseTracker.Visualizations
             html += "var chartDataBlinks = dataInJSFormatBlinks.map(function(dateElement) {" +
                 "return {" +
                 "date: parseDate(dateElement.date)," +
-                "count: dateElement.count" +
+                "count: dateElement.normalizedvalue," +
+                "tp: {original: dateElement.originalvalue, extra_info: dateElement.extraInfo}" +
                 "};" +
             "});";
 
@@ -84,6 +101,7 @@ namespace MuseTracker.Visualizations
                             ".colorRange(['#cce4f4', '#007acb'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +
+                            ".mode('WEEK')" +
                             ".onClick(function(data) {" +
                 "console.log('data', data);" +
             "});";
@@ -106,6 +124,7 @@ namespace MuseTracker.Visualizations
                             ".colorRange(['#ffcee8', '#FF0A8D'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +
+                            ".mode('WEEK')" +
                       ".onClick(function(data) {" +
                 "console.log('data', data);" +
             "});";
@@ -116,5 +135,13 @@ namespace MuseTracker.Visualizations
 
             return html;
         }
+
+        public static ExtraInfo FromDateToExtraInfo(DateTime _date)
+        {
+            return new ExtraInfo { switches = UserEfficiencyTracker.Data.Queries.GetNrOfProgramSwitches(_date, VisType.Day), topPgms = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(_date, VisType.Day, 3).Aggregate("", (current, p) => current + ProcessNameHelper.GetFileDescription(p) + ", ").Trim().TrimEnd(',') };
+        }
+
     }
+
+
 }
