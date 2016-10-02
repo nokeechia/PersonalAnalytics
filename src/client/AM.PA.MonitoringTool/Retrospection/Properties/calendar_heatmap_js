@@ -119,7 +119,7 @@ function calendarHeatmap() {
 				return height;
 			}		
 		})
-        .style('padding', '36px');
+        .style('padding', '26px'); //customized by monica
 
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
@@ -187,7 +187,7 @@ function calendarHeatmap() {
           			colorRange.push(color(max / i));
         		}
 		}else{
-        		var colorRange = [color(min)];
+        		var colorRange = [color(min)];t
         		for (var i = 3; i > 0; i--) {
           			colorRange.push(color((max-min) / i + min));
         		}
@@ -198,24 +198,24 @@ function calendarHeatmap() {
         legendGroup.selectAll('.calendar-heatmap-legend')
             .data(colorRange)
             .enter()
-          .append('rect')
+            .append('rect')
             .attr('class', 'calendar-heatmap-legend')
-            .attr('width', SQUARE_LENGTH)
-            .attr('height', SQUARE_LENGTH)
-            .attr('x', function (d, i) { return (width - legendWidth) + (i + 1) * 24; }) // MONICA before it was 13
-            .attr('y', height + SQUARE_PADDING)
+            .attr('width', SQUARE_LENGTH/2)
+            .attr('height', SQUARE_LENGTH/2)
+            .attr('x', function (d, i) { return (width - legendWidth - 48) + (i + 1) * 24; }) // customized by monica
+            .attr('y', 2*SQUARE_LENGTH + SQUARE_PADDING) // customized by monica
             .attr('fill', function (d) { return d; });
 
         legendGroup.append('text')
           .attr('class', 'calendar-heatmap-legend-text')
           .attr('x', width - legendWidth - 24) // MONICA before it was 13
-          .attr('y', height + SQUARE_LENGTH)
+          .attr('y', 1.5*SQUARE_LENGTH + SQUARE_PADDING)
           .text('Less');
 
         legendGroup.append('text')
           .attr('class', 'calendar-heatmap-legend-text')
-          .attr('x', (width - legendWidth + SQUARE_PADDING) + (colorRange.length + 1) * 24) // MONICA before it was 13
-          .attr('y', height + SQUARE_LENGTH)
+          .attr('x', (width - legendWidth - 48) + (colorRange.length + 1) * 12) // customized by monica
+          .attr('y', 1.5*SQUARE_LENGTH + SQUARE_PADDING) // customized by monica
           .text('More');
       }
 
