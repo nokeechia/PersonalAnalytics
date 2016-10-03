@@ -509,6 +509,7 @@ namespace InteractionTracker.Data
             var activityDictionary = new Dictionary<string, List<int>>();
 
             var chatsList = new List<int>();
+            var emailsHandledList = new List<int>();
             var emailsReceivedList = new List<int>();
             var emailsSentList = new List<int>();
             var meetingsAttendedList = new List<int>();
@@ -521,6 +522,7 @@ namespace InteractionTracker.Data
             var meetings = GetMeetingsFromSixAm(later);
 
             bool didHappen = false;
+            bool didEmail = false;
 
             TimeSpan span = later.Subtract(earlier);
             int minutes = (int)Math.Floor(span.TotalMinutes);
@@ -565,6 +567,7 @@ namespace InteractionTracker.Data
                         emailsSentList.Add(1);
                         notFocused = 1;
                         didHappen = true;
+                        didEmail = true;
                         break;
                     }
                 }
@@ -583,6 +586,7 @@ namespace InteractionTracker.Data
                         emailsReceivedList.Add(1);
                         notFocused = 1;
                         didHappen = true;
+                        didEmail = true;
                         break;
                     }
                 }
@@ -592,6 +596,16 @@ namespace InteractionTracker.Data
                     emailsReceivedList.Add(0);
                 }
                 didHappen = false;
+
+                if (!didEmail)
+                {
+                    emailsHandledList.Add(0);
+                }
+                else
+                {
+                    emailsHandledList.Add(1);
+                    didEmail = false;
+                }
 
                 // For Meetings
                 foreach (var meeting in meetings)
@@ -623,8 +637,9 @@ namespace InteractionTracker.Data
             
             activityDictionary.Add("Scheduled Meetings", meetingsAttendedList);
             activityDictionary.Add("Chat Conversations", chatsList);
-            activityDictionary.Add("Writing Emails", emailsSentList);
-            activityDictionary.Add("Reading Emails", emailsReceivedList);
+            //activityDictionary.Add("Writing Emails", emailsSentList);
+            //activityDictionary.Add("Reading Emails", emailsReceivedList);
+            activityDictionary.Add("Handling Emails", emailsHandledList);
             activityDictionary.Add("Overall Communication", overallFocusList);
             //activityDictionary.Add("Now", nowList);
             return activityDictionary;
