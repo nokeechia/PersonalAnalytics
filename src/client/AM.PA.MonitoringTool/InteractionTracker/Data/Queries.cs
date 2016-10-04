@@ -212,20 +212,23 @@ namespace InteractionTracker.Data
 
             foreach (var meeting in meetings)
             {
-                if (meeting.Item1 > startTs && meeting.Item2 < endTs)
+                if (meeting.Item1 < DateTime.Now)
                 {
-                    var t = new Tuple<DateTime, DateTime>(meeting.Item1, meeting.Item2);
-                    current.Add(t);
-                }
-                else if (meeting.Item1 < startTs && meeting.Item2 < endTs)
-                {
-                    var t = new Tuple<DateTime, DateTime>(startTs, meeting.Item2);
-                    current.Add(t);
-                }
-                else if (meeting.Item1 > startTs && meeting.Item2 > endTs)
-                {
-                    var t = new Tuple<DateTime, DateTime>(meeting.Item1, endTs);
-                    current.Add(t);
+                    if (meeting.Item1 > startTs && meeting.Item2 < endTs)
+                    {
+                        var t = new Tuple<DateTime, DateTime>(meeting.Item1, meeting.Item2);
+                        current.Add(t);
+                    }
+                    else if (meeting.Item1 < startTs && meeting.Item2 < endTs)
+                    {
+                        var t = new Tuple<DateTime, DateTime>(startTs, meeting.Item2);
+                        current.Add(t);
+                    }
+                    else if (meeting.Item1 > startTs && meeting.Item2 > endTs)
+                    {
+                        var t = new Tuple<DateTime, DateTime>(meeting.Item1, endTs);
+                        current.Add(t);
+                    }
                 }
             }
             return current;
@@ -337,7 +340,7 @@ namespace InteractionTracker.Data
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
                 
-                sentMail = GetEmailsSentOrReceivedFromSixAm(later, "sent");
+                //sentMail = GetEmailsSentOrReceivedFromSixAm(later, "sent");
 
                 foreach (DataRow row in table.Rows)
                 {
@@ -349,16 +352,16 @@ namespace InteractionTracker.Data
                     if (process.ToLower().Contains("outlook"))
                     {
                         isSent = false;
-                        for (var t = to - TimeSpan.FromMinutes(1); t < to + TimeSpan.FromMinutes(1); t += TimeSpan.FromSeconds(1))
-                        {
-                            if (sentMail.Contains(t))
-                                isSent = true;
-                        }
+                        //for (var t = to - TimeSpan.FromMinutes(1); t < to + TimeSpan.FromMinutes(1); t += TimeSpan.FromSeconds(1))
+                        //{
+                        //    if (sentMail.Contains(t))
+                        //        isSent = true;
+                        //}
                         for (var t = from; t < to; t += TimeSpan.FromMinutes(1))
                         {
-                            if (sentOrReceived == "sent" && (!window.Contains("@")))
+                            if (sentOrReceived == "sent") // && (!window.Contains("@")))
                                 emails.Add(t);
-                            else if (sentOrReceived == "received" && (window.Contains("@")))
+                            else if (sentOrReceived == "received") // && (window.Contains("@")))
                                 emails.Add(t);
                         }
                     }
