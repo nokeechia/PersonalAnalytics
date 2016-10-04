@@ -517,7 +517,7 @@ namespace InteractionTracker.Data
             var emailsSentList = new List<int>();
             var meetingsAttendedList = new List<int>();
             var overallFocusList = new List<int>();
-            var nowList = new List<int>();
+            //var nowList = new List<int>();
 
             var chats = GetChatsSentOrReceivedFromSixAm(later);
             var emailsSent = GetEmailTimesSentOrReceivedFromSixAm(later, "sent");
@@ -629,10 +629,10 @@ namespace InteractionTracker.Data
                 didHappen = false;
 
                 overallFocusList.Add(notFocused);
-                if (!(DateTime.Now.AddSeconds(-60) <= earlier) && (DateTime.Now.AddSeconds(60) >= earlier))
-                    nowList.Add(0);
-                else
-                    nowList.Add(1);
+                //if (!(DateTime.Now.AddSeconds(-60) <= earlier) && (DateTime.Now.AddSeconds(60) >= earlier))
+                //    nowList.Add(0);
+                //else
+                //    nowList.Add(1);
                 notFocused = 0;
 
                 earlier = earlier.AddMinutes(1);

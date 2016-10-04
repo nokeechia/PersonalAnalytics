@@ -67,15 +67,18 @@ namespace InteractionTracker
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public bool ThresholdReached(DateTime date, bool force=false)
+        public bool ThresholdReached(DateTime date, bool force = false)
         {
             var data = InteractionDataHelper.GetAllInteractionData(date, force);
 
             var thresholdReached = false;
-            if (data.NumMeetingsNow >= data.AvgMeetingsPrevious + data.MeetingsSD) thresholdReached = true;
-            else if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + data.EmailsReceivedSD) thresholdReached = true;
-            else if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + data.EmailsSentSD) thresholdReached = true;
-            else if (data.NumChatsNow >= data.AvgChatsPrevious + data.ChatsSD) thresholdReached = true;
+            if (date.AddHours(8) < DateTime.Now && DateTime.Now > date.AddHours(16)) // lower interuptions
+            {
+                if (data.NumMeetingsNow >= data.AvgMeetingsPrevious + data.MeetingsSD) thresholdReached = true;
+                else if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + data.EmailsReceivedSD) thresholdReached = true;
+                else if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + data.EmailsSentSD) thresholdReached = true;
+                else if (data.NumChatsNow >= data.AvgChatsPrevious + data.ChatsSD) thresholdReached = true;
+            }
 
             return thresholdReached;
         }

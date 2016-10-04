@@ -130,7 +130,7 @@ namespace InteractionTracker.Visualizations
             }
             html += "</p>";
             html += "<table class=\"interactions\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">";
-            html += "<tr><th>Communication</th><th>Today's Total</th><th>Previous Average</th></tr>";
+            html += "<tr><th>Communication</th><th>Today's Total</th><th>Previous Average (5-day)</th></tr>";
             html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + messageColors["meetings"] + "\">" + meetings;
             html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + messageColors["chats"] + "\">" + chats;
             html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + messageColors["sent emails"] + "\">" + emailsSent;
