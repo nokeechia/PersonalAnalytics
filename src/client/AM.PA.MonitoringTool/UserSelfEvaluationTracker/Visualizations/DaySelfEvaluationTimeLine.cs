@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Shared;
 using Shared.Helpers;
+using static Shared.Helpers.VisHelper;
+
 namespace UserSelfEvaluationTracker.Visualizations
 {
 
@@ -28,17 +30,22 @@ namespace UserSelfEvaluationTracker.Visualizations
             /////////////////////
             // fetch data sets
             /////////////////////
-            var chartQueryResultsLocal = UserSelfEvaluationTracker.Data.Queries.GetSelfEvaluationTimelineData(_date, VisType.Day);
+            var chartQueryResultsLocal = Data.Queries.GetSelfEvaluationTimelineData(_date, VisType.Day);
             var minutesInterval = 15;
             var blinks = MuseTracker.Data.Queries.GetBlinksByMinutesInterval(_date, minutesInterval);
-            var eegIndexes = MuseTracker.Data.Queries.GetEEGIndexGroupedByMinutesInterval(_date, minutesInterval);
+            var eegIndices = MuseTracker.Data.Queries.GetEEGIndexGroupedByMinutesInterval(_date, minutesInterval);
 
-            if (chartQueryResultsLocal.Count < 3 && blinks.Count < 3 && eegIndexes.Count < 3)
+            if (chartQueryResultsLocal.Count < 3 && blinks.Count < 3 && eegIndices.Count < 3)
             {
                 html += VisHelper.NotEnoughData("It is not possible to give you insights into your attention and engagement levels as you didn't fill out the pop-up often enough or not enough data from device is available. Try to fill it out at least 3 times per day and to wear the headband device.");
                 return html;
             }
 
+            /////////////////////
+            // normalize data sets
+            /////////////////////
+            List<DateElementExtended<double>> normalizedBlinks = MuseTracker.Helpers.Helper.NormalizeBlinks(blinks);
+            List<DateElementExtended<double>> normalizedEEG = MuseTracker.Helpers.Helper.NormalizeEEGIndices(eegIndices);
 
             /////////////////////
             // CSS
@@ -48,12 +55,11 @@ namespace UserSelfEvaluationTracker.Visualizations
             html += ".c3-grid text, c3.grid line { fill: gray; }";
             html += "</style>";
 
-
             /////////////////////
             // HTML
             /////////////////////
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>";
-            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Interpolates your perceived engagement and attention (from pop-ups) states and calculated EEGIndex and Blinks.</p>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Interpolates your perceived engagement and attention (from ratings) and computed EEGIndex and Blinks from Muse.<br>All values were normalized on a per day base and therefore not directly comparable to other days.</p>";
 
 
             /////////////////////
@@ -61,21 +67,17 @@ namespace UserSelfEvaluationTracker.Visualizations
             /////////////////////
             var ticks = CalculateLineChartAxisTicks(_date);
             var timeAxis = chartQueryResultsLocal.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(a.Item1) + ", ")).Trim().TrimEnd(',');
-            var timeAxis2 = blinks.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(Convert.ToDateTime(a.Item1)) + ", ")).TrimEnd(',');
+            var timeAxisMuse = blinks.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(Convert.ToDateTime(a.Item1)) + ", ")).TrimEnd(',');
 
             // Transform data into arrays for visualization
-            var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item2,1,7,0,1) + ", ")).Trim().TrimEnd(',');
-            var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item3, 1, 7, 0, 1) + ", ")).Trim().TrimEnd(',');
-            List<int> reverseBlinks = blinks.Select(i => i.Item2 * -1).ToList();
-            var minBlinks = reverseBlinks.DefaultIfEmpty(0).Min(i => i);
-            var maxBlinks = reverseBlinks.DefaultIfEmpty(0).Max(i => i);
-
-            var blinkData = reverseBlinks.Aggregate("", (current, p) => current + (VisHelper.Rescale(p, minBlinks, maxBlinks, 0, 1) + ", ")).Trim().TrimEnd(',');
-            var eegData = eegIndexes.Aggregate("", (current, p) => current + (Math.Round(p.Item2, 2) + ", ")).Trim().TrimEnd(',');
-
+            var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item2,1,7) + ", ")).Trim().TrimEnd(',');
+            var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item3, 1, 7) + ", ")).Trim().TrimEnd(',');
+            var eegData = normalizedEEG.Aggregate("", (current, p) => current + p.normalizedvalue + ", ").Trim().TrimEnd(',');
+            var blinkData = normalizedBlinks.Aggregate("", (current, p) => current + p.normalizedvalue + ", ").Trim().TrimEnd(',');
 
             List<Tuple<DateTime, List<String>>> programsUsedAtTimes = new List<Tuple<DateTime, List<string>>>();
             List<Tuple<DateTime, int>> pgmSwitchesAtTimesT1 = new List<Tuple<DateTime, int>>();
+
             //List contains same time points as for engagementFormattedData and attentionFormattedData (timeAxis)
             foreach (Tuple<DateTime, int, int> t in chartQueryResultsLocal) {
                 List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
@@ -91,7 +93,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             List<Tuple<DateTime, List<String>>> programsUsedAtTimesT2 = new List<Tuple<DateTime, List<string>>>();
             List<Tuple<DateTime, int>> pgmSwitchesAtTimesT2 = new List<Tuple<DateTime, int>>();
 
-            //List contains same time points as for blinkData and eegData (timeAxis2)
+            //List contains same time points as for blinkData and eegData (timeAxisMuse)
             foreach (Tuple<DateTime, int> t in blinks)
             {
                 List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
@@ -106,12 +108,11 @@ namespace UserSelfEvaluationTracker.Visualizations
 
             const string colorsUsed = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
-            var names = "Blinks: 'Attention(#Blinks)', EEGIndex: 'Engagement(EEGIndex)'";
-            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxis2', 'EEGIndex': 'timeAxis2'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxis2', " + timeAxis2 + "], ['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y2', Blinks:'y2', EEGIndex:'y'} , names: {" + names + "}"; // type options: spline, step, line
-            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, min:0, max:1, label: {text: 'Engagement', position: 'outer-middle'} }, y2: { show: true , min:0, max:1, label: {text: 'Attention', position: 'outer-middle'} }";
+            var names = "Engagement: 'Engagement(Ratings)', Attention: 'Attention(Ratings)', Blinks: 'Attention(#Blinks)', EEGIndex: 'Engagement(EEGIndex)'";
+            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxisMuse', 'EEGIndex': 'timeAxisMuse'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxisMuse', " + timeAxisMuse + "],['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y', EEGIndex:'y'} , names: {" + names + "}"; // type options: spline, step, line
+            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'Normalized Values', position: 'outer-middle'} }";
             var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); } }, contents: function(d, defaultTitleFormat, defaultValueFormat, color){ return createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, [" + usedPgmsT1 + "], [" + usedPgmsT2 + "], [" + switchesT1 + "], [" + switchesT2 + "]);} ";
             var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 55, right: 55, bottom: 0, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
-
 
             html += "<script type='text/javascript'>";
             html += "var formatDate = function(hours) { var suffix = 'AM';\n if (hours >= 12) { suffix = 'PM'; hours = hours - 12; } \n if (hours == 0) { hours = 12; } \n if (hours < 10) return '0' + hours + ' ' + suffix; \n else return hours + ' ' + suffix; };\n";
@@ -132,9 +133,7 @@ namespace UserSelfEvaluationTracker.Visualizations
         {
             var dict = new Dictionary<DateTime, int>();
             VisHelper.PrepareTimeAxis(date, dict, 60);
-
             return dict.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(a.Key) + ", ")).Trim().TrimEnd(',');
         }
     }
-
 }

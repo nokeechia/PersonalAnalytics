@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Shared;
 using Shared.Helpers;
 using MuseTracker.Data;
+using static Shared.Helpers.VisHelper;
 
 namespace MuseTracker.Visualizations
 {
@@ -16,7 +17,7 @@ namespace MuseTracker.Visualizations
         public MonthMuseVisualization(DateTimeOffset date) {
             this._date = date;
 
-            Title = "Attention Overview (# blinks) and Engagement Overview (EEG Index) ";
+            Title = "Attention Overview (#blinks) and Engagement Overview (EEG Index) ";
             IsEnabled = true;
             Order = 1;
             Size = VisSize.Wide;
@@ -39,6 +40,11 @@ namespace MuseTracker.Visualizations
                 return html;
             }
 
+            /////////////////////
+            // normalize data sets
+            /////////////////////
+            List<DateElementExtended<double>> normalizedBlinks = Helpers.Helper.NormalizeBlinks(blinks);
+            List<DateElementExtended<double>> normalizedEEG = Helpers.Helper.NormalizeEEGIndices(eegData);
 
             /////////////////////
             // CSS
@@ -54,11 +60,11 @@ namespace MuseTracker.Visualizations
             /////////////////////
             html += "<div id='attentionoverview' style='width:50%; display:inline-block;' align='center'></div>";
             html += "<div id='engagementoverview' style='width:50%; display:inline-block;' align='center'></div>";
-            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows attention via reverse number of blinks per day. Less blinks indicate more attention and average EEG Index per day which indicates your engagement level.</p>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows attention via reverse number of blinks per day. Less blinks indicate more attention and average EEG Index per day which indicates your engagement level. All values were normalized regarding the current month and are therefore not directly comparable to other months.</p>";
 
 
-            var dataInJSFormatBlinks = VisHelper.CreateJavaScriptArrayOfObjects(blinks);
-            var dataInJSFormatEEG = VisHelper.CreateJavaScriptArrayOfObjectsDouble(eegData);
+            var dataInJSFormatBlinks = VisHelper.CreateJavaScriptArrayOfObjectsDoubleWithAddtionalInfo(normalizedBlinks);
+            var dataInJSFormatEEG = VisHelper.CreateJavaScriptArrayOfObjectsDoubleWithAddtionalInfo(normalizedEEG);
 
             /////////////////////
             // JS
@@ -71,7 +77,8 @@ namespace MuseTracker.Visualizations
             html += "var chartDataBlinks = dataInJSFormatBlinks.map(function(dateElement) {" +
                 "return {" +
                 "date: parseDate(dateElement.date)," +
-                "count: dateElement.count" +
+                "count: dateElement.normalizedvalue," +
+                "tp: {original: dateElement.originalvalue, extra_info: dateElement.extraInfo}" +
                 "};" +
             "});";
 
@@ -83,6 +90,7 @@ namespace MuseTracker.Visualizations
                             ".colorRange(['#cce4f4', '#007acb'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +
+                            ".mode('MONTH')" +
                       ".onClick(function(data) {" +
                 "console.log('data', data);" +
             "});";
@@ -93,7 +101,8 @@ namespace MuseTracker.Visualizations
             html += "var chartDataEEG = dataInJSFormatEEG.map(function(dateElement) {" +
                 "return {" +
                 "date: parseDate(dateElement.date)," +
-                "count: dateElement.count" +
+                "count: dateElement.normalizedvalue," +
+                "tp: {original: dateElement.originalvalue, extra_info: dateElement.extraInfo}" +
                 "};" +
             "});";
 
@@ -105,6 +114,7 @@ namespace MuseTracker.Visualizations
                             ".colorRange(['#ffcee8', '#FF0A8D'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +
+                            ".mode('MONTH')" +
                       ".onClick(function(data) {" +
                 "console.log('data', data);" +
             "});";

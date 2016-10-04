@@ -93,7 +93,6 @@ namespace UserEfficiencyTracker.Visualizations
         {
             var dict = new Dictionary<DateTime, int>();
             VisHelper.PrepareTimeAxis(date, dict, 60);
-
             return dict.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(a.Key) + ", ")).Trim().TrimEnd(',');
         }
     }

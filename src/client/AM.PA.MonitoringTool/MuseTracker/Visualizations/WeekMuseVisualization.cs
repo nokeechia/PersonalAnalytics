@@ -43,19 +43,8 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // normalize data sets
             /////////////////////
-
-            //because more blinks indicate less attention we have to reverse the values
-            List<Tuple<DateTime, double>> logblinks = blinks.Select(i => new Tuple<DateTime, double>(i.Item1, Math.Log10(i.Item2)*-1)).ToList(); //log transform because of huge differences in ranges, -1 because reverse blinks indicate more attention
-            var minBlinks = logblinks.Min(i => i.Item2);
-            var maxBlinks = logblinks.Max(i => i.Item2);
-            
-         
-            List<DateElementExtended<double>> normalizedBlinks = logblinks.Select(i => new DateElementExtended<double> { date = i.Item1.ToString(),
-                normalizedvalue = Math.Round(VisHelper.Rescale(i.Item2, minBlinks, maxBlinks, 0.0, 1.0), 2),
-                originalvalue = Math.Pow(10, i.Item2*-1), //because log befored
-                extraInfo = new JavaScriptSerializer().Serialize(FromDateToExtraInfo(i.Item1))
-            }).ToList();
-
+            List<DateElementExtended<double>> normalizedBlinks = Helpers.Helper.NormalizeBlinks(blinks);
+            List<DateElementExtended<double>> normalizedEEG = Helpers.Helper.NormalizeEEGIndices(eegData);
 
             /////////////////////
             // CSS
@@ -71,11 +60,11 @@ namespace MuseTracker.Visualizations
             /////////////////////
             html += "<div id='attentionoverview' align='center'></div>";
             html += "<div id='engagementoverview' align='center'></div>";
-            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows attention via reverse number of blinks per day. Less blinks indicate more attention and average EEG Index per day which indicates your engagement level.</p>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Shows attention via reverse number of blinks per day. Less blinks indicate more attention and average EEG Index per day which indicates your engagement level. All values were normalized regarding the current week and are therefore not directly comparable to other weeks.</p>";
 
 
             var dataInJSFormatBlinks = VisHelper.CreateJavaScriptArrayOfObjectsDoubleWithAddtionalInfo(normalizedBlinks);
-            var dataInJSFormatEEG = VisHelper.CreateJavaScriptArrayOfObjectsDouble(eegData);
+            var dataInJSFormatEEG = VisHelper.CreateJavaScriptArrayOfObjectsDoubleWithAddtionalInfo(normalizedEEG);
 
             /////////////////////
             // JS
@@ -112,7 +101,8 @@ namespace MuseTracker.Visualizations
             html += "var chartDataEEG = dataInJSFormatEEG.map(function(dateElement) {" +
                 "return {" +
                 "date: parseDate(dateElement.date)," +
-                "count: dateElement.count" +
+                "count: dateElement.normalizedvalue," +
+                "tp: {original: dateElement.originalvalue, extra_info: dateElement.extraInfo}" +
                 "};" +
             "});";
 
@@ -136,10 +126,7 @@ namespace MuseTracker.Visualizations
             return html;
         }
 
-        public static ExtraInfo FromDateToExtraInfo(DateTime _date)
-        {
-            return new ExtraInfo { switches = UserEfficiencyTracker.Data.Queries.GetNrOfProgramSwitches(_date, VisType.Day), topPgms = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(_date, VisType.Day, 3).Aggregate("", (current, p) => current + ProcessNameHelper.GetFileDescription(p) + ", ").Trim().TrimEnd(',') };
-        }
+
 
     }
 
