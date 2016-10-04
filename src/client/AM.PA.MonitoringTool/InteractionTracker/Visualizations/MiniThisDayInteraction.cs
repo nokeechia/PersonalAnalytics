@@ -7,6 +7,7 @@ using System;
 using InteractionTracker.Data;
 using Shared;
 using Shared.Helpers;
+using System.Collections.Generic;
 
 namespace InteractionTracker.Visualizations
 {
@@ -51,11 +52,16 @@ namespace InteractionTracker.Visualizations
             var errorColor = "#D8000C"; // red
 
             // base colors
-            var meetingsColor = okayColor;
-            var emailsReceivedColor = okayColor;
-            var emailsSentColor = okayColor;
-            var chatsColor = okayColor;
-            
+            Dictionary<string, string> messageColors = new Dictionary<string, string>();
+            //var meetingsColor = okayColor;
+            messageColors.Add("meetings", okayColor); // meetingsColor
+            //var emailsReceivedColor = okayColor;
+            messageColors.Add("received emails", okayColor); // emailsReceivedColor
+            //var emailsSentColor = okayColor;
+            messageColors.Add("sent emails", okayColor); // emailsSentColor
+            //var chatsColor = okayColor;
+            messageColors.Add("chats", okayColor); // chatsColor
+
             var meetings = data.NumMeetingsNow + "</td><td>" + data.AvgMeetingsPrevious.ToString() + "</td></tr>";
             var chats = data.NumChatsNow + "</td><td>" + data.AvgChatsPrevious.ToString() + "</td></tr>";
             var emailsSent = data.NumEmailsSentNow + "</td><td>" + data.AvgEmailsSentPrevious.ToString() + "</td></tr>";
@@ -63,47 +69,72 @@ namespace InteractionTracker.Visualizations
 
             if (data.NumMeetingsNow >= data.AvgMeetingsPrevious + (data.MeetingsSD))
             {
-                meetingsColor = errorColor;
+                messageColors["meetings"] = errorColor;
                 meetings = "<b>" + data.NumMeetingsNow + "</b></td><td><b>" + data.AvgMeetingsPrevious.ToString() + "</b></td></tr>";
             }
             else if (data.NumMeetingsNow >= data.AvgMeetingsPrevious + (data.MeetingsSD/2))
-                meetingsColor = warningColor;
+                messageColors["meetings"] = warningColor;
 
             if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + (data.EmailsReceivedSD))
             {
-                emailsReceivedColor = errorColor;
+                messageColors["received emails"] = errorColor;
                 emailsReceived = "<b>" + data.NumEmailsReceivedNow + "</b></td><td><b>" + data.AvgEmailsReceivedPrevious.ToString() + "</b></td></tr>";
             }
             else if (data.NumEmailsReceivedNow >= data.AvgEmailsReceivedPrevious + (data.EmailsReceivedSD/2))
-                emailsReceivedColor = warningColor;
+                messageColors["received emails"] = warningColor;
 
             if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + (data.EmailsSentSD))
             {
-                emailsSentColor = errorColor;
+                messageColors["sent emails"] = errorColor;
                 emailsSent = "<b>" + data.NumEmailsSentNow + "</b></td><td><b>" + data.AvgEmailsSentPrevious.ToString() + "</b></td></tr>";
             }
             else if (data.NumEmailsSentNow >= data.AvgEmailsSentPrevious + (data.EmailsSentSD/2))
-                emailsSentColor = warningColor;
+                messageColors["sent emails"] = warningColor;
 
             
             if (data.NumChatsNow >= data.AvgChatsPrevious + (data.ChatsSD))
             {
-                chatsColor = errorColor;
+                messageColors["chats"] = errorColor;
                 chats = "<b>" + data.NumChatsNow + "</b></td><td><b>" + data.AvgChatsPrevious.ToString() + "</b></td></tr>";
             }
             else if (data.NumChatsNow >= data.AvgChatsPrevious + (data.ChatsSD/2))
-                chatsColor = warningColor;
+                messageColors["chats"] = warningColor;
 
             // generate html where queries were successful
             var html = string.Empty;
-//            var categorySurpased ="";
+            //            var categorySurpased ="";
+            var msgColor = okayColor;
+            if (messageColors.ContainsValue(warningColor)) msgColor = warningColor;
+            else if (messageColors.ContainsValue(errorColor)) msgColor = errorColor;
 
+            html += "<p style=\"color: " + msgColor + "\">";
+            if (msgColor == okayColor)
+            {
+                html += "Your overall communications are going well!";
+            }
+            else if (msgColor == warningColor)
+            {
+                html += "You have had a few too many ";
+                foreach (var message in messageColors)
+                    if (message.Value == warningColor)
+                        html += message.Key + " and ";
+                html = html.Substring(0, html.Length - 5) + "!";
+            }
+            else // errorColor
+            {
+                html += "You have had way too many ";
+                foreach (var message in messageColors)
+                    if (message.Value == errorColor)
+                        html += message.Key + " and ";
+                html = html.Substring(0, html.Length - 5) + "!";
+            }
+            html += "</p>";
             html += "<table class=\"interactions\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">";
             html += "<tr><th>Communication</th><th>Today's Total</th><th>Previous Average</th></tr>";
-            html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + meetingsColor + "\">" + meetings;
-            html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + chatsColor + "\">" + chats;
-            html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + emailsSentColor + "\">" + emailsSent;
-            html += "<tr><td>" + emailsReceivedIcon + "</td><td style=\"color: " + emailsReceivedColor + "\">" + emailsReceived;
+            html += "<tr><td>" + meetingsIcon + "</td><td style=\"color: " + messageColors["meetings"] + "\">" + meetings;
+            html += "<tr><td>" + chatsIcon + "</td><td style=\"color: " + messageColors["chats"] + "\">" + chats;
+            html += "<tr><td>" + emailsSentIcon + "</td><td style=\"color: " + messageColors["sent emails"] + "\">" + emailsSent;
+            html += "<tr><td>" + emailsReceivedIcon + "</td><td style=\"color: " + messageColors["received emails"] + "\">" + emailsReceived;
   //          html += "<tr><td>" + "You have " + categorySurpased + "today";
             html += "</table>";
 
