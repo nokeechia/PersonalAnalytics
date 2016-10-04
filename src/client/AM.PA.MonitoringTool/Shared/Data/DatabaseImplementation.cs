@@ -317,10 +317,14 @@ namespace Shared.Data
             }
             else if (type == VisType.Month)
             {
+                var startOfMonth = new DateTime(date.Year, date.Month, 1);
+                var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
                 filter = "( "
-                    + " STRFTIME('%s', DATE(" + datePropertyName + ")) between STRFTIME('%s', DATE('" + new DateTime(date.Year, date.Month, date.Day).Subtract(TimeSpan.FromDays(30)).ToString("u")
-                    + "')) and STRFTIME('%s', DATE('" + new DateTime(date.Year, date.Month, date.Day).AddHours(24).ToString("u") + "')) "
+                    + " STRFTIME('%s', DATE(" + datePropertyName + ")) between STRFTIME('%s', DATE('" + startOfMonth.Date.ToString("u")
+                    + "')) and STRFTIME('%s', DATE('" + endOfMonth.Date.ToString("u") + "')) "
                     + " ) ";
+
             }
             else if (type == VisType.Hour)
             {

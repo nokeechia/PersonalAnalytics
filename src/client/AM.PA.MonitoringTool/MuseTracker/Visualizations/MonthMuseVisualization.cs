@@ -31,8 +31,8 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // fetch data sets
             /////////////////////
-            var blinks = Queries.GetBlinksByYear(_date);
-            var eegData = Queries.GetEEGIndexOfMonth(_date);
+            var blinks = Queries.GetBlinksOfMonth(_date);
+            var eegData = Queries.GetEEGIndicesOfMonth(_date);
 
             if (blinks.Count < 1 ) //Todo: have to set a min limit
             {
@@ -86,7 +86,7 @@ namespace MuseTracker.Visualizations
                             ".data(chartDataBlinks)" +
                             ".selector('#attentionoverview')" +
                             ".tooltipEnabled(true)" +
-                            ".tooltipUnit('#Blink')" +
+                            ".tooltipUnit('#Blinks')" +
                             ".colorRange(['#cce4f4', '#007acb'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +
@@ -110,7 +110,7 @@ namespace MuseTracker.Visualizations
                             ".data(chartDataEEG)" +
                             ".selector('#engagementoverview')" +
                             ".tooltipEnabled(true)" +
-                            ".tooltipUnit('Avg EEG Indice')" +
+                            ".tooltipUnit('Avg EEG Indices')" +
                             ".colorRange(['#ffcee8', '#FF0A8D'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +

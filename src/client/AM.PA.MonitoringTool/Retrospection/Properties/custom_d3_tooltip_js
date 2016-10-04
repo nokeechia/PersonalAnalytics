@@ -1,22 +1,5 @@
-function formatThat(value, ratio, id) {
-	return id ==='Attention' ? value + '<tr class="c3-tooltip-name--Pgm"><td class="name"><span style="background-color:#990654"></span>Pgms</td><td class="value">Visual Studio, IE </td></tr>' : value;
-}
-
-function triggerMyHandler(){
-	$('#dailyengagementandattentionoverview').trigger("extendedTooltip");
-}
-
-function appendTooltip() {
-	var tooltipContent = $('#dailyengagementandattentionoverview').find('.c3-tooltip-container').find('table');
-	var tooltipTable = $('#dailyengagementandattentionoverview').find('.c3-tooltip-container').find('table > tbody:last-child');
-	if(tooltipTable && $('#dailyengagementandattentionoverview').find('.c3-tooltip-container').find('table tr').length < 4){
-		var datetime = $('#dailyengagementandattentionoverview').find('.c3-tooltip-container').find('table > tbody > tr:first-child').text();
-		tooltipTable.append('<tr class="c3-tooltip-name--Pgm"><td class="name"><span style="background-color:#990654"></span>Pgms</td><td class="value">Visual Studio, IE' + datetime + '</td></tr>');
-		console.log("asdf");
-	}
-}
-
-function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, pgmsT1, pgmsT2, switchesT1, switchesT2) {
+//creates custom tooltip for d3 line chart
+function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, originalBlinks, originalEEG, pgmsT1, pgmsT2, switchesT1, switchesT2) {
           var $$ = dailyengagementandattentionoverview, config = $$.internal.config,
               titleFormat = config.tooltip_format_title || defaultTitleFormat,
               nameFormat = config.tooltip_format_name || function (name) { return name; },
@@ -38,11 +21,20 @@ function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, p
 
               text += "<tr class='" + $$.internal.CLASS.tooltipName + "-" + d[i].id + "'>";
               text += "<td class='name'><span style='background-color:" + bgcolor + "'></span>" + name + "</td>";
-              text += "<td class='value'>" + value + "</td>";
+
+		      // condition depends directly to names in d3 chart. Consider this when changing.
+              if(name === "Attention(#Blinks)") {
+				text += "<td class='value'>" + value + " (#" + originalBlinks[d[i].index] + ")</td>";			  
+			  } else if(name === "Engagement(EEGIndex)") {
+				text += "<td class='value'>" + value + " (" + originalEEG[d[i].index] + ")</td>";			  
+			  }else {
+				text += "<td class='value'>" + value + "</td>";
+			  }
               text += "</tr>";
           }
 	  
-          if(name === "Attention" || name === "Engagement") {
+		 // condition depends directly to names in d3 chart. Consider this when changing.
+          if(name === "Attention(Ratings)" || name === "Engagement(Ratings)") {
 			for (i = 0; i < pgmsT1.length; i++) {
 				if(pgmsT1[i].tsd === current_tsd.getTime()) {
 					//add custom row for top used pgms

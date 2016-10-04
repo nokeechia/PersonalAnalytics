@@ -86,7 +86,7 @@ namespace MuseTracker.Visualizations
                             ".data(chartDataBlinks)" +
                             ".selector('#attentionoverview')" +
                             ".tooltipEnabled(true)" +
-                            ".tooltipUnit('#Blink')" +
+                            ".tooltipUnit('#Blinks')" +
                             ".colorRange(['#cce4f4', '#007acb'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +
@@ -110,7 +110,7 @@ namespace MuseTracker.Visualizations
                             ".data(chartDataEEG)" +
                             ".selector('#engagementoverview')" +
                             ".tooltipEnabled(true)" +
-                            ".tooltipUnit('Avg EEG Indice')" +
+                            ".tooltipUnit('Avg EEG Indices')" +
                             ".colorRange(['#ffcee8', '#FF0A8D'])" +
                             ".begin(beginDate)" +
                             ".end(endDate)" +

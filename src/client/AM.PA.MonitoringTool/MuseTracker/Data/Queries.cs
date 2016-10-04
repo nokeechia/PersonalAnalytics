@@ -448,7 +448,7 @@ namespace MuseTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static List<Tuple<DateTime, int>> GetBlinksByYear(DateTimeOffset date)
+        public static List<Tuple<DateTime, int>> GetBlinksOfMonth(DateTimeOffset date)
         {
             var resList = new List<Tuple<DateTime, int>>();
 
@@ -766,7 +766,7 @@ namespace MuseTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static List<Tuple<DateTime, double>> GetEEGIndexOfMonth(DateTimeOffset date)
+        public static List<Tuple<DateTime, double>> GetEEGIndicesOfMonth(DateTimeOffset date)
         {
             var query = "SELECT strftime('%Y-%m-%d',time), eegType, avg(avg)" +
                         " FROM " + Settings.DbTableMuseEEGData +

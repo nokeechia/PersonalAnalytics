@@ -73,7 +73,9 @@ namespace UserSelfEvaluationTracker.Visualizations
             var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item2,1,7) + ", ")).Trim().TrimEnd(',');
             var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item3, 1, 7) + ", ")).Trim().TrimEnd(',');
             var eegData = normalizedEEG.Aggregate("", (current, p) => current + p.normalizedvalue + ", ").Trim().TrimEnd(',');
+            var originalEegData = normalizedEEG.Aggregate("", (current, p) => current + Math.Round(p.originalvalue, 2) + ", ").Trim().TrimEnd(',');
             var blinkData = normalizedBlinks.Aggregate("", (current, p) => current + p.normalizedvalue + ", ").Trim().TrimEnd(',');
+            var originalBlinkData = normalizedBlinks.Aggregate("", (current, p) => current + p.originalvalue + ", ").Trim().TrimEnd(',');
 
             List<Tuple<DateTime, List<String>>> programsUsedAtTimes = new List<Tuple<DateTime, List<string>>>();
             List<Tuple<DateTime, int>> pgmSwitchesAtTimesT1 = new List<Tuple<DateTime, int>>();
@@ -111,7 +113,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             var names = "Engagement: 'Engagement(Ratings)', Attention: 'Attention(Ratings)', Blinks: 'Attention(#Blinks)', EEGIndex: 'Engagement(EEGIndex)'";
             var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxisMuse', 'EEGIndex': 'timeAxisMuse'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxisMuse', " + timeAxisMuse + "],['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y', EEGIndex:'y'} , names: {" + names + "}"; // type options: spline, step, line
             var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'Normalized Values', position: 'outer-middle'} }";
-            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); } }, contents: function(d, defaultTitleFormat, defaultValueFormat, color){ return createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, [" + usedPgmsT1 + "], [" + usedPgmsT2 + "], [" + switchesT1 + "], [" + switchesT2 + "]);} ";
+            var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); } }, contents: function(d, defaultTitleFormat, defaultValueFormat, color){ return createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, [" + originalBlinkData + "], [" + originalEegData + "], [" + usedPgmsT1 + "], [" + usedPgmsT2 + "], [" + switchesT1 + "], [" + switchesT2 + "]);} ";
             var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 55, right: 55, bottom: 0, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
             html += "<script type='text/javascript'>";

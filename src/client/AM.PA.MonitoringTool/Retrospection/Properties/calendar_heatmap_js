@@ -1,3 +1,6 @@
+// Origin library: https://github.com/DKirwan/calendar-heatmap
+// Sept 2016 Monica Trink: Customized parts of the lib due to different kinds of visualizations (weekly, monthly)
+//
 function calendarHeatmap() {
   // defaults
   var width = 150; //MONICA CHANGE PREV 350
@@ -119,7 +122,7 @@ function calendarHeatmap() {
 				return height;
 			}		
 		})
-        .style('padding', '26px'); //customized by monica
+        .style('padding', '26px 26px 16px 26px'); //customized by monica
 
       dayRects = svg.selectAll('.day-cell')
         .data(dateRange);  //  array of days for the last yr
@@ -202,24 +205,27 @@ function calendarHeatmap() {
             .attr('class', 'calendar-heatmap-legend')
             .attr('width', SQUARE_LENGTH/2)
             .attr('height', SQUARE_LENGTH/2)
-            .attr('x', function (d, i) { return (width - legendWidth - 48) + (i + 1) * 24; }) // customized by monica
-            .attr('y', 2*SQUARE_LENGTH + SQUARE_PADDING) // customized by monica
+            .attr('x', function (d, i) { if(mode === 'WEEK') {return (width - legendWidth - 48) + (i + 1) * 24;} else{ return (width - legendWidth) + (i + 1) * 13; } }) // customized by monica
+            .attr('y', function() {if(mode === 'WEEK') { return 2*SQUARE_LENGTH + SQUARE_PADDING;} else {return height + SQUARE_PADDING; } }) // customized by monica
             .attr('fill', function (d) { return d; });
 
         legendGroup.append('text')
           .attr('class', 'calendar-heatmap-legend-text')
-          .attr('x', width - legendWidth - 24) // MONICA before it was 13
-          .attr('y', 1.5*SQUARE_LENGTH + SQUARE_PADDING)
+          .attr('x', function() { if(mode === 'WEEK') {return (width - legendWidth - 48) + (i + 1) * 24;} else{ return (width - legendWidth) + (i + 1) * 13; } }) // customized by monica
+          .attr('y', function() { if(mode === 'WEEK') {return 1.5*SQUARE_LENGTH + SQUARE_PADDING}else{return height + SQUARE_PADDING-3} }) // customized by monica
           .text('Less');
 
         legendGroup.append('text')
           .attr('class', 'calendar-heatmap-legend-text')
-          .attr('x', (width - legendWidth - 48) + (colorRange.length + 1) * 12) // customized by monica
-          .attr('y', 1.5*SQUARE_LENGTH + SQUARE_PADDING) // customized by monica
+          .attr('x', function() { if(mode === 'WEEK') {return ((width - legendWidth - 48) + (i + 1) * 24) + 70;} else{ return ((width - legendWidth) + (i + 1) * 13) + 50; } }) // customized by monica
+          .attr('y', function() { if(mode === 'WEEK') {return 1.5*SQUARE_LENGTH + SQUARE_PADDING}else{ return height + SQUARE_PADDING-3 } }) // customized by monica
           .text('More');
       }
 
       dayRects.exit().remove();
+
+	  //customized by monica
+	  if(mode === 'MONTH') {
       var monthLabels = svg.selectAll('.month')
           .data(monthRange)
           .enter().append('text')
@@ -246,7 +252,7 @@ function calendarHeatmap() {
 			}
           })
           .attr('y', 0);  // fix these to the top
-
+		  }
 
 	//customized by monica
 	  if(mode === 'WEEK'){
@@ -270,7 +276,7 @@ function calendarHeatmap() {
 			if (index % 2) {
 			  svg.append('text')
 				.attr('class', 'day-initial')
-				.attr('transform', 'translate(-18,' + (SQUARE_LENGTH + SQUARE_PADDING) * (index + 1) + ')')
+				.attr('transform', 'translate(-17,' + (SQUARE_LENGTH) * (index + 1) + ')') //customized by monica
 				.style('text-anchor', 'middle')
 				.attr('dy', '2')
 				.text(day);
@@ -285,7 +291,10 @@ function calendarHeatmap() {
       var dateStr = moment(d).format('ddd, MMM Do YYYY');
       var count = countForDate(d);
 	  var info = extraInfoForDate(d);
-      return '<span>On ' + dateStr + '<br>' + (count ? count : 'No') + ' ' + tooltipUnit + '</span><br>' +  '<span>' + (info ? JSON.parse(info).switches + ' nr of switches' : "") + '</span>' + '<br>' + '<span>' + (info ? 'Top programs: ' + JSON.parse(info).topPgms : "") + '</span>';
+	  if(count && tooltipUnit === 'Avg EEG Indices') {
+	   count = (Math.round(count * 100)/100).toFixed(2); //http://stackoverflow.com/questions/4098685/rounding-numbers-to-2-digits-after-comma
+	  }
+      return '<span>On ' + dateStr + '<br>' + (count ? count : 'No') + ' ' + tooltipUnit + '</span><br>' +  '<span>' + (info ? JSON.parse(info).switches + ' switches' : "") + '</span>' + '<br>' + '<span>' + (info ? 'Top programs: ' + JSON.parse(info).topPgms : "") + '</span>';
     }
 
 	//Customized by Monica
