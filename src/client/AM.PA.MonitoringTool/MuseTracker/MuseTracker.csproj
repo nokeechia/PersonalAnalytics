@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="Daemon.cs" />
     <Compile Include="Data\Queries.cs" />
-    <Compile Include="Helpers\DataAggregator.cs" />
+    <Compile Include="Helpers\MuseHelper.cs" />
     <Compile Include="Models\IMuseTrackerInput.cs" />
     <Compile Include="Models\MuseTrackerInput.cs" />
     <Compile Include="Settings.cs" />
@@ -67,6 +67,10 @@
     <ProjectReference Include="..\UserEfficiencyTracker\UserEfficiencyTracker.csproj">
       <Project>{30dda905-2068-4985-8372-ffb11c8ad4d9}</Project>
       <Name>UserEfficiencyTracker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UserInputTracker\UserInputTracker.csproj">
+      <Project>{f4f1afb6-71a9-4ab4-be95-d3c45d3492cc}</Project>
+      <Name>UserInputTracker</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

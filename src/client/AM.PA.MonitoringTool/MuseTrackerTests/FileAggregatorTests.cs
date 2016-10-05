@@ -14,7 +14,7 @@ namespace MuseTrackerTests
         [TestMethod]
         public void TestAggregatingFrequencyBandsPerTimeInterval()
         {
-            DataAggregator.processFileStream(new FileStream(EEGbandFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));           
+            MuseHelper.processFileStream(new FileStream(EEGbandFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));           
         }
     }
 }

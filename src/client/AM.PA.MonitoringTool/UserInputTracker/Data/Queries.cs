@@ -231,7 +231,7 @@ namespace UserInputTracker.Data {
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        internal static Dictionary<DateTime, int> GetUserInputTimelineData(DateTimeOffset date)
+        public static Dictionary<DateTime, int> GetUserInputTimelineData(DateTimeOffset date)
         {
             var dto = new Dictionary<DateTime, int>();
 

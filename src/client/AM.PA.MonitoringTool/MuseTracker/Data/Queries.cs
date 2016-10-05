@@ -565,6 +565,7 @@ namespace MuseTracker.Data
         }
 
 
+
         /// <summary>
         /// Fetches eeg data of a user between given from and to dates.
         /// </summary>

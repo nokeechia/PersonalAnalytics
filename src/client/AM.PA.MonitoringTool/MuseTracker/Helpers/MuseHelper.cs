@@ -6,11 +6,10 @@ using static Shared.Helpers.VisHelper;
 using System.Web.Script.Serialization;
 using Shared.Helpers;
 using Shared;
-using System.Linq;
 
 namespace MuseTracker.Helpers
 {
-    public static class DataAggregator
+    public static class MuseHelper
     {
         public static void processFileStream(FileStream fs)
         {
@@ -28,6 +27,26 @@ namespace MuseTracker.Helpers
 
     public static class Helper
     {
+        //http://stackoverflow.com/questions/2253874/linq-equivalent-for-standard-deviation
+
+        public static double StdDev(this IEnumerable<double> values)
+        {
+            double ret = 0;
+            int count = values.Count();
+            if (count > 1)
+            {
+                //Compute the Average
+                double avg = values.Average();
+
+                //Perform the Sum of (value-avg)^2
+                double sum = values.Sum(d => (d - avg) * (d - avg));
+
+                //Put it all together
+                ret = Math.Sqrt(sum / count-1); //used sample formula thus -1
+            }
+            return ret;
+        }
+
         private static List<Tuple<DateTime, double>> GetLogBlinks(List<Tuple<DateTime, int>> blinks)
         {
             return blinks.Select(i => new Tuple<DateTime, double>(i.Item1, Math.Log10(i.Item2) * -1)).ToList(); //log transform because of huge differences in ranges, -1 because reverse blinks indicate more attention

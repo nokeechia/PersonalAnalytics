@@ -49,24 +49,37 @@ namespace MuseTracker.Visualizations
             // prepare data sets
             /////////////////////
 
-            var avgPerPgm = new List<Tuple<String, double>>();
+            var avgEEGPerPgm = new List<Tuple<String, double>>();
             var avgBlinksPerPgm = new List<Tuple<String, double>>();
 
             foreach (KeyValuePair<string, List<TopProgramTimeDto>> entry in programsUsed)
             {
                 //processing for eeg data
                 var eegIndicesList = new List<double>();
-                var eegIndices = MuseTracker.Data.Queries.GetEEGIndexWithinTimerange(_date.Date, entry.Value);
+                var eegIndices = Data.Queries.GetEEGIndexWithinTimerange(_date.Date, entry.Value);
                 if (eegIndices.Count > 0) eegIndicesList.Add(eegIndices.Average(item => item.Item2));
-                if(eegIndicesList.Count > 0) avgPerPgm.Add(new Tuple<String, double>(entry.Key, eegIndicesList.Average(i => i)));
+                if(eegIndicesList.Count > 0) avgEEGPerPgm.Add(new Tuple<String, double>(entry.Key, eegIndicesList.Average(i => i)));
 
                 //processing for blink data
-                var blinks = MuseTracker.Data.Queries.GetBlinksWithinTimerange(_date.Date, entry.Value);
+                var blinks = Data.Queries.GetBlinksWithinTimerange(_date.Date, entry.Value);
                 if (blinks > 0) avgBlinksPerPgm.Add(new Tuple<String, double>(entry.Key, blinks));
             }
 
-            var avgEEG = Math.Round(MuseTracker.Data.Queries.GetAvgEEGIndexByDate(_date), 2);
-            var avgBlinks = Math.Round(MuseTracker.Data.Queries.GetAvgBlinksByDate(_date), 2);
+            if (avgEEGPerPgm.Count < 1 || avgBlinksPerPgm.Count < 1)
+            {
+                html += VisHelper.NotEnoughData(_notEnoughPgmsMsg);
+                return html;
+            }
+
+            var eegValuesWithTimes = Data.Queries.GetEEGIndex(_date);
+            var eegValuesOnly = eegValuesWithTimes.Select(item => item.Item2).ToList();
+            var eegStdev = Helpers.Helper.StdDev(eegValuesOnly);
+            var eegAvg = Math.Round(eegValuesOnly.Average(), 2);
+
+            var blinkValuesWithTimes = Data.Queries.GetBlinks(_date);
+            var blinkValuesOnly = blinkValuesWithTimes.Select(item => item.Item2).ToList();
+            var blinkStdev = Helpers.Helper.StdDev(eegValuesOnly);
+            var blinkAvg = Math.Round(blinkValuesOnly.Average(), 2);
 
             /////////////////////
             // visualize data sets
@@ -78,46 +91,65 @@ namespace MuseTracker.Visualizations
             html += "<tbody>";
 
 
-            foreach (var p in avgPerPgm)
+            foreach (var p in avgEEGPerPgm)
             {
                 html += "<tr>";
                 html += "<td>" + ProcessNameHelper.GetFileDescription(p.Item1) + "</td>";
 
                 var blink = avgBlinksPerPgm.Find(x => x.Item1.Equals(p.Item1)).Item2;
-                var percBlink = ((blink / avgBlinks) - 1) * 100;
+                var percBlink = ((blink / blinkAvg) - 1) * 100;
 
-                //blinks are reverse -> better attention when less blinks
-                if (percBlink > 0)
+                //if blink difference is equal or greater 2*Stdev then show, otherwise difference is not significant (assumption)
+                if (Math.Abs(blinkAvg - blink) >= 2 * blinkStdev)
                 {
-                    html += "<td style='color:red;'>" + "<strong>&#9730; </strong>" + "-" + Math.Round(percBlink) + "%</td>";
+                    //blinks are reverse -> better attention when less blinks
+                    if (percBlink > 0)
+                    {
+                        html += "<td style='color:red;'>" + "<strong>&#9730; </strong>" + "-" + Math.Round(percBlink) + "%</td>";
+                    }
+                    else if (percBlink < 0)
+                    {
+                        html += "<td style='color:green;'>" + "<strong>&#9728; </strong> +" + -1 * Math.Round(percBlink) + "%</td>";
+                    }
+                    else
+                    {
+                        html += "<td>" + "<strong>&#9729; </strong>" + Math.Round(percBlink) + "%</td>";
+                    }
                 }
-                else if (percBlink < 0)
+                else {
+                    html += "<td>" + "<strong> - </td>";
+                }
+
+
+                var eeg = Math.Round(p.Item2, 2);
+                var percEEG = ((eeg / eegAvg) - 1) * 100;
+
+                //if eeg difference is equal or greater 2*Stdev then show, otherwise difference is not significant (assumption)
+                if (Math.Abs(eegAvg - eeg) >= 2 * eegStdev)
                 {
-                    html += "<td style='color:green;'>" + "<strong>&#9728; </strong> +" + -1*Math.Round(percBlink) + "%</td>";
+                    if (percEEG > 0)
+                    {
+                        html += "<td style='color:green;'>" + "<strong>&#9728; </strong>" + "+" + Math.Round(percEEG) + "%</td>";
+                    }
+                    else if (percEEG < 0)
+                    {
+                        html += "<td style='color:red;'>" + "<strong>&#9730; </strong>" + Math.Round(percEEG) + "%</td>";
+                    }
+                    else
+                    {
+                        html += "<td>" + "<strong>&#9729; </strong>" + Math.Round(percEEG) + "%</td>";
+                    }
                 }
                 else
                 {
-                    html += "<td>" + "<strong>&#9729; </strong>" + Math.Round(percBlink) + "%</td>";
+                    html += "<td>" + "<strong> - </td>";
                 }
 
-                var eeg = Math.Round(p.Item2, 2);
-                var percentage = ((eeg / avgEEG) - 1) * 100;
 
-                if (percentage > 0)
-                {
-                     html += "<td style='color:green;'>" + "<strong>&#9728; </strong>" + "+"+Math.Round(percentage) + "%</td>";
-                }
-                else if (percentage < 0)
-                {
-                    html += "<td style='color:red;'>" + "<strong>&#9730; </strong>" + Math.Round(percentage) + "%</td>";
-                }
-                else {
-                    html += "<td>" + "<strong>&#9729; </strong>" + Math.Round(percentage) + "%</td>";
-                }
                 html += "</tr>";
             }
             html += "</tbody>";
-            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Compares daily average values with average values per program of this date.</p>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Presents the daily attention and engagement when using the top used programs and compares them with averages.</p>";
 
             html += "</table>";
 
