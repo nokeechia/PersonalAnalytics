@@ -366,7 +366,7 @@ namespace MuseTracker
         {
             // var vis1 = new DayMuseInsightCompareYesterday(date);
             var vis2 = new DayInsightTopPgmAndMuseDataTrends(date);
-            var vis3 = new InsightAttentionOfDay(date);
+            var vis3 = new DayInsightsAttentionEngagement(date);
             return new List<IVisualization> { vis2, vis3 };
         }
     }

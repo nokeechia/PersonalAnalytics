@@ -216,6 +216,7 @@ namespace Retrospection
             catch(Exception e)
             {
                 Logger.WriteToLogFile(e);
+
                 return VisHelper.Error(string.Format(CultureInfo.InvariantCulture, "<div id='item {2}'>An error occurred when creating the visualization: '{0}'.</div>", vis.Title, vis.Size));
             }
         }

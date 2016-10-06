@@ -53,9 +53,8 @@
     <Compile Include="Models\MuseTrackerInput.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Visualizations\DayMuseInsightCompareYesterday.cs" />
     <Compile Include="Visualizations\DayInsightTopPgmAndMuseDataTrends.cs" />
-    <Compile Include="Visualizations\InsightAttentionOfDay.cs" />
+    <Compile Include="Visualizations\DayInsightsAttentionEngagement.cs" />
     <Compile Include="Visualizations\MonthMuseVisualization.cs" />
     <Compile Include="Visualizations\WeekMuseVisualization.cs" />
   </ItemGroup>

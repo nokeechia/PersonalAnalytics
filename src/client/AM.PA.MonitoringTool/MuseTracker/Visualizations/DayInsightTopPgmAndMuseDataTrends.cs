@@ -54,6 +54,8 @@ namespace MuseTracker.Visualizations
 
             foreach (KeyValuePair<string, List<TopProgramTimeDto>> entry in programsUsed)
             {
+                if(entry.Value.Count > 0)
+                { 
                 //processing for eeg data
                 var eegIndicesList = new List<double>();
                 var eegIndices = Data.Queries.GetEEGIndexWithinTimerange(_date.Date, entry.Value);
@@ -63,6 +65,7 @@ namespace MuseTracker.Visualizations
                 //processing for blink data
                 var blinks = Data.Queries.GetBlinksWithinTimerange(_date.Date, entry.Value);
                 if (blinks > 0) avgBlinksPerPgm.Add(new Tuple<String, double>(entry.Key, blinks));
+                }
             }
 
             if (avgEEGPerPgm.Count < 1 || avgBlinksPerPgm.Count < 1)
