@@ -4,6 +4,7 @@ using System.Linq;
 using Shared;
 using Shared.Helpers;
 using static Shared.Helpers.VisHelper;
+using MuseTracker.Helpers;
 
 namespace UserSelfEvaluationTracker.Visualizations
 {
@@ -84,9 +85,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             foreach (Tuple<DateTime, int, int> t in chartQueryResultsLocal) {
                 List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
                 programsUsedAtTimes.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
-                int switches = UserEfficiencyTracker.Data.Queries.GetNrOfProgramSwitches(t.Item1, VisType.Hour);
+                int switches = GetSwitches(t.Item1);
                 pgmSwitchesAtTimesT1.Add(new Tuple<DateTime, int>(t.Item1, switches));
-
             }
 
             var usedPgmsT1 = programsUsedAtTimes.Aggregate("", (current, a) => current + ("{tsd:" + DateTimeHelper.JavascriptTimestampFromDateTime(a.Item1) + ", value:[" + string.Concat(a.Item2.Select(n => "'" + n + "',")).TrimEnd(',') + "]}, ")).Trim().TrimEnd(',');
@@ -100,7 +100,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             {
                 List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
                 programsUsedAtTimesT2.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
-                int switches = UserEfficiencyTracker.Data.Queries.GetNrOfProgramSwitches(t.Item1, VisType.Hour);
+                int switches = GetSwitches(t.Item1);
                 pgmSwitchesAtTimesT2.Add(new Tuple<DateTime, int>(t.Item1, switches));
             }
 
@@ -126,6 +126,11 @@ namespace UserSelfEvaluationTracker.Visualizations
             return html;
         }
 
+        private static int GetSwitches(DateTime date) {
+            DateTime from = date.AddMinutes(-7);
+            DateTime to = date.AddMinutes(7);
+            return Helper.GetNrOftopProgramSwitchesBetweenTimes(from, to);
+        }
         /// <summary>
         /// Creates a list of one-hour axis times
         /// </summary>

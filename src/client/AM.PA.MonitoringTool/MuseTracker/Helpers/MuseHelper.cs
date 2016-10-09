@@ -87,32 +87,26 @@ namespace MuseTracker.Helpers
         }
 
 
-        private static int GetNrOfTopProgramSwitchesOfTheDay(DateTime date, VisType type)
+        public static int GetNrOftopProgramSwitchesBetweenTimes(DateTime from, DateTime to)
         {
-
-            var programsUsed = Queries.GetTopProgramsUsedWithTimes(date, type, 20); //20 is an assumption
-
+            var programsUsed = GetTop20Programs(from);
             if (programsUsed.Count < 1)
             {
                 return 0;
             }
 
-            var tempList = new List<TopProgramFlatDto>();
+            return ComputeSwitches(TransformDictionaryToFlatDto(programsUsed, from, to));
+        }
 
-            foreach (KeyValuePair<string, List<TopProgramTimeDto>> entry in programsUsed)
-            {
-                if (entry.Value.Count > 0)
-                {
-                    foreach (TopProgramTimeDto dt in entry.Value)
-                    {
-                        tempList.Add(new TopProgramFlatDto(entry.Key, dt.From, dt.To, dt.DurInMins));
-                    }
-                }
-            }
+        private static Dictionary<String, List<TopProgramTimeDto>> GetTop20Programs(DateTime date)
+        {
+            return Queries.GetTopProgramsUsedWithTimes(date, VisType.Day, 20); // 20 is assumption
+        }
+
+        private static int ComputeSwitches(List<TopProgramFlatDto> list)
+        {
             //sort list by From Date
-
-            var sortedList = tempList.OrderBy(x => x.From.TimeOfDay).ThenBy(x => x.DurInMins).ToList();
-
+            var sortedList = list.OrderBy(x => x.From.TimeOfDay).ThenBy(x => x.DurInMins).ToList();
             //count switches
 
             var oldName = "";
@@ -127,6 +121,53 @@ namespace MuseTracker.Helpers
             }
 
             return switches;
+        }
+
+        private static List<TopProgramFlatDto> TransformDictionaryToFlatDto(Dictionary<String, List<TopProgramTimeDto>> dict)
+        {
+            var list = new List<TopProgramFlatDto>();
+            foreach (KeyValuePair<string, List<TopProgramTimeDto>> entry in dict)
+            {
+                if (entry.Value.Count > 0)
+                {
+                    foreach (TopProgramTimeDto dt in entry.Value)
+                    {
+                        list.Add(new TopProgramFlatDto(entry.Key, dt.From, dt.To, dt.DurInMins));
+                    }
+                }
+            }
+            return list;
+        }
+
+        private static List<TopProgramFlatDto> TransformDictionaryToFlatDto(Dictionary<String, List<TopProgramTimeDto>> dict, DateTime from, DateTime to)
+        {
+            var list = new List<TopProgramFlatDto>();
+            foreach (KeyValuePair<string, List<TopProgramTimeDto>> entry in dict)
+            {
+                if (entry.Value.Count > 0)
+                {
+                    foreach (TopProgramTimeDto dt in entry.Value)
+                    {
+                        if (dt.From >= from && dt.To <= to)
+                        {
+                            list.Add(new TopProgramFlatDto(entry.Key, dt.From, dt.To, dt.DurInMins));
+                        }
+                    }
+                }
+            }
+            return list;
+        }
+
+        private static int GetNrOfTopProgramSwitchesOfTheDay(DateTime date, VisType type)
+        {
+
+            var programsUsed = GetTop20Programs(date);
+            if (programsUsed.Count < 1)
+            {
+                return 0;
+            }
+
+            return ComputeSwitches(TransformDictionaryToFlatDto(programsUsed));
         }
 
         private class TopProgramFlatDto
