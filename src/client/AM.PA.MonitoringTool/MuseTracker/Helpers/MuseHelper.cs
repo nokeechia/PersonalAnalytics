@@ -6,6 +6,7 @@ using static Shared.Helpers.VisHelper;
 using System.Web.Script.Serialization;
 using Shared.Helpers;
 using Shared;
+using UserEfficiencyTracker.Data;
 
 namespace MuseTracker.Helpers
 {
@@ -73,7 +74,7 @@ namespace MuseTracker.Helpers
             {
                 date = i.Item1.ToString(),
                 normalizedvalue = Math.Round(VisHelper.Rescale(i.Item2, minBlinks, maxBlinks), 2),
-                originalvalue = Math.Pow(10, i.Item2 * -1), //because log befored
+                originalvalue = Math.Pow(10, i.Item2 * -1), //because log before
                 extraInfo = new JavaScriptSerializer().Serialize(FromDateToExtraInfo(i.Item1))
             }).ToList();
 
@@ -82,9 +83,67 @@ namespace MuseTracker.Helpers
 
         private static ExtraInfo FromDateToExtraInfo(DateTime _date)
         {
-            return new ExtraInfo { switches = UserEfficiencyTracker.Data.Queries.GetNrOfProgramSwitches(_date, VisType.Day), topPgms = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(_date, VisType.Day, 3).Aggregate("", (current, p) => current + ProcessNameHelper.GetFileDescription(p) + ", ").Trim().TrimEnd(',') };
+            return new ExtraInfo { switches = GetNrOfTopProgramSwitchesOfTheDay(_date, VisType.Day), topPgms = Queries.GetTopProgramsUsed(_date, VisType.Day, 3).Aggregate("", (current, p) => current + ProcessNameHelper.GetFileDescription(p) + ", ").Trim().TrimEnd(',') };
         }
 
+
+        private static int GetNrOfTopProgramSwitchesOfTheDay(DateTime date, VisType type)
+        {
+
+            var programsUsed = Queries.GetTopProgramsUsedWithTimes(date, type, 20); //20 is an assumption
+
+            if (programsUsed.Count < 1)
+            {
+                return 0;
+            }
+
+            var tempList = new List<TopProgramFlatDto>();
+
+            foreach (KeyValuePair<string, List<TopProgramTimeDto>> entry in programsUsed)
+            {
+                if (entry.Value.Count > 0)
+                {
+                    foreach (TopProgramTimeDto dt in entry.Value)
+                    {
+                        tempList.Add(new TopProgramFlatDto(entry.Key, dt.From, dt.To, dt.DurInMins));
+                    }
+                }
+            }
+            //sort list by From Date
+
+            var sortedList = tempList.OrderBy(x => x.From.TimeOfDay).ThenBy(x => x.DurInMins).ToList();
+
+            //count switches
+
+            var oldName = "";
+            var switches = 0;
+            foreach (TopProgramFlatDto dt in sortedList)
+            {
+                if (oldName.Length > 0 && !dt.Name.Equals(oldName))
+                {
+                    switches += 1;
+                }
+                oldName = dt.Name;
+            }
+
+            return switches;
+        }
+
+        private class TopProgramFlatDto
+        {
+            public String Name { get; private set; }
+            public DateTime From { get; private set; }
+            public DateTime To { get; private set; }
+            public int DurInMins { get; private set; }
+
+            public TopProgramFlatDto(String name, DateTime from, DateTime to, int durInMins)
+            {
+                Name = name;
+                From = from;
+                To = to;
+                DurInMins = durInMins;
+            }
+        }
 
         public static List<DateElementExtended<double>> NormalizeEEGIndices(List<Tuple<DateTime, double>> eegData)
         {
