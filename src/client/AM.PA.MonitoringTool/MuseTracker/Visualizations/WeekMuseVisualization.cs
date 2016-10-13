@@ -34,7 +34,7 @@ namespace MuseTracker.Visualizations
             var blinks = Queries.GetBlinksOfWeek(_date);
             var eegData = Queries.GetEEGIndexOfWeek(_date);
 
-            if (blinks.Count < 1 && eegData.Count < 1)
+            if (blinks.Count < 1 || eegData.Count < 1)
             {
                 html += VisHelper.NotEnoughData("It is not possible to give you insights. Either because of no blink or EEG data.");
                 return html;
@@ -43,8 +43,8 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // normalize data sets
             /////////////////////
-            List<DateElementExtended<double>> normalizedBlinks = Helpers.Helper.NormalizeBlinks(blinks);
-            List<DateElementExtended<double>> normalizedEEG = Helpers.Helper.NormalizeEEGIndices(eegData);
+            List<DateElementExtended<double>> normalizedBlinks = Helper.HelperMethods.NormalizeBlinks(blinks);
+            List<DateElementExtended<double>> normalizedEEG = Helper.HelperMethods.NormalizeEEGIndices(eegData);
 
             /////////////////////
             // CSS

@@ -43,7 +43,7 @@ namespace MuseTracker.Visualizations
             var eegValuesWithTimes = Data.Queries.GetEEGIndex(_date);
             var blinkWithTimes = Data.Queries.GetBlinks(_date);
 
-            if (eegValuesWithTimes.Count < 1)
+            if (eegValuesWithTimes.Count < 1 || blinkWithTimes.Count < 1)
             {
                 html += VisHelper.NotEnoughData(_notEnoughMuseMsg);
                 return html;

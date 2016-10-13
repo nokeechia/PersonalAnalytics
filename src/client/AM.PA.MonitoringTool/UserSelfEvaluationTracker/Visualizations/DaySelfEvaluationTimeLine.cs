@@ -4,7 +4,7 @@ using System.Linq;
 using Shared;
 using Shared.Helpers;
 using static Shared.Helpers.VisHelper;
-using MuseTracker.Helpers;
+using MuseTracker.Helper;
 
 namespace UserSelfEvaluationTracker.Visualizations
 {
@@ -45,8 +45,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             /////////////////////
             // normalize data sets
             /////////////////////
-            List<DateElementExtended<double>> normalizedBlinks = MuseTracker.Helpers.Helper.NormalizeBlinks(blinks);
-            List<DateElementExtended<double>> normalizedEEG = MuseTracker.Helpers.Helper.NormalizeEEGIndices(eegIndices);
+            List<DateElementExtended<double>> normalizedBlinks = MuseTracker.Helper.HelperMethods.NormalizeBlinks(blinks);
+            List<DateElementExtended<double>> normalizedEEG = MuseTracker.Helper.HelperMethods.NormalizeEEGIndices(eegIndices);
 
             /////////////////////
             // CSS
@@ -129,7 +129,7 @@ namespace UserSelfEvaluationTracker.Visualizations
         private static int GetSwitches(DateTime date) {
             DateTime from = date.AddMinutes(-7);
             DateTime to = date.AddMinutes(7);
-            return Helper.GetNrOftopProgramSwitchesBetweenTimes(from, to);
+            return HelperMethods.GetNrOftopProgramSwitchesBetweenTimes(from, to);
         }
         /// <summary>
         /// Creates a list of one-hour axis times

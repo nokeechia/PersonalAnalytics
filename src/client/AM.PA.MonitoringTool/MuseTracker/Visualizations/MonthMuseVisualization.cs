@@ -34,17 +34,17 @@ namespace MuseTracker.Visualizations
             var blinks = Queries.GetBlinksOfMonth(_date);
             var eegData = Queries.GetEEGIndicesOfMonth(_date);
 
-            if (blinks.Count < 1 ) //Todo: have to set a min limit
+            if (blinks.Count < 1 || eegData.Count < 1) 
             {
-                html += VisHelper.NotEnoughData("It is not possible to give you insights into your productivity.");
+                html += VisHelper.NotEnoughData("It is not possible to give you insights. Either because of no blink or EEG data.");
                 return html;
             }
 
             /////////////////////
             // normalize data sets
             /////////////////////
-            List<DateElementExtended<double>> normalizedBlinks = Helpers.Helper.NormalizeBlinks(blinks);
-            List<DateElementExtended<double>> normalizedEEG = Helpers.Helper.NormalizeEEGIndices(eegData);
+            List<DateElementExtended<double>> normalizedBlinks = Helper.HelperMethods.NormalizeBlinks(blinks);
+            List<DateElementExtended<double>> normalizedEEG = Helper.HelperMethods.NormalizeEEGIndices(eegData);
 
             /////////////////////
             // CSS

@@ -377,23 +377,24 @@ namespace MuseTracker.Data
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static double GetBlinksWithinTimerange(DateTime date, List<TopProgramTimeDto> dtoList)
+        public static List<Tuple<DateTime, double>> GetBlinksWithinTimerange(DateTime date, List<TopProgramTimeDto> dtoList)
         {
-            var avg = 0.0;
+            var resList = new List<Tuple<DateTime, double>>();
 
             try
             {
-                var query = "SELECT avg(blink) as avgblinks" +
+                var query = "SELECT time, avg(blink) as avgblinks" +
                             " FROM " + Settings.DbTableMuseBlink +
                             " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) +
                             " AND (" + buildORClause(dtoList) + ")" +
+                            " GROUP BY time" +
                             ";";
 
                 var table = Database.GetInstance().ExecuteReadQuery(query);
 
                 foreach (DataRow row in table.Rows)
                 {
-                    avg = Convert.ToDouble(row["avgblinks"]);
+                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact((String)row[0], "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), Convert.ToDouble(row["avgblinks"])));
                 }
                 table.Dispose();
             }
@@ -402,7 +403,7 @@ namespace MuseTracker.Data
                 Logger.WriteToLogFile(e);
             }
 
-            return avg;
+            return resList;
         }
 
         /// <summary>

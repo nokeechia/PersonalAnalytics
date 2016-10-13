@@ -49,40 +49,77 @@ namespace MuseTracker.Visualizations
             // prepare data sets
             /////////////////////
 
-            var avgEEGPerPgm = new List<Tuple<String, double>>();
-            var avgBlinksPerPgm = new List<Tuple<String, double>>();
+            var flatProgramStruct4EEG = new Dictionary<String, List<Tuple<DateTime, double>>>();
+            var flatProgramStruct4Blinks = new Dictionary<String, List<Tuple<DateTime, double>>>();
 
             foreach (KeyValuePair<string, List<TopProgramTimeDto>> entry in programsUsed)
             {
-                if(entry.Value.Count > 0)
-                { 
-                //processing for eeg data
-                var eegIndicesList = new List<double>();
-                var eegIndices = Data.Queries.GetEEGIndexWithinTimerange(_date.Date, entry.Value);
-                if (eegIndices.Count > 0) eegIndicesList.Add(eegIndices.Average(item => item.Item2));
-                if(eegIndicesList.Count > 0) avgEEGPerPgm.Add(new Tuple<String, double>(entry.Key, eegIndicesList.Average(i => i)));
+                if (entry.Value.Count > 0)
+                {
+                    //processing for eeg data
+                    var eegIndicesList = new List<double>();
+                    var eegIndicesList2 = new List<Tuple<int, double>>();
 
-                //processing for blink data
-                var blinks = Data.Queries.GetBlinksWithinTimerange(_date.Date, entry.Value);
-                if (blinks > 0) avgBlinksPerPgm.Add(new Tuple<String, double>(entry.Key, blinks));
+                    var eegIndices = Data.Queries.GetEEGIndexWithinTimerange(_date.Date, entry.Value);
+                    if (eegIndices.Count > 0) flatProgramStruct4EEG.Add(entry.Key, eegIndices);
+
+                    //processing for blink data
+                    var avgBlinks = Data.Queries.GetBlinksWithinTimerange(_date.Date, entry.Value);
+                    if (avgBlinks.Count > 0) flatProgramStruct4Blinks.Add(entry.Key, avgBlinks);
                 }
             }
 
-            if (avgEEGPerPgm.Count < 1 || avgBlinksPerPgm.Count < 1)
+            var eegDataWithWeights = new List<Tuple<string, int, double>>();
+
+            foreach (KeyValuePair<string, List<Tuple<DateTime, double>>> entry in flatProgramStruct4EEG)
+            {
+                if (entry.Value.Count > 0)
+                {
+
+                    foreach (Tuple<DateTime, double> e in entry.Value)
+                    {
+                        var durInMins = programsUsed.SelectMany(pair => pair.Value.Where(dto => dto.From <= e.Item1 && dto.To >= e.Item1))
+                                                     .Select(dto => dto.DurInMins)
+                                                     .ToList();
+                        if(durInMins.Sum() > 0) eegDataWithWeights.Add(new Tuple<string, int, double>(entry.Key, durInMins.Sum(), e.Item2));
+                    }
+                }
+            }
+
+            var blinkDataWithWeights = new List<Tuple<string, int, double>>();
+
+            foreach (KeyValuePair<string, List<Tuple<DateTime, double>>> entry in flatProgramStruct4Blinks)
+            {
+                if (entry.Value.Count > 0)
+                {
+
+                    foreach (Tuple<DateTime, double> e in entry.Value)
+                    {
+                        var durInMins = programsUsed.SelectMany(pair => pair.Value.Where(dto => dto.From <= e.Item1 && dto.To >= e.Item1))
+                                                     .Select(dto => dto.DurInMins)
+                                                     .ToList();
+                        if (durInMins.Sum() > 0) blinkDataWithWeights.Add(new Tuple<string, int, double>(entry.Key, durInMins.Sum(), e.Item2));
+                    }
+                }
+            }
+
+
+
+
+            if (eegDataWithWeights.Count < 1 || blinkDataWithWeights.Count < 1)
             {
                 html += VisHelper.NotEnoughData(_notEnoughPgmsMsg);
                 return html;
             }
 
-            var eegValuesWithTimes = Data.Queries.GetEEGIndex(_date);
-            var eegValuesOnly = eegValuesWithTimes.Select(item => item.Item2).ToList();
-            var eegStdev = Helpers.Helper.StdDev(eegValuesOnly);
-            var eegAvg = Math.Round(eegValuesOnly.Average(), 2);
+            var weightedEegAvg = Math.Round((eegDataWithWeights.Sum(i => i.Item2*i.Item3) / eegDataWithWeights.Sum(x => x.Item2)), 2);
+            var eegStdev = Helper.HelperMethods.SampleStdDev(eegDataWithWeights.Select(x => x.Item3).ToList(), weightedEegAvg);
 
-            var blinkValuesWithTimes = Data.Queries.GetBlinks(_date);
-            var blinkValuesOnly = blinkValuesWithTimes.Select(item => item.Item2).ToList();
-            var blinkStdev = Helpers.Helper.StdDev(eegValuesOnly);
-            var blinkAvg = Math.Round(blinkValuesOnly.Average(), 2);
+            var weightedBlinkAvg = Math.Round((blinkDataWithWeights.Sum(i => i.Item2*i.Item3) / blinkDataWithWeights.Sum(x => x.Item2)), 2);
+            var blinkStdev = Helper.HelperMethods.SampleStdDev(blinkDataWithWeights.Select(x => x.Item3).ToList(), weightedBlinkAvg);
+
+            var weightedAvgEEGPerPgm = Helper.HelperMethods.CalculateWeightedAvgPerPgm(eegDataWithWeights);
+            var weightedAvgBlinksPerPgm = Helper.HelperMethods.CalculateWeightedAvgPerPgm(blinkDataWithWeights);
 
             /////////////////////
             // visualize data sets
@@ -94,16 +131,16 @@ namespace MuseTracker.Visualizations
             html += "<tbody>";
 
 
-            foreach (var p in avgEEGPerPgm)
+            foreach (var p in weightedAvgEEGPerPgm)
             {
                 html += "<tr>";
                 html += "<td>" + ProcessNameHelper.GetFileDescription(p.Item1) + "</td>";
 
-                var blink = avgBlinksPerPgm.Find(x => x.Item1.Equals(p.Item1)).Item2;
-                var percBlink = ((blink / blinkAvg) - 1) * 100;
+                var blink = weightedAvgBlinksPerPgm.Find(x => x.Item1.Equals(p.Item1)).Item2;
+                var percBlink = ((blink / weightedBlinkAvg) - 1) * 100;
 
                 //if blink difference is equal or greater 2*Stdev then show, otherwise difference is not significant (assumption)
-                if (Math.Abs(blinkAvg - blink) >= 2 * blinkStdev)
+                if (Math.Abs(weightedBlinkAvg - blink) >= 2 * blinkStdev)
                 {
                     //blinks are reverse -> better attention when less blinks
                     if (percBlink > 0)
@@ -125,10 +162,10 @@ namespace MuseTracker.Visualizations
 
 
                 var eeg = Math.Round(p.Item2, 2);
-                var percEEG = ((eeg / eegAvg) - 1) * 100;
+                var percEEG = ((eeg / weightedEegAvg) - 1) * 100;
 
                 //if eeg difference is equal or greater 2*Stdev then show, otherwise difference is not significant (assumption)
-                if (Math.Abs(eegAvg - eeg) >= 2 * eegStdev)
+                if (Math.Abs(weightedEegAvg - eeg) >= 2 * eegStdev)
                 {
                     if (percEEG > 0)
                     {

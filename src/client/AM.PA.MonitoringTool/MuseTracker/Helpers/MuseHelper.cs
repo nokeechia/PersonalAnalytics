@@ -8,29 +8,13 @@ using Shared.Helpers;
 using Shared;
 using UserEfficiencyTracker.Data;
 
-namespace MuseTracker.Helpers
+namespace MuseTracker.Helper
 {
-    public static class MuseHelper
-    {
-        public static void processFileStream(FileStream fs)
-        {
-            using (fs)
-            {
-                using (StreamReader sr = new StreamReader(fs))
-                {
-                    string lines = sr.ReadToEnd();
-                    
-                    Console.Write("The Elapsed event was raised at {0}", lines);
-                }
-            }
-        }
-    }
-
-    public static class Helper
+    public static class HelperMethods
     {
         //http://stackoverflow.com/questions/2253874/linq-equivalent-for-standard-deviation
 
-        public static double StdDev(this IEnumerable<double> values)
+        public static double SampleStdDev(this IEnumerable<double> values, double mean)
         {
             double ret = 0;
             int count = values.Count();
@@ -40,7 +24,7 @@ namespace MuseTracker.Helpers
                 double avg = values.Average();
 
                 //Perform the Sum of (value-avg)^2
-                double sum = values.Sum(d => (d - avg) * (d - avg));
+                double sum = values.Sum(d => Math.Pow((d - mean), 2));
 
                 //Put it all together
                 ret = Math.Sqrt(sum / count-1); //used sample formula thus -1
@@ -203,9 +187,11 @@ namespace MuseTracker.Helpers
 
             return normalizedEEG;
         }
+
+        public static List<Tuple<string, double>> CalculateWeightedAvgPerPgm(List<Tuple<string, int, double>> rawData)
+        {
+            return rawData.GroupBy(x => x.Item1).Select( g => Tuple.Create(g.Key, g.Sum(x => x.Item2 * x.Item3)/g.Sum(x => x.Item2))).ToList();
+        }
     }
-
-
-
 
 }
