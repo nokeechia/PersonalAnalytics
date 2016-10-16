@@ -28,7 +28,7 @@ namespace MuseTracker
         public const string DbTableMuseConcentration = "muse_input_concentration";
         public const string DbTableMuseMellow = "muse_input_mellow";
 
-        public const string CmdToRunMuseIo = "/C muse-io --device Muse --osc osc.udp://localhost:5000";
+        public const string CmdToRunMuseIo = "/C muse-io --device-search muse --osc osc.udp://localhost:5000";
 
         public const int msTimeIntervalForAggregation = 2000;
 
