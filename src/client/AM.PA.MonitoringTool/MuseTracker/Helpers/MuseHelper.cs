@@ -192,6 +192,57 @@ namespace MuseTracker.Helper
         {
             return rawData.GroupBy(x => x.Item1).Select( g => Tuple.Create(g.Key, g.Sum(x => x.Item2 * x.Item3)/g.Sum(x => x.Item2))).ToList();
         }
+
+        public static double CalculateTotalWeightedAvg(List<Tuple<string, int, double>> data)
+        {
+            return Math.Round((data.Sum(i => i.Item2 * i.Item3) / data.Sum(x => x.Item2)), 2);
+        }
+
+
+        public static List<Tuple<string, int, double>> GetFilteredEntries(Dictionary<String, List<Tuple<DateTime, double>>> dict, Dictionary<string, List<TopProgramTimeDto>> programs)
+        {
+            
+            var list = new List<Tuple<string, int, double>>();
+
+            foreach (KeyValuePair<string, List<Tuple<DateTime, double>>> entry in dict)
+            {
+                if (entry.Value.Count > 0)
+                {
+
+                    foreach (Tuple<DateTime, double> e in entry.Value)
+                    {
+                        //select only entries within time range and duration > 1 min
+                        var durInMins = programs.SelectMany(pair => pair.Value.Where(dto => dto.From <= e.Item1 && dto.To >= e.Item1 && dto.DurInMins > 1))
+                                                     .Select(dto => dto.DurInMins)
+                                                     .ToList();
+                        if (durInMins.Sum() > 0) list.Add(new Tuple<string, int, double>(entry.Key, durInMins.Sum(), e.Item2));
+                    }
+                }
+            }           
+            return list;
+        }
+
+
+        public static List<Tuple<String, double, double>> CalculateDiffToAvg(List<Tuple<String, double>> avgEEG, List<Tuple<String, double>> avgBlinks, double totalAvgEEG, double totalAvgBlink)
+        {
+            var diffToAvgPerProgram = new List<Tuple<String, double, double>>();
+
+            // calculate differences to average
+            foreach (var p in avgEEG)
+            {
+                var avgBlinksPerProgram = avgBlinks.Find(x => x.Item1.Equals(p.Item1)).Item2;
+                var percBlink = ((avgBlinksPerProgram / totalAvgBlink) - 1) * 100;
+
+                var avgEEGPerProgram = Math.Round(p.Item2, 2);
+                var percEEG = ((avgEEGPerProgram / totalAvgEEG) - 1) * 100;
+
+                diffToAvgPerProgram.Add(Tuple.Create(p.Item1, percBlink, percEEG));
+            }
+
+            return diffToAvgPerProgram;
+
+        }
+
     }
 
 }
