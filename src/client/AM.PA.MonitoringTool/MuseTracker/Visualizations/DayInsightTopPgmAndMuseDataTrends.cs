@@ -27,7 +27,7 @@ namespace MuseTracker.Visualizations
             this._date = date;
             this._type = VisType.Day;
             IsEnabled = true; 
-            Order = 9; //todo: handle by user
+            Order = 9;
             Size = VisSize.Square;
     }
 
@@ -39,6 +39,7 @@ namespace MuseTracker.Visualizations
             // fetch data sets
             /////////////////////
             var programsUsed = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsedWithTimes(_date, _type, maxNumberOfTopPrograms);
+
             if (programsUsed.Count < 1)
             {
                 html += VisHelper.NotEnoughData(_notEnoughPgmsMsg);

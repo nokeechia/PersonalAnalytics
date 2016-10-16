@@ -383,7 +383,7 @@ namespace MuseTracker.Data
 
             try
             {
-                var query = "SELECT time, avg(blink) as avgblinks" +
+                var query = "SELECT time, sum(blink) as sumblinks" +
                             " FROM " + Settings.DbTableMuseBlink +
                             " WHERE " + Database.GetInstance().GetDateFilteringStringForQuery(VisType.Day, date) +
                             " AND (" + buildORClause(dtoList) + ")" +
@@ -394,7 +394,7 @@ namespace MuseTracker.Data
 
                 foreach (DataRow row in table.Rows)
                 {
-                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact((String)row[0], "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), Convert.ToDouble(row["avgblinks"])));
+                    resList.Add(new Tuple<DateTime, double>(DateTime.ParseExact((String)row[0], "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), Convert.ToDouble(row["sumblinks"])));
                 }
                 table.Dispose();
             }
