@@ -121,7 +121,7 @@ namespace MuseTracker
             };
 
             // Create an OSC server.
-            _listener = new UDPListener(Settings.museIoPort, callback);
+            _listener = new UDPListener(Settings.MuseIoPort, callback);
 
             IsRunning = true;
             Console.Write("++++ muse tracker started");

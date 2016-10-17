@@ -222,27 +222,47 @@ namespace MuseTracker.Helper
             return list;
         }
 
-
+        /// <summary>
+        /// Calculates percentual difference of |total average - average per program | for eeg and blink data
+        /// </summary>
+        /// <param name="avgEEG"></param>
+        /// <param name="avgBlinks"></param>
+        /// <param name="totalAvgEEG"></param>
+        /// <param name="totalAvgBlink"></param>
+        /// <returns>List with % differences of blink and eeg data per program and their total averages</returns>
+        /// 
         public static List<Tuple<String, double, double>> CalculateDiffToAvg(List<Tuple<String, double>> avgEEG, List<Tuple<String, double>> avgBlinks, double totalAvgEEG, double totalAvgBlink)
         {
             var diffToAvgPerProgram = new List<Tuple<String, double, double>>();
 
-            // calculate differences to average
+            // process eeg data and blink data separately because they can contain different programs
+
             foreach (var p in avgEEG)
             {
-                var avgBlinksPerProgram = avgBlinks.Find(x => x.Item1.Equals(p.Item1)).Item2;
-                var percBlink = ((avgBlinksPerProgram / totalAvgBlink) - 1) * 100;
-
                 var avgEEGPerProgram = Math.Round(p.Item2, 2);
                 var percEEG = ((avgEEGPerProgram / totalAvgEEG) - 1) * 100;
-
-                diffToAvgPerProgram.Add(Tuple.Create(p.Item1, percBlink, percEEG));
+                diffToAvgPerProgram.Add(Tuple.Create(p.Item1, Settings.MaxAvgValue, percEEG)); // max value for default
             }
 
+            foreach (var p in avgBlinks)
+            {
+                var avgBlinksPerProgram = Math.Round(p.Item2, 2);
+                var percBlink = ((avgBlinksPerProgram / totalAvgBlink) - 1) * 100;
+
+                var existingEntry = diffToAvgPerProgram.Find(i => i.Item1 == p.Item1);
+                if (existingEntry.Equals(null))
+                {
+                    // No entry exists, add new one
+                    diffToAvgPerProgram.Add(Tuple.Create(p.Item1, percBlink, Settings.MaxAvgValue)); // max value for default
+                }
+                else
+                {
+                    var newEntry = Tuple.Create(existingEntry.Item1, percBlink, existingEntry.Item3);
+                    diffToAvgPerProgram.Remove(existingEntry);
+                    diffToAvgPerProgram.Add(newEntry);
+                }
+            }
             return diffToAvgPerProgram;
-
         }
-
     }
-
 }

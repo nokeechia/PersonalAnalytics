@@ -67,6 +67,12 @@ namespace MuseTracker.Visualizations
                 }
             }
 
+            if (flatProgramStruct4EEG.Count < 1 || flatProgramStruct4Blinks.Count < 1 || programsUsed.Count < 1)
+            {
+                html += VisHelper.NotEnoughData(_notEnoughPgmsMsg);
+                return html;
+            }
+
             var eegDataWithWeights = Helper.HelperMethods.GetFilteredEntries(flatProgramStruct4EEG, programsUsed);
             var blinkDataWithWeights = Helper.HelperMethods.GetFilteredEntries(flatProgramStruct4Blinks, programsUsed);
 
@@ -80,15 +86,14 @@ namespace MuseTracker.Visualizations
             var weightedBlinkAvg = Helper.HelperMethods.CalculateTotalWeightedAvg(blinkDataWithWeights);
             var weightedAvgEEGPerPgm = Helper.HelperMethods.CalculateWeightedAvgPerPgm(eegDataWithWeights);
             var weightedAvgBlinksPerPgm = Helper.HelperMethods.CalculateWeightedAvgPerPgm(blinkDataWithWeights);
-
-            var diffToAvgPerProgram = Helper.HelperMethods.CalculateDiffToAvg(weightedAvgEEGPerPgm, weightedAvgBlinksPerPgm, weightedEegAvg, weightedBlinkAvg);
                 
             /////////////////////
             // visualize data sets
             /////////////////////
 
-            if (weightedAvgEEGPerPgm.Count > 0)
+            if (weightedAvgEEGPerPgm.Count > 0 && weightedAvgBlinksPerPgm.Count > 0)
             {
+                var diffToAvgPerProgram = Helper.HelperMethods.CalculateDiffToAvg(weightedAvgEEGPerPgm, weightedAvgBlinksPerPgm, weightedEegAvg, weightedBlinkAvg);
                 html += CreateHtmlTable(diffToAvgPerProgram, Title);
             }
 
@@ -120,15 +125,19 @@ namespace MuseTracker.Visualizations
 
             //filter only programs that have at least either blink or eeg differences > 5%
             var filteredPgmList = diffToAvgPerProgram.Where(x => Math.Abs(x.Item2) > 5 || Math.Abs(x.Item3) > 5).ToList();
+
             foreach (var p in filteredPgmList)
             {
                 html += "<tr>";
                 html += "<td>" + ProcessNameHelper.GetFileDescription(p.Item1) + "</td>";
 
-                // assumption - we consider only those values which are > than +- 5% of average
                 var percBlink = p.Item2;
 
-                if (Math.Abs(percBlink) > 5)
+                if (percBlink == Settings.MaxAvgValue)
+                {
+                    html += "<td style ='color:grey;'> - </td>";
+                }    
+                else if (Math.Abs(percBlink) > 5) // assumption - we consider only those values which are > than +- 5% of average
                 {
                     //blinks are reverse -> better attention when less blinks
                     if (percBlink > 0)
@@ -152,8 +161,11 @@ namespace MuseTracker.Visualizations
 
                 var percEEG = p.Item3;
 
-                // assumption - we consider only those values which are > than +- 5% of average
-                if (Math.Abs(percEEG) > 5)
+                if (percEEG == Settings.MaxAvgValue)
+                {
+                    html += "<td style ='color:grey;'> - </td>";
+                }
+                else if (Math.Abs(percEEG) > 5) // assumption - we consider only those values which are > than +- 5% of average
                 {
                     if (percEEG > 0)
                     {
@@ -181,6 +193,5 @@ namespace MuseTracker.Visualizations
             html += "</table>";
             return html;
         }
-
     }
 }
