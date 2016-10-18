@@ -189,7 +189,7 @@ namespace Shared.Helpers
             return d.Aggregate("", (current, b) => current + "{date: '" + b.date.ToString() + "', normalizedvalue: '" + b.normalizedvalue + "', originalvalue: '" + b.originalvalue + "', extraInfo: '" + b.extraInfo + "'},").Trim().TrimEnd(','); 
         }
 
-        public static double Rescale(double x, double min, double max)
+        public static double Normalize(double x, double min, double max)
         {
             //f(x) = (x-min) / (max-min)            
             return Math.Round((double)(x - min) / (max - min), 2);

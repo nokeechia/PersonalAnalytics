@@ -45,8 +45,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             /////////////////////
             // normalize data sets
             /////////////////////
-            List<DateElementExtended<double>> normalizedBlinks = MuseTracker.Helper.HelperMethods.NormalizeBlinks(blinks);
-            List<DateElementExtended<double>> normalizedEEG = MuseTracker.Helper.HelperMethods.NormalizeEEGIndices(eegIndices);
+            List<DateElementExtended<double>> normalizedBlinks = MuseTracker.Helper.HelperMethods.TransformBlinksToExtendedDateElements(blinks);
+            List<DateElementExtended<double>> normalizedEEG = MuseTracker.Helper.HelperMethods.TransformEEGToExtendedDateElements(eegIndices);
 
             /////////////////////
             // CSS
@@ -71,8 +71,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             var timeAxisMuse = blinks.Aggregate("", (current, a) => current + (DateTimeHelper.JavascriptTimestampFromDateTime(Convert.ToDateTime(a.Item1)) + ", ")).TrimEnd(',');
 
             // Transform data into arrays for visualization
-            var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item2,1,7) + ", ")).Trim().TrimEnd(',');
-            var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Rescale(p.Item3, 1, 7) + ", ")).Trim().TrimEnd(',');
+            var engagementFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Normalize(p.Item2,1,7) + ", ")).Trim().TrimEnd(',');
+            var attentionFormattedData = chartQueryResultsLocal.Aggregate("", (current, p) => current + (VisHelper.Normalize(p.Item3, 1, 7) + ", ")).Trim().TrimEnd(',');
             var eegData = normalizedEEG.Aggregate("", (current, p) => current + p.normalizedvalue + ", ").Trim().TrimEnd(',');
             var originalEegData = normalizedEEG.Aggregate("", (current, p) => current + Math.Round(p.originalvalue, 2) + ", ").Trim().TrimEnd(',');
             var blinkData = normalizedBlinks.Aggregate("", (current, p) => current + p.normalizedvalue + ", ").Trim().TrimEnd(',');

@@ -43,8 +43,8 @@ namespace MuseTracker.Visualizations
             /////////////////////
             // normalize data sets
             /////////////////////
-            List<DateElementExtended<double>> normalizedBlinks = Helper.HelperMethods.NormalizeBlinks(blinks);
-            List<DateElementExtended<double>> normalizedEEG = Helper.HelperMethods.NormalizeEEGIndices(eegData);
+            List<DateElementExtended<double>> normalizedBlinks = Helper.HelperMethods.TransformBlinksToExtendedDateElements(blinks);
+            List<DateElementExtended<double>> normalizedEEG = Helper.HelperMethods.TransformEEGToExtendedDateElements(eegData);
 
             /////////////////////
             // CSS

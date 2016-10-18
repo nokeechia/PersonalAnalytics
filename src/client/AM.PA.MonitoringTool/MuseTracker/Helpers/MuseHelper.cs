@@ -47,7 +47,13 @@ namespace MuseTracker.Helper
             return (blinks.Count == 0) ? 0 : blinks.Max(i => i.Item2);
         }
 
-        public static List<DateElementExtended<double>> NormalizeBlinks(List<Tuple<DateTime, int>> blinks)
+        /// <summary>
+        /// Transform original blink values into DateElementExtended items with normalized values
+        /// </summary>
+        /// <param name="blinks"></param>
+        /// <returns>List with DateElements which contain original, normal and addition values</returns>
+        /// 
+        public static List<DateElementExtended<double>> TransformBlinksToExtendedDateElements(List<Tuple<DateTime, int>> blinks)
         {
 
             List<Tuple<DateTime, double>> logblinks = GetLogBlinks(blinks); //log transform because of huge differences in ranges, -1 because reverse blinks indicate more attention
@@ -57,7 +63,7 @@ namespace MuseTracker.Helper
             List<DateElementExtended<double>> normalizedBlinks = logblinks.Select(i => new DateElementExtended<double>
             {
                 date = i.Item1.ToString(),
-                normalizedvalue = Math.Round(VisHelper.Rescale(i.Item2, minBlinks, maxBlinks), 2),
+                normalizedvalue = Math.Round(VisHelper.Normalize(i.Item2, minBlinks, maxBlinks), 2),
                 originalvalue = Math.Pow(10, i.Item2 * -1), //because log before
                 extraInfo = new JavaScriptSerializer().Serialize(FromDateToExtraInfo(i.Item1))
             }).ToList();
@@ -170,22 +176,28 @@ namespace MuseTracker.Helper
             }
         }
 
-        public static List<DateElementExtended<double>> NormalizeEEGIndices(List<Tuple<DateTime, double>> eegData)
+        /// <summary>
+        /// Transform original EEG values into DateElementExtended items with normalized values
+        /// </summary>
+        /// <param name="eegData"></param>
+        /// <returns>List with DateElements which contain original, normal and addition values</returns>
+        /// 
+        public static List<DateElementExtended<double>> TransformEEGToExtendedDateElements(List<Tuple<DateTime, double>> eegData)
         {
             List<Tuple<DateTime, double>> logEEG = eegData.Select(i => new Tuple<DateTime, double>(i.Item1, Math.Log10(i.Item2))).ToList(); //log transform because of huge differences in ranges, -1 because reverse blinks indicate more attention
             var minEEG = (eegData.Count == 0) ? 0 : eegData.Min(i => i.Item2);
             var maxEEG = (eegData.Count == 0) ? 0 : eegData.Max(i => i.Item2);
 
 
-            List<DateElementExtended<double>> normalizedEEG = eegData.Select(i => new DateElementExtended<double>
+            List<DateElementExtended<double>> transformedEEG = eegData.Select(i => new DateElementExtended<double>
             {
                 date = i.Item1.ToString(),
-                normalizedvalue = Math.Round(VisHelper.Rescale(i.Item2, minEEG, maxEEG), 2),
+                normalizedvalue = Math.Round(VisHelper.Normalize(i.Item2, minEEG, maxEEG), 2),
                 originalvalue = i.Item2, //because log befored
                 extraInfo = new JavaScriptSerializer().Serialize(FromDateToExtraInfo(i.Item1))
             }).ToList();
 
-            return normalizedEEG;
+            return transformedEEG;
         }
 
         public static List<Tuple<string, double>> CalculateWeightedAvgPerPgm(List<Tuple<string, int, double>> rawData)
@@ -199,6 +211,13 @@ namespace MuseTracker.Helper
         }
 
 
+        /// <summary>
+        /// Filter only list entries with duration > 1 min
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <param name="programs"></param>
+        /// <returns>List with entries that fulfill filter criteria</returns>
+        /// 
         public static List<Tuple<string, int, double>> GetFilteredEntries(Dictionary<String, List<Tuple<DateTime, double>>> dict, Dictionary<string, List<TopProgramTimeDto>> programs)
         {
             
