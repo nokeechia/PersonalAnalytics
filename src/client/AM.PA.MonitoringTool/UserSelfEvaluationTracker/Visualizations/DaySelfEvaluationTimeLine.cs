@@ -84,7 +84,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             //List contains same time points as for engagementFormattedData and attentionFormattedData (timeAxis)
             foreach (Tuple<DateTime, int, int> t in chartQueryResultsLocal) {
                 List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
-                programsUsedAtTimes.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
+                var descPgm = programs.Select(p => ProcessNameHelper.GetFileDescription(p)).ToList();
+                programsUsedAtTimes.Add(new Tuple<DateTime, List<String>>(t.Item1, descPgm));
                 int switches = GetSwitches(t.Item1);
                 pgmSwitchesAtTimesT1.Add(new Tuple<DateTime, int>(t.Item1, switches));
             }
@@ -99,7 +100,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             foreach (Tuple<DateTime, int> t in blinks)
             {
                 List<String> programs = UserEfficiencyTracker.Data.Queries.GetTopProgramsUsed(t.Item1, VisType.Hour, 2);
-                programsUsedAtTimesT2.Add(new Tuple<DateTime, List<String>>(t.Item1, programs));
+                var descPgm = programs.Select(p => ProcessNameHelper.GetFileDescription(p)).ToList();
+                programsUsedAtTimesT2.Add(new Tuple<DateTime, List<String>>(t.Item1, descPgm));
                 int switches = GetSwitches(t.Item1);
                 pgmSwitchesAtTimesT2.Add(new Tuple<DateTime, int>(t.Item1, switches));
             }
