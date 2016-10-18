@@ -12,26 +12,6 @@ namespace MuseTracker.Helper
 {
     public static class HelperMethods
     {
-        //http://stackoverflow.com/questions/2253874/linq-equivalent-for-standard-deviation
-
-        public static double SampleStdDev(this IEnumerable<double> values, double mean)
-        {
-            double ret = 0;
-            int count = values.Count();
-            if (count > 1)
-            {
-                //Compute the Average
-                double avg = values.Average();
-
-                //Perform the Sum of (value-avg)^2
-                double sum = values.Sum(d => Math.Pow((d - mean), 2));
-
-                //Put it all together
-                ret = Math.Sqrt(sum / count-1); //used sample formula thus -1
-            }
-            return ret;
-        }
-
         private static List<Tuple<DateTime, double>> GetLogBlinks(List<Tuple<DateTime, int>> blinks)
         {
             return blinks.Select(i => new Tuple<DateTime, double>(i.Item1, Math.Log10(i.Item2) * -1)).ToList(); //log transform because of huge differences in ranges, -1 because reverse blinks indicate more attention

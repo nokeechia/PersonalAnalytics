@@ -45,8 +45,8 @@ namespace UserSelfEvaluationTracker.Visualizations
             /////////////////////
             // normalize data sets
             /////////////////////
-            List<DateElementExtended<double>> normalizedBlinks = MuseTracker.Helper.HelperMethods.TransformBlinksToExtendedDateElements(blinks);
-            List<DateElementExtended<double>> normalizedEEG = MuseTracker.Helper.HelperMethods.TransformEEGToExtendedDateElements(eegIndices);
+            List<DateElementExtended<double>> normalizedBlinks = HelperMethods.TransformBlinksToExtendedDateElements(blinks);
+            List<DateElementExtended<double>> normalizedEEG = HelperMethods.TransformEEGToExtendedDateElements(eegIndices);
 
             /////////////////////
             // CSS
