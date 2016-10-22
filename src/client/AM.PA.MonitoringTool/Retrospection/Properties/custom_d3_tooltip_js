@@ -39,7 +39,7 @@ function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, o
 				if(pgmsT1[i].tsd === current_tsd.getTime()) {
 					//add custom row for top used pgms
 					text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgms" + "'>";
-        			text += "<td class='name'><span style='background-color:" + "#06980E" + "'></span>" + "Top Used Pgms" + "</td>";
+        			text += "<td class='name'><span style='background-color:" + "#06980E" + "'></span>" + "Top Used Programs" + "</td>";
           			text += "<td class='value'>" + pgmsT1[i].value.join(); + "</td>";
           			text += "</tr>";	  
 				}
@@ -60,7 +60,7 @@ function createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, o
 				if(pgmsT2[i].tsd === current_tsd.getTime()) {
 					//add custom row for top used pgms
 					text += "<tr class='" + $$.internal.CLASS.tooltipName + "-pgms" + "'>";
-        			text += "<td class='name'><span style='background-color:" + "#06980E" + "'></span>" + "Top Used Pgms" + "</td>";
+        			text += "<td class='name'><span style='background-color:" + "#06980E" + "'></span>" + "Top Used Programs" + "</td>";
           			text += "<td class='value'>" + pgmsT2[i].value.join(); + "</td>";
           			text += "</tr>";	  
 				}
