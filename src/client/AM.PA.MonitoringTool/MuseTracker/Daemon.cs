@@ -15,15 +15,25 @@ using System.Threading.Tasks;
 using MuseTracker.Visualizations;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace MuseTracker
 {
+    public enum MuseContactStates
+    {
+        Good = 1,
+        Bad = 0,
+        Nocontact = -1
+    }
+
     public class Daemon : BaseTrackerDisposable, ITracker
     {
         #region FIELDS
         private bool _disposed = false;
-        private Timer _saveToDatabaseTimer;
+        private System.Timers.Timer _saveToDatabaseTimer;
         private UDPListener _listener;
+        private System.Timers.Timer _checkMuseConnectionTimer;
 
         private int _pid = 0;
 
@@ -36,6 +46,15 @@ namespace MuseTracker
 
         private static Func<double, int> ZeroOrOne = (x => x > 0.5 ? 1 : 0);
 
+        public static MuseContactStates CurrentMuseContactState = MuseContactStates.Nocontact;
+        public static DateTime museContactTsd = DateTime.Now;
+        public static float RemainingBattery = -100;
+
+        public static MuseChannelQuality QualityLeft = MuseChannelQuality.Nocontact;
+        public static MuseChannelQuality QualityTopLeft = MuseChannelQuality.Nocontact;
+        public static MuseChannelQuality QualityTopRight = MuseChannelQuality.Nocontact;
+        public static MuseChannelQuality QualityRight = MuseChannelQuality.Nocontact;
+
         #endregion
 
         #region METHODS
@@ -47,6 +66,15 @@ namespace MuseTracker
             Name = "Muse Tracker";
         }
 
+
+        public enum MuseChannelQuality: int
+        {
+            Good = 1,
+            OK = 2,
+            Bad = 3,
+            Nocontact = 4
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -54,6 +82,7 @@ namespace MuseTracker
                 if (disposing)
                 {
                     _saveToDatabaseTimer.Dispose();
+                    _checkMuseConnectionTimer.Dispose();
                     _listener.Dispose();
                 }
 
@@ -94,17 +123,19 @@ namespace MuseTracker
             // Register Save-To-Database Timer
             if (_saveToDatabaseTimer != null)
                 Stop();
-            _saveToDatabaseTimer = new Timer();
+            _saveToDatabaseTimer = new System.Timers.Timer();
             _saveToDatabaseTimer.Interval = Settings.SaveToDatabaseInterval.TotalMilliseconds;
             _saveToDatabaseTimer.Elapsed += SaveToDatabaseTick;
             _saveToDatabaseTimer.Start();
 
+            // Register Muse Connection Timer
+            if (_checkMuseConnectionTimer != null)
+                Stop();
+            _checkMuseConnectionTimer = new System.Timers.Timer();
+            _checkMuseConnectionTimer.Interval = Settings.CheckMuseConnectionInterval.TotalMilliseconds;
+            _checkMuseConnectionTimer.Elapsed += ShowMessageWhenConnectionLost;
+            _checkMuseConnectionTimer.Start();
 
-            //set timer interval to 1 minute
-            //atimer = new Timer(Settings.msTimerInterval);
-            //hook up elapsed event
-            //atimer.Elapsed += OnTimedEvent;
-            //atimer.Enabled = true;
 
             // SharpOSC lib from https://github.com/ValdemarOrn/SharpOSC
             // Callback function for received OSC messages. 
@@ -124,7 +155,6 @@ namespace MuseTracker
             _listener = new UDPListener(Settings.MuseIoPort, callback);
 
             IsRunning = true;
-            Console.Write("++++ muse tracker started");
 
         }
 
@@ -138,14 +168,12 @@ namespace MuseTracker
 
                 if (blink == 1)
                 {
-                    //Console.Write("##### Blink event");
                     await Task.Run(() => MuseBlinkBuffer.Enqueue(new MuseBlinkEvent(blink)));
                 }
             }
 
             if (addr == "/muse/elements/alpha_absolute")
             {
-                //Console.Write("##### Alpha abs value");
                 await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseEEGDataType.AlphaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
@@ -155,7 +183,6 @@ namespace MuseTracker
 
             if (addr == "/muse/elements/beta_absolute")
             {
-                // Console.Write("##### Beta abs value");
                 await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseEEGDataType.BetaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
@@ -165,7 +192,6 @@ namespace MuseTracker
 
             if (addr == "/muse/elements/theta_absolute")
             {
-                //Console.Write("##### Theta abs value");
                 await Task.Run(() => MuseEEGDataBuffer.Enqueue(new MuseEEGDataEvent(MuseEEGDataType.ThetaAbsolute,
                     (float)arguments[0],
                     (float)arguments[1],
@@ -173,15 +199,66 @@ namespace MuseTracker
                     (float)arguments[3])));
             }
 
-            //check data quality
-            if (addr == "/muse/elements/is_good")
+            // Data quality on each channel
+            if (addr == "/muse/elements/horseshoe")
             {
-                //Console.WriteLine("##### Data quality " + (int)arguments[0]+ (int)arguments[1]+(int)arguments[2]+(int)arguments[3]);
-                await Task.Run(() => MuseEEGDataQualityBuffer.Enqueue(new MuseEEGDataQuality(
-                    (int)arguments[0],
-                    (int)arguments[1],
-                    (int)arguments[2],
-                    (int)arguments[3])));
+                if (Enum.IsDefined(typeof(MuseChannelQuality), (int)(float)arguments[0]))
+                {
+                    QualityLeft = (MuseChannelQuality)(int)(float)arguments[0];
+                }
+                else
+                {
+                    QualityLeft = MuseChannelQuality.Nocontact;
+                }
+
+                if (Enum.IsDefined(typeof(MuseChannelQuality), (int)(float)arguments[1]))
+                {
+                    QualityTopLeft = (MuseChannelQuality)(int)(float)arguments[1];
+                }
+                else
+                {
+                    QualityTopLeft = MuseChannelQuality.Nocontact;
+                }
+
+                if (Enum.IsDefined(typeof(MuseChannelQuality), (int)(float)arguments[2]))
+                {
+                    QualityTopRight = (MuseChannelQuality)(int)(float)arguments[2];
+                }
+                else
+                {
+                    QualityTopRight = MuseChannelQuality.Nocontact;
+                }
+
+                if (Enum.IsDefined(typeof(MuseChannelQuality), (int)(float)arguments[3]))
+                {
+                    QualityRight = (MuseChannelQuality)(int)(float)arguments[3];
+                }
+                else
+                {
+                    QualityRight = MuseChannelQuality.Nocontact;
+                }
+
+                Console.WriteLine("##### Data quality " + arguments[0] + arguments[1] + arguments[2] + arguments[3]);
+            }
+
+            // Muse contact 
+            if (addr == "/muse/elements/touching_forehead")
+            {
+                museContactTsd = DateTime.Now;
+                if ((int)arguments[0] == 0)
+                {
+                    CurrentMuseContactState = MuseContactStates.Bad;
+                    Console.WriteLine("##### Muse has BAD contact");
+                }else if ((int)arguments[0] == 1)
+                {
+                    CurrentMuseContactState = MuseContactStates.Good;
+                }
+            }
+
+            // Battery level 
+            if (addr == "/muse/batt")
+            {
+                RemainingBattery = (int)arguments[0] / 100;
             }
         }
         #endregion
@@ -206,8 +283,6 @@ namespace MuseTracker
         {
             DateTime Timestamp = DateTime.Now;
 
-            Console.Write("Save Input Buffer to DB: EEG, Blink, Concent, Mellow" + MuseEEGDataBuffer.Count + " " + MuseBlinkBuffer.Count
-                + " " + MuseConcentrationBuffer.Count + " " + MuseMellowBuffer.Count);
             try
             {
                 if (MuseEEGDataBuffer.Count > 0)
@@ -219,21 +294,21 @@ namespace MuseTracker
                         MuseEEGDataBuffer.TryDequeue(out museEvent);
                         museData.Add(museEvent);
                     }
-                    var alphaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute).Average(x => x.ChannelLeft);
-                    var alphaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute).Average(x => x.ChannelFrontLeft);
-                    var alphaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute).Average(x => x.ChannelFrontRight);
-                    var alphaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute).Average(x => x.ChannelRight);
+                    var alphaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute && x.ChannelLeft > 0).Select(x => x.ChannelLeft).DefaultIfEmpty(0).Average();
+                    var alphaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute && x.ChannelFrontLeft > 0).Select(x => x.ChannelFrontLeft).DefaultIfEmpty(0).Average();
+                    var alphaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute && x.ChannelFrontRight > 0).Select(x => x.ChannelFrontRight).DefaultIfEmpty(0).Average();
+                    var alphaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.AlphaAbsolute && x.ChannelRight > 0).Select(x => x.ChannelRight).DefaultIfEmpty(0).Average();
 
 
-                    var betaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute).Average(x => x.ChannelLeft);
-                    var betaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute).Average(x => x.ChannelFrontLeft);
-                    var betaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute).Average(x => x.ChannelFrontRight);
-                    var betaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute).Average(x => x.ChannelRight);
+                    var betaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute && x.ChannelLeft > 0).Select(x => x.ChannelLeft).DefaultIfEmpty(0).Average();
+                    var betaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute && x.ChannelFrontLeft > 0).Select(x => x.ChannelFrontLeft).DefaultIfEmpty(0).Average();
+                    var betaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute && x.ChannelFrontRight > 0).Select(x => x.ChannelFrontRight).DefaultIfEmpty(0).Average();
+                    var betaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.BetaAbsolute && x.ChannelRight > 0).Select(x => x.ChannelRight).DefaultIfEmpty(0).Average();
 
-                    var thetaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute).Average(x => x.ChannelLeft);
-                    var thetaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute).Average(x => x.ChannelFrontLeft);
-                    var thetaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute).Average(x => x.ChannelFrontRight);
-                    var thetaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute).Average(x => x.ChannelRight);
+                    var thetaAvgChannelLeft = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute && x.ChannelLeft > 0).Select(x => x.ChannelLeft).DefaultIfEmpty(0).Average();
+                    var thetaAvgChannelFrontLeft = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute && x.ChannelFrontLeft > 0).Select(x => x.ChannelFrontLeft).DefaultIfEmpty(0).Average();
+                    var thetaAvgChannelFrontRight = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute && x.ChannelFrontRight > 0).Select(x => x.ChannelFrontRight).DefaultIfEmpty(0).Average();
+                    var thetaAvgChannelRight = museData.Where(x => x.DataType == MuseEEGDataType.ThetaAbsolute && x.ChannelRight > 0).Select(x => x.ChannelRight).DefaultIfEmpty(0).Average();
 
                     MuseEEGDataEvent[] museEEGArrayAggr = {
                         new MuseEEGDataEvent(MuseEEGDataType.AlphaAbsolute, alphaAvgChannelLeft, alphaAvgChannelFrontLeft, alphaAvgChannelFrontRight, alphaAvgChannelRight),
@@ -249,6 +324,7 @@ namespace MuseTracker
                     List<MuseEEGDataQuality> museDataQuality = new List<MuseEEGDataQuality>();
                     MuseEEGDataQuality museDataQualityEvent = null;
                     var museEEGDataQuality = new MuseEEGDataQuality[MuseEEGDataQualityBuffer.Count];
+
                     for (var i = 0; i < MuseEEGDataQualityBuffer.Count; i++)
                     {
                         MuseEEGDataQualityBuffer.TryDequeue(out museDataQualityEvent);
@@ -324,14 +400,12 @@ namespace MuseTracker
             }
 
             IsRunning = false;
-            Console.Write("++++ muse tracker stopped");
 
             try
             {
                 Process[] proc = Process.GetProcessesByName("muse-io");
                 foreach (Process p in proc)
                 {
-                    Console.Write("### Muse: Process stopped!!");
                     p.Kill();
                 }
             }
@@ -368,5 +442,23 @@ namespace MuseTracker
             var vis3 = new DayInsightsAttentionEngagement(date);
             return new List<IVisualization> { vis2, vis3 };
         }
+        /// <summary>
+        /// Shows a message box when connection is lost
+        /// </summary>
+        private static void ShowMessageWhenConnectionLost(object sender, EventArgs e)
+        {
+            if (CurrentMuseContactState == MuseContactStates.Bad || CurrentMuseContactState == MuseContactStates.Nocontact)
+            {
+                MessageBox.Show("Muse connection gets bad contact. Try to rearrange the headband on your head.", "PersonalAnalytics Warning", MessageBoxButtons.OK);
+            }
+            else {
+                //case that the last time it the connection was good but lost connection in the meantime
+                if (DateTime.Now.Subtract(museContactTsd).TotalMinutes > 2)
+                {
+                    MessageBox.Show("Muse connection is lost. Please check your connection or battery state.", "PersonalAnalytics Warning", MessageBoxButtons.OK);
+                }
+            }
+        }
+
     }
 }

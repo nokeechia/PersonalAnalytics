@@ -32,7 +32,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             // fetch data sets
             /////////////////////
             var chartQueryResultsLocal = Data.Queries.GetSelfEvaluationTimelineData(_date, VisType.Day);
-            var minutesInterval = 15;
+            var minutesInterval = 1;
             var blinks = MuseTracker.Data.Queries.GetBlinksByMinutesInterval(_date, minutesInterval);
             var eegIndices = MuseTracker.Data.Queries.GetEEGIndexGroupedByMinutesInterval(_date, minutesInterval);
 
@@ -52,8 +52,9 @@ namespace UserSelfEvaluationTracker.Visualizations
             // CSS
             /////////////////////
             html += "<style type='text/css'>";
+//            html += "#dailyengagementandattentionoverview .c3-event-rects { fill:yellow; fill-opacity:0.9; }";
             html += ".c3-line { stroke-width: 2px; }";
-            html += ".c3-grid text, c3.grid line { fill: gray; }";
+            html += ".c3-region.regionX { fill-opacity:0.1; }";
             html += "</style>";
 
             /////////////////////
@@ -112,8 +113,9 @@ namespace UserSelfEvaluationTracker.Visualizations
 
             const string colorsUsed = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
+            var regions = "{'Blinks':[ " + calculateIdleRegions(blinks) + " ] }";
             var names = "Engagement: 'Engagement(Ratings)', Attention: 'Attention(Ratings)', Blinks: 'Attention(#Blinks)', EEGIndex: 'Engagement(EEGIndex)'";
-            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxisMuse', 'EEGIndex': 'timeAxisMuse'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxisMuse', " + timeAxisMuse + "],['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y', EEGIndex:'y'} , names: {" + names + "}"; // type options: spline, step, line
+            var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxisMuse', 'EEGIndex': 'timeAxisMuse'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxisMuse', " + timeAxisMuse + "],['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y', EEGIndex:'y'} , names: {" + names + "}, regions: " + regions; // type options: spline, step, line
             var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'Normalized Values', position: 'outer-middle'} }";
             var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); } }, contents: function(d, defaultTitleFormat, defaultValueFormat, color){ return createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, [" + originalBlinkData + "], [" + originalEegData + "], [" + usedPgmsT1 + "], [" + usedPgmsT2 + "], [" + switchesT1 + "], [" + switchesT2 + "]);} ";
             var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 55, right: 55, bottom: 0, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
@@ -131,7 +133,7 @@ namespace UserSelfEvaluationTracker.Visualizations
         private static int GetSwitches(DateTime date) {
             DateTime from = date.AddMinutes(-7);
             DateTime to = date.AddMinutes(7);
-            return HelperMethods.GetNrOftopProgramSwitchesBetweenTimes(from, to);
+            return HelperMethods.GetNoOftopProgramSwitchesBetweenTimes(from, to);
         }
         /// <summary>
         /// Creates a list of one-hour axis times

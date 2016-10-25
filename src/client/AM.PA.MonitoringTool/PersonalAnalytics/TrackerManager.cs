@@ -501,7 +501,22 @@ namespace PersonalAnalytics
         {
             // Update Taskbar Icon Tooltip
             var text = _trackers.Aggregate(String.Empty, (current, tracker) => current + (tracker.GetStatus() + "\n"));
-            text += "Version: " + _publishedAppVersion;
+            text += "Version: " + _publishedAppVersion + "\n";
+
+            // Muse connection details
+            text += "Muse connection: " + MuseTracker.Daemon.CurrentMuseContactState.ToString() + "\n";
+            text += "Quality of Muse channels L: " + MuseTracker.Daemon.QualityLeft.ToString() + " TL: " + MuseTracker.Daemon.QualityTopLeft.ToString()
+                + " TR: " + MuseTracker.Daemon.QualityTopRight.ToString() + " R: " + MuseTracker.Daemon.QualityRight.ToString() + "\n";
+
+            if (MuseTracker.Daemon.RemainingBattery < 0)
+            {
+                text += "Muse remaining battery: state not avilable " + "\n";
+            }
+            else
+            {
+                text += "Muse remaining battery: " + MuseTracker.Daemon.RemainingBattery + "%" + "\n";
+            }
+
             SetTaskbarIconTooltip(text);
 
             // Update database file (if necessary)

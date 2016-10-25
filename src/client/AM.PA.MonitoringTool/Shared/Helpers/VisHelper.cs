@@ -195,5 +195,37 @@ namespace Shared.Helpers
             return Math.Round((double)(x - min) / (max - min), 2);
         }
 
+        public static String calculateIdleRegions(List<Tuple<DateTime, int>> items)
+        {
+            var idleRegionsAsStr = "";
+            var index = 0;
+            var maxIndex = items.Count() - 1;
+            List<Tuple<DateTime, DateTime>> allRegions = new List<Tuple<DateTime, DateTime>>();
+            List<Tuple<long, long>> idleRegions = new List<Tuple<long, long>>();
+
+            foreach (var i in items)
+            {
+                if (index + 1 <= maxIndex)
+                {
+                    allRegions.Add(Tuple.Create(i.Item1, items.ElementAt(index + 1).Item1));
+                }
+                index++;
+            }
+
+            foreach (var i in allRegions)
+            {
+                TimeSpan timeSpan = i.Item2.Subtract(i.Item1);
+
+                if (timeSpan.TotalMinutes > 30)
+                {
+                    idleRegions.Add(Tuple.Create(DateTimeHelper.JavascriptTimestampFromDateTime(Convert.ToDateTime(i.Item1)), DateTimeHelper.JavascriptTimestampFromDateTime(Convert.ToDateTime(i.Item2))));
+                }
+            }
+
+            idleRegionsAsStr = idleRegions.Aggregate("", (current, a) => current + ( "{ 'start':" + a.Item1 + ",'end':" + a.Item2 + ",'style':'dashed'}, ")).TrimEnd(',');
+
+            return idleRegionsAsStr;
+
+        }
     }
 }

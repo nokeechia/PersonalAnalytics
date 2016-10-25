@@ -23,6 +23,7 @@ namespace MuseTracker
 
         private const int IntervalSaveToDatabaseInSeconds = 60;
         public static TimeSpan SaveToDatabaseInterval = TimeSpan.FromSeconds(IntervalSaveToDatabaseInSeconds);
+        public static TimeSpan CheckMuseConnectionInterval = TimeSpan.FromMinutes(2);
 
         public const double MaxAvgValue = 9999.99;
     }

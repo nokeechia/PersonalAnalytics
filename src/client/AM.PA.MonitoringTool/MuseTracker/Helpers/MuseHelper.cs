@@ -57,7 +57,7 @@ namespace MuseTracker.Helper
         }
 
 
-        public static int GetNrOftopProgramSwitchesBetweenTimes(DateTime from, DateTime to)
+        public static int GetNoOftopProgramSwitchesBetweenTimes(DateTime from, DateTime to)
         {
             var programsUsed = GetTop20Programs(from);
             if (programsUsed.Count < 1)
