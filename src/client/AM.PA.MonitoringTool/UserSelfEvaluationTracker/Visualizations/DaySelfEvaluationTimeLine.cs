@@ -54,14 +54,14 @@ namespace UserSelfEvaluationTracker.Visualizations
             html += "<style type='text/css'>";
 //            html += "#dailyengagementandattentionoverview .c3-event-rects { fill:yellow; fill-opacity:0.9; }";
             html += ".c3-line { stroke-width: 2px; }";
-            html += ".c3-region.regionX { fill-opacity:0.1; }";
+        //    html += ".c3-region.regionX { fill-opacity:0.1; }";
             html += "</style>";
 
             /////////////////////
             // HTML
             /////////////////////
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='height:75%;' align='center'></div>";
-            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Interpolates your perceived engagement and attention (from ratings) and computed EEGIndex and Blinks from Muse.<br>All values were normalized on a per day base and therefore not directly comparable to other days.</p>";
+            html += "<p style='text-align: center; font-size: 0.66em;'>Hint: Interpolates your engagement and attention ratings and computed EEGIndex and Blinks from Muse. All values are daily normalized and not directly comparable to other days.</p>";
 
 
             /////////////////////
@@ -113,12 +113,13 @@ namespace UserSelfEvaluationTracker.Visualizations
 
             const string colorsUsed = "Engagement: '#990654', Attention: '#004979', EEGIndex: '#FF0A8D', Blinks: '#007acb' ";
 
-            var regions = "{'Blinks':[ " + calculateIdleRegions(blinks) + " ] }";
+            //same data for regions, because I assume same data points as the same time axis is used
+            var regions = "{'Blinks':[ " + calculateIdleRegions(blinks) + " ]," + "'EEGIndex':[ " + calculateIdleRegions(blinks) + " ]" + "}";
             var names = "Engagement: 'Engagement(Ratings)', Attention: 'Attention(Ratings)', Blinks: 'Attention(#Blinks)', EEGIndex: 'Engagement(EEGIndex)'";
             var data = "xs: {'Engagement':'timeAxis', 'Attention': 'timeAxis', 'Blinks': 'timeAxisMuse', 'EEGIndex': 'timeAxisMuse'}, columns: [['timeAxis', " + timeAxis + "], ['timeAxisMuse', " + timeAxisMuse + "],['Engagement', " + engagementFormattedData + " ], ['Attention', " + attentionFormattedData + " ], ['Blinks', " + blinkData + " ], ['EEGIndex', " + eegData + " ] ], types: {Engagement:'line', Attention:'line', Blinks:'area', EEGIndex:'area'  }, colors: { " + colorsUsed + " }, axes: { Engagement: 'y',  Attention: 'y', Blinks:'y', EEGIndex:'y'} , names: {" + names + "}, regions: " + regions; // type options: spline, step, line
-            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: { show:true, label: {text: 'Normalized Values', position: 'outer-middle'} }";
+            var axis = "x: { localtime: true, type: 'timeseries', tick: { values: [ " + ticks + "], format: function(x) { return formatDate(x.getHours()); }}  }, y: {  padding: {top:0, bottom: 800}, show:true, label: {text: 'Normalized Values', position: 'outer-middle'} }";
             var tooltip = "show: true, format: { title: function(d) { return 'Timestamp: ' + formatTime(d.getHours(),d.getMinutes()); } }, contents: function(d, defaultTitleFormat, defaultValueFormat, color){ return createCustomTooltip(d, defaultTitleFormat, defaultValueFormat, color, [" + originalBlinkData + "], [" + originalEegData + "], [" + usedPgmsT1 + "], [" + usedPgmsT2 + "], [" + switchesT1 + "], [" + switchesT2 + "]);} ";
-            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 55, right: 55, bottom: 0, top: 0}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
+            var parameters = " bindto: '#" + VisHelper.CreateChartHtmlTitle(Title) + "', data: { " + data + " }, padding: { left: 45, right: 0, bottom: 10, top: 10}, legend: { show: true }, axis: { " + axis + " }, tooltip: { " + tooltip + " }, point: { show: true }";
 
             html += "<script type='text/javascript'>";
             html += "var formatDate = function(hours) { var suffix = 'AM';\n if (hours >= 12) { suffix = 'PM'; hours = hours - 12; } \n if (hours == 0) { hours = 12; } \n if (hours < 10) return '0' + hours + ' ' + suffix; \n else return hours + ' ' + suffix; };\n";

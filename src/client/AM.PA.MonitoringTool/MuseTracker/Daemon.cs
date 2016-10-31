@@ -449,7 +449,7 @@ namespace MuseTracker
         {
             if (CurrentMuseContactState == MuseContactStates.Bad || CurrentMuseContactState == MuseContactStates.Nocontact)
             {
-                MessageBox.Show("Muse connection gets bad contact. Try to rearrange the headband on your head.", "PersonalAnalytics Warning", MessageBoxButtons.OK);
+                MessageBox.Show("Muse connection gets bad or no contact. Try to rearrange the headband on your head.", "PersonalAnalytics Warning", MessageBoxButtons.OK);
             }
             else {
                 //case that the last time it the connection was good but lost connection in the meantime

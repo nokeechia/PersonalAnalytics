@@ -68,7 +68,7 @@ namespace MuseTracker.Visualizations
             var topPgm = maxPgmInThisTime.Item2 > 0 ? ProcessNameHelper.GetFileDescription(maxPgmInThisTime.Item1) : "?";
             preposition = getPreposition(maxInput.Value, userInputAvg); 
 
-            html += "<p style='text-align: center; margin-top:-0.3em;font-size: 0.89em;'>You had the <strong style='color:#007acc;'>highest Engagement</strong> today at <strong style='color:#007acc;'>" + maxEEGItem.Item1.ToString("HH:mm tt") + "</strong> while you were working in program <strong style='color:#007acc;'>" + topPgm + "</strong> with a user input, <strong style='color:#007acc;'>" + preposition + "</strong> average.</p>";
+            html += "<p style='text-align: center; margin-top:-0.3em;font-size: 0.89em;'>You had the <strong style='color:#007acc;'>highest Engagement</strong> at <strong style='color:#007acc;'>" + maxEEGItem.Item1.ToString("HH:mm") + "</strong> while you were working in <strong style='color:#007acc;'>" + topPgm + "</strong> with " + preposition + "</strong> average user input.</p>";
 
             //processing for min engagement 
             dtFrom = minEEGItem.Item1.AddMinutes(-5);
@@ -78,7 +78,7 @@ namespace MuseTracker.Visualizations
             topPgm = maxPgmInThisTime.Item2 > 0 ? ProcessNameHelper.GetFileDescription(maxPgmInThisTime.Item1) : "?";
             preposition = getPreposition(maxInput.Value, userInputAvg);
 
-            html += "<p style='text-align: center; margin-top:-0.3em;font-size: 0.89em;'>You had the <strong style='color:#007acc;'>lowest Engagement</strong> today at <strong style='color:#007acc;'>" + minEEGItem.Item1.ToString("HH:mm tt") + "</strong> while you were working in program <strong style='color:#007acc;'>" + topPgm + "</strong> with a user input, <strong style='color:#007acc;'>" + preposition + "</strong> average.</p>";
+            html += "<p style='text-align: center; margin-top:-0.3em;font-size: 0.89em;'>You had the <strong style='color:#007acc;'>lowest Engagement</strong> at <strong style='color:#007acc;'>" + minEEGItem.Item1.ToString("HH:mm") + "</strong> while you were working in <strong style='color:#007acc;'>" + topPgm + "</strong> with " + preposition + "</strong> average user input.</p>";
 
             //processing for min attention 
             dtFrom = minBlinkItem.Item1.AddMinutes(-5);
@@ -88,7 +88,7 @@ namespace MuseTracker.Visualizations
             topPgm = maxPgmInThisTime.Item2 > 0 ? ProcessNameHelper.GetFileDescription(maxPgmInThisTime.Item1) : "?";
             preposition = getPreposition(maxInput.Value, userInputAvg);
 
-            html += "<p style='text-align: center; margin-top:-0.3em;font-size: 0.89em;'>You had the <strong style='color:#007acc;'>lowest Attention</strong> today at <strong style='color:#007acc;'>" + minBlinkItem.Item1.ToString("HH:mm tt") + "</strong> while you were working in program <strong style='color:#007acc;'>" + topPgm + "</strong> with a user input, <strong style='color:#007acc;'>" + preposition + "</strong> average.</p>";
+            html += "<p style='text-align: center; margin-top:-0.3em;font-size: 0.89em;'>You had the <strong style='color:#007acc;'>lowest Attention</strong> at <strong style='color:#007acc;'>" + minBlinkItem.Item1.ToString("HH:mm") + "</strong> while you were working in <strong style='color:#007acc;'>" + topPgm + "</strong> with " + preposition + "</strong> average user input.</p>";
 
             //processing for max attention 
             dtFrom = maxBlinkItem.Item1.AddMinutes(-5);
@@ -98,7 +98,7 @@ namespace MuseTracker.Visualizations
             topPgm = maxPgmInThisTime.Item2 > 0 ? ProcessNameHelper.GetFileDescription(maxPgmInThisTime.Item1) : "?";
             preposition = getPreposition(maxInput.Value, userInputAvg);
 
-            html += "<p style='text-align: center; margin-top:-0.3em;font-size: 0.89em;'>You had the <strong style='color:#007acc;'>highest Attention</strong> today at <strong style='color:#007acc;'>" + maxBlinkItem.Item1.ToString("HH:mm tt") + "</strong> while you were working in program <strong style='color:#007acc;'>" + topPgm + "</strong> with a user input, <strong style='color:#007acc;'>" + preposition + "</strong> average.</p>";
+            html += "<p style='text-align: center; margin-top:-0.3em;font-size: 0.89em;'>You had the <strong style='color:#007acc;'>highest Attention</strong> at <strong style='color:#007acc;'>" + maxBlinkItem.Item1.ToString("HH:mm") + "</strong> while you were working in <strong style='color:#007acc;'>" + topPgm + "</strong> with " + preposition + "</strong> average user input.</p>";
 
             html += InsightsComparedToYesterday(_date);
             return html;
@@ -106,7 +106,7 @@ namespace MuseTracker.Visualizations
 
         public static String getPreposition(int val, double avg)
         {
-            return (val > avg) ? "above" : (val == avg) ? "equal" : "below";
+            return (val > avg) ? "an <strong style='color:#007acc;'>above" : (val == avg) ? "an <strong style='color:#007acc;'>equal" : "a <strong style='color:#007acc;'>below";
         }
 
         public static Tuple<String, int> findTopUsedPgmInThisTime(Dictionary<String, List<TopProgramTimeDto>> allTopPgmsOfTheDay, DateTime dtFrom, DateTime dtTo)

@@ -510,7 +510,7 @@ namespace PersonalAnalytics
 
             if (MuseTracker.Daemon.RemainingBattery < 0)
             {
-                text += "Muse remaining battery: state not avilable " + "\n";
+                text += "Muse remaining battery: state not available " + "\n";
             }
             else
             {
