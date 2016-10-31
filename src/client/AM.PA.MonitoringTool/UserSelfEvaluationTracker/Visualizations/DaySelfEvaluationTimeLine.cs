@@ -32,7 +32,7 @@ namespace UserSelfEvaluationTracker.Visualizations
             // fetch data sets
             /////////////////////
             var chartQueryResultsLocal = Data.Queries.GetSelfEvaluationTimelineData(_date, VisType.Day);
-            var minutesInterval = 1;
+            var minutesInterval = 15;
             var blinks = MuseTracker.Data.Queries.GetBlinksByMinutesInterval(_date, minutesInterval);
             var eegIndices = MuseTracker.Data.Queries.GetEEGIndexGroupedByMinutesInterval(_date, minutesInterval);
 
