@@ -14,7 +14,7 @@
         MouseEnter="OnWindowHover" Topmost="True"
         WindowStyle="ToolWindow" Loaded="WindowLoaded" Deactivated="WindowDeactivated" Closing="WindowClosing" 
         Title="Today's Communication Summary"
-        Height="350" Width="460">
+        Height="500" Width="660">
     
     <Window.Resources>
         <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
