@@ -158,6 +158,9 @@
     <Compile Include="Upload\UploadReminder.xaml.cs">
       <DependentUpon>UploadReminder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Upload\UploadToDatabaseWizard.xaml.cs">
+      <DependentUpon>UploadToDatabaseWizard.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Upload\UploadWizard.xaml.cs">
       <DependentUpon>UploadWizard.xaml</DependentUpon>
     </Compile>
@@ -181,6 +184,10 @@
     </Compile>
     <Compile Include="TrackerSettings.cs" />
     <Page Include="Upload\UploadReminder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Upload\UploadToDatabaseWizard.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

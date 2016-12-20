@@ -105,7 +105,7 @@ namespace PersonalAnalytics.Upload
                 return string.Empty;
             }
         }
-
+        
         private string CreateCopyOfOriginalDbFile()
         {
             try
@@ -167,7 +167,7 @@ namespace PersonalAnalytics.Upload
 
             return anonymizedDbFile;
         }
-
+        
         private void LogSuccessfulObfuscation(DatabaseImplementation anonDb, string windowsActivityTable, int res)
         {
             var logMsg = string.Format(CultureInfo.InvariantCulture, "Successfully obfucscated table '{0}' with {1} entries.", windowsActivityTable, res);
@@ -271,6 +271,34 @@ namespace PersonalAnalytics.Upload
                 AskToSendErrorMessage(e, "RunQuickUpload", e.Message);
                 return false;
             }
+        }
+
+        internal bool RunQuickUploadToDatabase()
+        {
+            try
+            {
+                var obfuscateMeetingTitles = Database.GetInstance().GetSettingsBool(Settings.ObfuscatedMeetingTitles, false);
+                var obfuscateWindowTitles = Database.GetInstance().GetSettingsBool(Settings.ObfuscatedWindowTitles, false);
+
+                var anonymizedDbFilePath = AnonymizeCollectedData(obfuscateMeetingTitles, obfuscateWindowTitles);
+                if (string.IsNullOrEmpty(anonymizedDbFilePath)) throw new Exception("An error occured when anonymizing the collected data.");
+
+                var _uploadZipFileName = UploadToDatabase();
+                if (!_uploadZipFileName) throw new Exception("An error occured when uploading the data.");
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                AskToSendErrorMessage(e, "RunQuickUpload", e.Message);
+                return false;
+            }
+        }
+
+        internal bool UploadToDatabase()
+        {
+            Logger.WriteToConsole("Upload to database!");
+            return true;
         }
     }
 }

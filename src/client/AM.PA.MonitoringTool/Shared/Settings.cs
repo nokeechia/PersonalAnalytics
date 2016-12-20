@@ -16,7 +16,7 @@ namespace Shared
 
 // only enable the current uploader in the MSR-deployment (default: disabled)
 #if ! PilotMSR
-        public const bool IsUploadEnabled = false;
+        public const bool IsUploadEnabled = true;
         public const bool IsUploadReminderEnabled = false;
 #else
         public const bool IsUploadEnabled = true;
@@ -67,6 +67,9 @@ namespace Shared
 
         public const string EmailAddress1 = "ameyer@ifi.uzh.ch"; // main email address
         public const string EmailAddress2 = "tzimmer@microsoft.com";
-
+        public static string UploadLocation = "UploadURL";
+        public static string ParticipantID = "participantID";
+        public static string ObfuscatedMeetingTitles = "RBObfuscateMeetingTitles";
+        public static string ObfuscatedWindowTitles = "RBObfuscateWindowTitles";
     }
 }

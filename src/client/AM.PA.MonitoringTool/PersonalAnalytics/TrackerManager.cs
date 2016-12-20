@@ -56,7 +56,7 @@ namespace PersonalAnalytics
             Register(new UserEfficiencyTracker.Daemon());
             Register(new UserInputTracker.Daemon());
             Register(new MsOfficeTracker.Daemon());
-
+            
 #if TestPilot1
             //Register(new FocusLightTracker.Daemon());
             //Register(new PeopleVisualizer.PeopleVisualizer()); // disabled, as it's not finished and pretty slow
@@ -434,8 +434,18 @@ namespace PersonalAnalytics
             Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
             () =>
             {
-                var uploaderWindow = new Upload.UploadWizard();
-                uploaderWindow.ShowDialog();
+                string url = Database.GetInstance().GetSettingsString(Settings.UploadLocation, string.Empty);
+                if (!url.Equals(string.Empty))
+                {
+                    Logger.WriteToConsole("Start uploading to: " + url);
+                    var uploaderWindow = new Upload.UploadToDatabaseWizard();
+                    uploaderWindow.ShowDialog();
+                }
+                else
+                {
+                    var uploaderWindow = new Upload.UploadWizard();
+                    uploaderWindow.ShowDialog();
+                }
             }));
         }
 
