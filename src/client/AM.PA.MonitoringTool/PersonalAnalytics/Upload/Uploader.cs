@@ -13,6 +13,7 @@ using System.IO.Compression;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
 using System.Windows;
+using PersonalAnalytics.FileUploadServiceReference;
 
 namespace PersonalAnalytics.Upload
 {
@@ -273,6 +274,11 @@ namespace PersonalAnalytics.Upload
             }
         }
 
+        public void SetParticipant(string participant)
+        {
+            _participantId = participant;
+        }
+
         internal bool RunQuickUploadToDatabase()
         {
             try
@@ -283,8 +289,8 @@ namespace PersonalAnalytics.Upload
                 var anonymizedDbFilePath = AnonymizeCollectedData(obfuscateMeetingTitles, obfuscateWindowTitles);
                 if (string.IsNullOrEmpty(anonymizedDbFilePath)) throw new Exception("An error occured when anonymizing the collected data.");
 
-                var _uploadZipFileName = UploadToDatabase();
-                if (!_uploadZipFileName) throw new Exception("An error occured when uploading the data.");
+                var success = UploadToDatabase(anonymizedDbFilePath);
+                if (!success) throw new Exception("An error occured when uploading the data.");
 
                 return true;
             }
@@ -295,10 +301,30 @@ namespace PersonalAnalytics.Upload
             }
         }
 
-        internal bool UploadToDatabase()
+        internal bool UploadToDatabase(string filePath)
         {
-            Logger.WriteToConsole("Upload to database!");
-            return true;
+            bool success;
+            string fileName;
+            long duration;
+            int length;
+
+            using (FileUploaderClient client = new FileUploaderClient())
+            {
+                Stream fileStream = new FileInfo(filePath).OpenRead();
+                duration = client.Upload("pa.dat", _participantId, fileStream, out fileName, out length, out success);
+
+                byte[] buffer = new byte[2048];
+                int bytesRead = fileStream.Read(buffer, 0, 2048);
+                while (bytesRead > 0)
+                {
+                    fileStream.Write(buffer, 0, 2048);
+                    bytesRead = fileStream.Read(buffer, 0, 2048);
+                }
+            };
+
+            Console.WriteLine(fileName + ": " + success + " (" + (length / 1000.0 / 1000.0) + " MB) in " + (double)duration / (double)TimeSpan.TicksPerSecond + " seconds");
+            return success;
+            
         }
     }
 }

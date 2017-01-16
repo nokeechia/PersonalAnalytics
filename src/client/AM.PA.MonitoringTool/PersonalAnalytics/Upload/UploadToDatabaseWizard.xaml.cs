@@ -18,8 +18,8 @@ namespace PersonalAnalytics.Upload
     {
         Uploader uploader;
         private bool forceClose;
-        private string userID;
-        
+        private string anonymizedDbFilePath = null;
+
         public UploadToDatabaseWizard()
         {
             InitializeComponent();
@@ -32,7 +32,6 @@ namespace PersonalAnalytics.Upload
             Step1.Visibility = Visibility.Visible;
             PrePopulateUserUploadSettings();
             QuickUploadEnabled.IsEnabled = true;
-
             tbOneClickUploadSettingsTxt.Text = CreateOneClickUploadSettingsTxt(); 
         }
 
@@ -46,19 +45,22 @@ namespace PersonalAnalytics.Upload
 
         private void PrePopulateUserUploadSettings()
         {
-            TbParticipantId.Text = Database.GetInstance().GetSettingsString(Settings.ParticipantID, GenerateNewUserID());
-            userID = TbParticipantId.Text;
+            string userID = Database.GetInstance().GetSettingsString(Settings.ParticipantID, String.Empty);
+            if (userID.Equals(string.Empty))
+            {
+                userID = GenerateNewUserID();
+            }
+            TbParticipantId.Text = userID;
+            uploader.SetParticipant(userID);
             RBObfuscateMeetingTitles.IsChecked = Database.GetInstance().GetSettingsBool(Settings.ObfuscatedMeetingTitles, false);
             RBObfuscateWindowTitles.IsChecked = Database.GetInstance().GetSettingsBool(Settings.ObfuscatedWindowTitles, false);
         }
 
         private string GenerateNewUserID()
         {
-            var macAddr = (from nic in NetworkInterface.GetAllNetworkInterfaces()
-                           where nic.OperationalStatus == OperationalStatus.Up
-                           select nic.GetPhysicalAddress().ToString()
-                          ).FirstOrDefault();
-            return macAddr.ToString();
+            String id = Guid.NewGuid().ToString();
+            Database.GetInstance().SetSettings(Settings.ParticipantID, id);
+            return id;
         }
 
         private async void QuickUploadNext_Clicked(object sender, EventArgs e)
@@ -110,7 +112,7 @@ namespace PersonalAnalytics.Upload
             var obfuscateMeetingTitles = (RBObfuscateMeetingTitles.IsChecked.HasValue) ? RBObfuscateMeetingTitles.IsChecked.Value : false;
             var obfuscateWindowTitles = (RBObfuscateWindowTitles.IsChecked.HasValue) ? RBObfuscateWindowTitles.IsChecked.Value : false;
 
-            var anonymizedDbFilePath = await Task.Run(() => uploader.AnonymizeCollectedData(obfuscateMeetingTitles, obfuscateWindowTitles));
+            anonymizedDbFilePath = await Task.Run(() => uploader.AnonymizeCollectedData(obfuscateMeetingTitles, obfuscateWindowTitles));
             if (string.IsNullOrEmpty(anonymizedDbFilePath))
             {
                 CloseWindow(); // stop upload wizard if error occurred
@@ -136,7 +138,7 @@ namespace PersonalAnalytics.Upload
             Step4.Visibility = Visibility.Collapsed;
             Step5.Visibility = Visibility.Visible;
 
-            bool success = await Task.Run(() => uploader.UploadToDatabase());
+            bool success = await Task.Run(() => uploader.UploadToDatabase(anonymizedDbFilePath));
             if (!success)
             {
                 CloseWindow(); // stop upload wizard if error occurred
@@ -179,7 +181,7 @@ namespace PersonalAnalytics.Upload
 
         private void Feedback_Clicked(object sender, EventArgs e)
         {
-            Retrospection.Handler.GetInstance().SendFeedback("Feedback Upload", "User ID: " + userID);
+            Retrospection.Handler.GetInstance().SendFeedback("Feedback Upload", "User ID: " + TbParticipantId.Text);
         }
         
         private void CloseUploadWizard_Click(object sender, EventArgs e)
