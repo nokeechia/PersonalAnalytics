@@ -18,9 +18,11 @@ namespace Shared
 #if ! PilotMSR
         public const bool IsUploadEnabled = true;
         public const bool IsUploadReminderEnabled = false;
+        public const bool UploadToDatabase = false;
 #else
         public const bool IsUploadEnabled = true;
         public const bool IsUploadReminderEnabled = true;
+        public const bool UploadToDatabase = true;
 #endif
 
         public const bool AnonymizeSensitiveData = false;

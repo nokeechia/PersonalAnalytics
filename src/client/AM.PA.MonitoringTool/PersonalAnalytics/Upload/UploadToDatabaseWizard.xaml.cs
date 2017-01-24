@@ -139,6 +139,11 @@ namespace PersonalAnalytics.Upload
             Step5.Visibility = Visibility.Visible;
 
             bool success = await Task.Run(() => uploader.UploadToDatabase(anonymizedDbFilePath));
+
+            string logMessage = "Uploading to database was " + (success ? "successful" : "not successful");
+            Logger.WriteToConsole(logMessage);
+            Database.GetInstance().LogInfo(logMessage);
+            
             if (!success)
             {
                 CloseWindow(); // stop upload wizard if error occurred

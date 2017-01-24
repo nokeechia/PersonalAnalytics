@@ -435,7 +435,7 @@ namespace PersonalAnalytics
             () =>
             {
                 string url = Database.GetInstance().GetSettingsString(Settings.UploadLocation, string.Empty);
-                if (url.Equals("pluto.ifi.uzh.ch"))
+                if (Settings.UploadToDatabase)
                 {
                     Logger.WriteToConsole("Start uploading to: " + url);
                     var uploaderWindow = new Upload.UploadToDatabaseWizard();
