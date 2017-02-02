@@ -4,21 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PersonalAnalytics.Upload"
+        xmlns:paColors="clr-namespace:Shared;assembly=Shared"
         mc:Ignorable="d"
         Title="PersonalAnalytics: Upload Wizard" 
         Height="660" Width="950" ResizeMode="NoResize">
-
-    <Window.Resources>
-        <SolidColorBrush x:Key="RetrospectionColor" Color="#007acc" />
-        <SolidColorBrush x:Key="GrayColor" Color="#E8E8E8" />
-    </Window.Resources>
 
     <Grid>
         <Grid.Resources>
             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
                 <Setter Property="Foreground" Value="White" />
-                <Setter Property="Background" Value="{StaticResource RetrospectionColor}" />
-                <Setter Property="BorderBrush" Value="{StaticResource RetrospectionColor}" />
+                <Setter Property="Background" Value="{x:Static paColors:Settings.RetrospectionColorBrush}" />
+                <Setter Property="BorderBrush" Value="{x:Static paColors:Settings.RetrospectionColorBrush}" />
                 <Setter Property="Padding" Value="5 0 5 0" />
             </Style>
             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -32,7 +28,7 @@
 
         <!-- Step 1: Info -->
         <Grid x:Name="Step1" Margin="0" Visibility="Collapsed" Grid.Row="0">
-            <Grid VerticalAlignment="Top" Height="40" Background="{StaticResource RetrospectionColor}">
+            <Grid VerticalAlignment="Top" Height="40" Background="{x:Static paColors:Settings.RetrospectionColorBrush}">
                 <TextBlock Text="Please consider sharing the collected data with us (step 1/4)" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="White" />
             </Grid>
 
@@ -67,23 +63,23 @@
 
         <!-- Step 2: Select Anonymization -->
         <Grid x:Name="Step2" Margin="0" Visibility="Collapsed" Grid.Row="0">
-            <Grid VerticalAlignment="Top" Height="40" Background="{StaticResource RetrospectionColor}">
+            <Grid VerticalAlignment="Top" Height="40" Background="{x:Static paColors:Settings.RetrospectionColorBrush}">
                 <TextBlock Text="Select how you want to obfuscate the collected data (step 2/4)" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="White" />
             </Grid>
 
             <StackPanel Margin="0 50 0 50">
                 <TextBlock Text="This is a list of the collected data the tool will share with us. For some data sets, you can now specify if and how you want to obfuscate them. Please keep in mind that obfuscating data will also reduce what we can analyze and make your personalized productivity insights less detailed. The tool will create a copy of your original database file and obfuscate it according to your selection:" TextWrapping="Wrap" />
 
-                <TextBlock FontWeight="Bold" Text="Emails" Foreground="{StaticResource RetrospectionColor}" />
+                <TextBlock FontWeight="Bold" Text="Emails" Foreground="{x:Static paColors:Settings.RetrospectionColorBrush}" />
                 <TextBlock Text="The tool only collected the number of emails sent/received and the inbox size." Margin="10 -10 10 0" />
 
-                <TextBlock FontWeight="Bold" Text="Mouse and Keyboard Input Activity" Foreground="{StaticResource RetrospectionColor}" />
+                <TextBlock FontWeight="Bold" Text="Mouse and Keyboard Input Activity" Foreground="{x:Static paColors:Settings.RetrospectionColorBrush}" />
                 <TextBlock Text="The tool only collected the number of mouse clicks, scrolls, movements and when a key was pressed (not which one)." TextWrapping="Wrap" Margin="10 -10 10 0" />
 
-                <TextBlock FontWeight="Bold" Text="Perceived Productivity (Pop-Up Responses)" Foreground="{StaticResource RetrospectionColor}" />
+                <TextBlock FontWeight="Bold" Text="Perceived Productivity (Pop-Up Responses)" Foreground="{x:Static paColors:Settings.RetrospectionColorBrush}" />
                 <TextBlock Text="The tool collected your responses to the pop-ups about your perceived productivity. This information helps us to correlate the collected data with your perceived productivity." TextWrapping="Wrap" Margin="10 -10 10 0" />
 
-                <TextBlock FontWeight="Bold" Text="Meetings" Foreground="{StaticResource RetrospectionColor}" />
+                <TextBlock FontWeight="Bold" Text="Meetings" Foreground="{x:Static paColors:Settings.RetrospectionColorBrush}" />
                 <TextBlock Text="The tool collected the start time, duration and meeting subject. Please select how you want to share the meetings:" TextWrapping="Wrap" Margin="10 -10 10 0" />
                 <StackPanel Margin="10 10 0 0" Orientation="Horizontal">
                     <RadioButton IsChecked="True" Content="Keep meeting subjects as they are" GroupName="MeetingsGroup"/>
@@ -94,7 +90,7 @@
                     <TextBlock Margin="56 0 0 0" Width="700" Text="An obfuscated meeting subject which will be shared with us looks like this: 'E6D52761A44A3DCA6D432903913DF914'." TextWrapping="Wrap" Foreground="Gray" />
                 </StackPanel>
 
-                <TextBlock FontWeight="Bold" Text="Programs Used" Foreground="{StaticResource RetrospectionColor}" />
+                <TextBlock FontWeight="Bold" Text="Programs Used" Foreground="{x:Static paColors:Settings.RetrospectionColorBrush}" />
                 <TextBlock Text="The tool collected the currently active process and window title during your work. Please select how you want to share the window titles:" Margin="10 -10 10 0" />
                 <StackPanel Margin="10 10 0 0" Orientation="Horizontal">
                     <RadioButton IsChecked="True" Content="Keep window titles as they are" GroupName="WindowTitlesGroup"/>
@@ -113,7 +109,7 @@
         </Grid>
 
         <Grid x:Name="Step3" Margin="0" Visibility="Collapsed" Grid.Row="0">
-            <Grid VerticalAlignment="Top" Height="40" Background="{StaticResource RetrospectionColor}">
+            <Grid VerticalAlignment="Top" Height="40" Background="{x:Static paColors:Settings.RetrospectionColorBrush}">
                 <TextBlock Text="Obfuscating the collected data and preparing for sharing... (step 3/5)" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="White" />
             </Grid>
 
@@ -121,7 +117,7 @@
         </Grid>
 
         <Grid x:Name="Step4" Margin="0" Visibility="Collapsed" Grid.Row="0">
-            <Grid VerticalAlignment="Top" Height="40" Background="{StaticResource RetrospectionColor}">
+            <Grid VerticalAlignment="Top" Height="40" Background="{x:Static paColors:Settings.RetrospectionColorBrush}">
                 <TextBlock Text="Check the data again before they are shared with us (step 4/4)" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="White" />
             </Grid>
 
@@ -129,7 +125,7 @@
                 <TextBlock Text="The collected data was sucessfully obfuscated." />
             </StackPanel>
 
-            <Border Margin="10 30 10 10" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10" Width="400" BorderBrush="{StaticResource RetrospectionColor}" BorderThickness="1">
+            <Border Margin="10 30 10 10" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10" Width="400" BorderBrush="{x:Static paColors:Settings.RetrospectionColorBrush}" BorderThickness="1">
                 <StackPanel HorizontalAlignment="Center">
                     <Button Content="Upload the data now" Click="UploadNow_Clicked" Height="30" Width="140" />
                     <TextBlock Foreground="Gray" TextAlignment="Center" Margin="0" TextWrapping="Wrap" Text="Once you start the upload, it might take a few minutes to copy the obfuscated data file to our database." />
@@ -138,7 +134,7 @@
         </Grid>
 
         <Grid x:Name="Step5" Margin="0" Visibility="Collapsed" Grid.Row="0">
-            <Grid VerticalAlignment="Top" Height="40" Background="{StaticResource RetrospectionColor}">
+            <Grid VerticalAlignment="Top" Height="40" Background="{x:Static paColors:Settings.RetrospectionColorBrush}">
                 <TextBlock Text="Copying the obfuscated data files to the database ... (step 4/4)" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="White" />
             </Grid>
 
@@ -146,7 +142,7 @@
         </Grid>
 
         <Grid x:Name="Step6" Margin="0" Visibility="Collapsed" Grid.Row="0">
-            <Grid VerticalAlignment="Top" Height="40" Background="{StaticResource RetrospectionColor}">
+            <Grid VerticalAlignment="Top" Height="40" Background="{x:Static paColors:Settings.RetrospectionColorBrush}">
                 <TextBlock Text="Thank you for sharing your data! (step 4/4)" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="White" />
             </Grid>
 
@@ -164,7 +160,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" x:Name="Status" Margin="10 0 0 0" Foreground="Gray" />
-            <Button Grid.Column="1" Content="Questions or Feedback?" Click="Feedback_Clicked" VerticalAlignment="Center" Margin="0 0 5 0" Foreground="Gray" Background="{StaticResource GrayColor}" BorderBrush="{StaticResource GrayColor}" />
+            <Button Grid.Column="1" Content="Questions or Feedback?" Click="Feedback_Clicked" VerticalAlignment="Center" Margin="0 0 5 0" Foreground="Gray" Background="{x:Static paColors:Settings.GrayColorBrush}" BorderBrush="{x:Static paColors:Settings.GrayColorBrush}" />
         </Grid>
     </Grid>
 </Window>
