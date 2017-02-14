@@ -3,7 +3,6 @@
 // 
 // Licensed under the MIT License.
 
-using GarminTracker.Data;
 using Shared;
 using System.Reflection;
 using System;
@@ -36,7 +35,7 @@ namespace GarminTracker
 
         public override void CreateDatabaseTablesIfNotExist()
         {
-            DatabaseConnector.CreateGarminTables();
+
         }
 
         public override string GetVersion()
