@@ -35,7 +35,7 @@ namespace GarminTracker
 
         public override void CreateDatabaseTablesIfNotExist()
         {
-
+        
         }
 
         public override string GetVersion()
@@ -46,12 +46,13 @@ namespace GarminTracker
 
         public override bool IsEnabled()
         {
-            return Database.GetInstance().GetSettingsBool(Settings.TRACKER_ENABLED, false);
+            return true;
         }
 
         public override void Start()
         {
             Logger.WriteToConsole("GarminTracker is now running!");
+            GarminConnector.GetAccessToken();
         }
 
         public override void Stop()
