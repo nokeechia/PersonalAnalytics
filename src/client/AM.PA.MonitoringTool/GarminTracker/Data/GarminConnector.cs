@@ -1,40 +1,63 @@
 ﻿using OAuth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Net;
+using System.IO;
+using System;
 
 namespace GarminTracker
 {
     public class GarminConnector
     {
-        private static string CONSUMER_KEY = "4722b3ef-95dc-47d5-9394-af5c2fd41339";
-        private static string CONSUMER_SECRET = "Z0ZVpJgUT3w7oPSZVbyFTu9jJOD2ShBjnFd";
+
+        private static Manager InitializeOauthManager()
+        {
+            var oauth = new Manager();
+            oauth["consumer_key"] = Settings.CONSUMER_KEY;
+            oauth["consumer_secret"] = Settings.CONSUMER_SECRET;
+            if (SecretStorage.GetAccessToken() != null) {
+                oauth["token"] = SecretStorage.GetAccessToken();
+            }
+            if (SecretStorage.GetTokenSecret() != null)
+            {
+                oauth["token_secret"] = SecretStorage.GetTokenSecret();
+            }
+
+            return oauth;
+        }
+
+        public static void GetDaily()
+        {
+            var oauth = InitializeOauthManager();
+
+            var authzHeader = oauth.GenerateAuthzHeader(Settings.DAILY_URL, "GET");
+            var request = (HttpWebRequest)WebRequest.Create(Settings.DAILY_URL);
+            request.Method = "GET";
+            request.PreAuthenticate = true;
+            request.AllowWriteStreamBuffering = true;
+            request.Headers.Add("Authorization", authzHeader);
+
+            using (var r = (HttpWebResponse)request.GetResponse())
+            {
+                using (var reader = new StreamReader(r.GetResponseStream()))
+                {
+
+                    var objText = reader.ReadToEnd();
+                    Console.WriteLine(objText);
+                }
+            }
+        }
 
         public static void GetAccessToken()
         {
+            var oauth = InitializeOauthManager();
 
-            //STEP 1
-            var oauth = new Manager();
-            // the URL to obtain a temporary "request token"
-            var rtUrl = "http://connectapitest.garmin.com/oauth-service-1.0/oauth/request_token";
-            oauth["consumer_key"] = CONSUMER_KEY;
-            oauth["consumer_secret"] = CONSUMER_SECRET;
-
-            OAuthResponse response = oauth.AcquireRequestToken(rtUrl, "POST");
-            Console.WriteLine(response.AllText);
-
+            OAuthResponse response = oauth.AcquireRequestToken(Settings.REQUEST_TOKEN_URL, "POST");
+            
             var token = response["oauth_token"];
             var secret = response["oauth_token_secret"];
-
-            Console.WriteLine(token);
-            Console.WriteLine(secret);
-
-            //STEP 2
-
-            var url = "http://connecttest.garmin.com/oauthConfirm?oauth_token=" + oauth["token"];
+            
+            //Step 2
+            var url = Settings.OAUTH_CONFIRM_URL + oauth["token"];
             VerifyAccessView browser = new VerifyAccessView(url, oauth);
             Window browserWindow = new Window
             {
@@ -44,8 +67,6 @@ namespace GarminTracker
             browserWindow.ShowDialog();
         }
 
-
     }
-
-  
+ 
 }

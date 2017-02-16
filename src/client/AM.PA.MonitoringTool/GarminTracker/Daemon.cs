@@ -52,7 +52,17 @@ namespace GarminTracker
         public override void Start()
         {
             Logger.WriteToConsole("GarminTracker is now running!");
-            GarminConnector.GetAccessToken();
+
+            if (! IsAccessTokensAvailable())
+            {
+                GarminConnector.GetAccessToken();
+            }
+            GarminConnector.GetDaily();
+        }
+
+        private bool IsAccessTokensAvailable()
+        {
+            return SecretStorage.GetAccessToken() != null && SecretStorage.GetTokenSecret() != null;
         }
 
         public override void Stop()

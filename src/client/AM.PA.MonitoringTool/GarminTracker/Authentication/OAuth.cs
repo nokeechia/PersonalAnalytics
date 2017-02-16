@@ -1,7 +1,4 @@
-// TwitPic/OAuth.cs
-//
-// Code to do OAuth stuff, in support of a cropper plugin that sends
-// a screen snap to TwitPic.com.
+// Adapted from: http://cropperplugins.codeplex.com/SourceControl/changeset/view/72088#1710422
 //
 // There's one main class: OAuth.Manager.  It handles interaction with the OAuth-
 // enabled service, for requesting temporary tokens (aka request tokens), as well
@@ -750,8 +747,7 @@ namespace OAuth
                 return _params[ix];
             }
         }
-
-
+        
         public OAuthResponse(string alltext)
         {
             AllText = alltext;
@@ -766,5 +762,5 @@ namespace OAuth
             //   oauth_token, oauth_token_secret, user_id, screen_name, etc
         }
     }
-}
 
+}
