@@ -49,6 +49,9 @@ namespace GarminTracker
                     string accessToken = response["oauth_token"];
                     string tokenSecret = response["oauth_token_secret"];
 
+                    SecretStorage.SaveAccessToken(accessToken);
+                    SecretStorage.SaveTokenSecret(tokenSecret);
+
                     Console.WriteLine(accessToken);
                     Console.WriteLine(tokenSecret);
 

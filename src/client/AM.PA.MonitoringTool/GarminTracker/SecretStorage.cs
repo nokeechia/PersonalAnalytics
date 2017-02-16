@@ -1,5 +1,5 @@
 ﻿// Created by Sebastian Mueller (smueller@ifi.uzh.ch) from the University of Zurich
-// Created: 2017-01-30
+// Created: 2017-02-16
 // 
 // Licensed under the MIT License.
 
@@ -7,15 +7,15 @@ using System;
 using System.Linq;
 using Windows.Security.Credentials;
 
-namespace FitbitTracker
+namespace GarminTracker
 {
 
     //Stores access token. See: https://social.msdn.microsoft.com/Forums/en-US/8160064a-dd96-463f-b3b7-4243f20c13e4/recommended-way-to-store-oauth-clientid-and-secret-for-rest-services-in-a-xaml-metro-app?forum=winappswithcsharp
     public class SecretStorage
     {
-        private const string RESOURCE_NAME = "OAuth_Token";
+        private const string RESOURCE_NAME = "Garmin_OAuth_Token";
         private const string ACCESS_TOKEN = "accessToken";
-        private const string REFRESH_TOKEN = "refreshToken";
+        private const string TOKEN_SECRET = "tokenSecret";
 
         public static void SaveAccessToken(string accessToken)
         {
@@ -24,24 +24,24 @@ namespace FitbitTracker
             vault.Add(credential);
         }
 
-        public static void SaveRefreshToken(string refreshToken)
+        public static void SaveTokenSecret(string tokenSecret)
         {
             var vault = new PasswordVault();
-            var credential = new PasswordCredential(RESOURCE_NAME, REFRESH_TOKEN, refreshToken);
+            var credential = new PasswordCredential(RESOURCE_NAME, TOKEN_SECRET, tokenSecret);
             vault.Add(credential);
         }
-
+        
         public static string GetAccessToken()
         {
-            return GetToken(ACCESS_TOKEN);
+            return GetCredential(ACCESS_TOKEN);
         }
 
-        public static string GetRefreshToken()
+        public static string GetTokenSecret()
         {
-            return GetToken(REFRESH_TOKEN);
+            return GetCredential(TOKEN_SECRET);
         }
 
-        private static string GetToken(string kind)
+        private static string GetCredential(string kind)
         {
             var vault = new PasswordVault();
             try
