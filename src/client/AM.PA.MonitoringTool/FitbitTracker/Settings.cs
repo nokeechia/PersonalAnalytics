@@ -16,11 +16,11 @@ namespace FitbitTracker
         internal const int SYNCHRONIZE_INTERVALL_SECOND = 20 * 60 * 1000; //20 minutes
 
         //Data Collection Settings
-        #if PilotManu_March17
+#if Pilot_Manu_March17
             internal static readonly bool IsDetailedCollectionEnabled = true;
-        #else
+#else
         internal static readonly bool IsDetailedCollectionEnabled = false; // default: disabled
-        #endif
+#endif
 
         //Database table names
         internal static readonly string SLEEP_INTRA_DAY_TABLE_NAME = "fitbit_sleep_intraday";

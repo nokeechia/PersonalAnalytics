@@ -88,10 +88,6 @@ namespace PersonalAnalytics
         /// </summary>
         public void Start()
         {
-#if Pilot_Manu_March17
-            MessageBox.Show("hello sebi");
-#endif
-
             //GetDllVersions();
 
             // show unified first start screens
