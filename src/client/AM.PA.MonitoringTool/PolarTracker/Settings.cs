@@ -21,11 +21,12 @@ namespace PolarTracker
         internal static readonly string TABLE_NAME_AGGREGATED = "polar_aggregated";
 
         //Settings
-#if Pilot_Manu_March17
-        internal static readonly bool IsDetailedCollectionEnabled = true;
-#else
-        internal static readonly bool IsDetailedCollectionEnabled = false; // default: disabled
-#endif
+        #if PilotManu_March17
+            internal static readonly bool IsDetailedCollectionEnabled = true;
+        #else
+            internal static readonly bool IsDetailedCollectionEnabled = false; // default: disabled
+        #endif
+        internal static readonly bool IsEnabledByDefault = true;
 
         //Visualization for week
         internal static readonly int NUMBER_OF_BUCKETS = 5;
