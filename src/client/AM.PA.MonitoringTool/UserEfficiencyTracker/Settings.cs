@@ -10,7 +10,12 @@ namespace UserEfficiencyTracker
 {
     public static class Settings
     {
+#if Pilot_Manu_March17
+        public static bool DefaultPopUpIsEnabled = false;
+#else
         public static bool DefaultPopUpIsEnabled = true;
+#endif
+
         public const int DefaultPopUpInterval = 60; // in minutes
 
         //public static bool IsEnabled = MiniSurveysEnabled;
