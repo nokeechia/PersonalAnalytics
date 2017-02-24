@@ -380,7 +380,7 @@ namespace PersonalAnalytics
 
 #endregion
 
-#region Taskbar Icon Options
+        #region Taskbar Icon Options
 
         /// <summary>
         /// Dreates a taskbar icon to modify its tooltip and create the context menu options
@@ -692,9 +692,9 @@ namespace PersonalAnalytics
             TaskbarIcon.ToolTipText = message;
         }
 
-#endregion
+        #endregion
 
-#region Helpers
+        #region Helpers
 
         /// <summary>
         /// On the first workday of the week, remind the user ONCE to share
