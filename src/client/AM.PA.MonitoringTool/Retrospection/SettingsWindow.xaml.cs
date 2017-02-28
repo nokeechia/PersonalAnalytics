@@ -50,6 +50,23 @@ namespace Retrospection
             TbVersion.Text = "Version: " + version;
             SetDefaultValues(dto);
             FitbitRevoke.IsEnabled = SecretStorage.GetAccessToken() != null;
+
+            // disable unsed settings for Manuela study in Spring 2017
+            DisableUnusedSettings();
+        }
+
+        private void DisableUnusedSettings()
+        {
+            CbPopUpsEnabled.Visibility = Visibility.Collapsed;
+            TbPopUpsHint.Visibility = Visibility.Collapsed;
+            SpPopupInterval.Visibility = Visibility.Collapsed;
+            CbUserInputTrackerEnabled.Visibility = Visibility.Collapsed;
+            TbUserInputTrackerHint.Visibility = Visibility.Collapsed;
+            PolarEnabled.Visibility = Visibility.Collapsed;
+            PolarHint.Visibility = Visibility.Collapsed;
+            FitbitEnabled.Visibility = Visibility.Collapsed;
+            FitbitHint.Visibility = Visibility.Collapsed;
+            TiFlowLightSettings.Visibility = Visibility.Collapsed;
         }
 
         private void SetDefaultValues(SettingsDto dto)
