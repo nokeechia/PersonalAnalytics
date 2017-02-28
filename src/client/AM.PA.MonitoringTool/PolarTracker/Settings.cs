@@ -21,10 +21,10 @@ namespace PolarTracker
         internal static readonly string TABLE_NAME_AGGREGATED = "polar_aggregated";
 
         //Settings
-        #if PilotManu_March17
-            internal static readonly bool IsDetailedCollectionEnabled = true;
+        #if Pilot_Manu_March17
+        internal static readonly bool IsDetailedCollectionEnabled = true;
         #else
-            internal static readonly bool IsDetailedCollectionEnabled = false; // default: disabled
+        internal static readonly bool IsDetailedCollectionEnabled = false; // default: disabled
         #endif
         internal static readonly bool IsEnabledByDefault = true;
 
