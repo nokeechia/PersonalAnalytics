@@ -80,6 +80,11 @@ namespace PersonalAnalytics
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
+            //disable the FlowLight for this study
+#if Pilot_Manu_March17
+            FlowLight.Handler.GetInstance().FlowLightEnabled = false;
+#endif
+
             // Create log directory if it doesn't already exist
             var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PersonalAnalytics");
             if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
