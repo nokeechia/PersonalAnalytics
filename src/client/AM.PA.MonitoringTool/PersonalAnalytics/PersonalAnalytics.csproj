@@ -312,6 +312,10 @@
       <Project>{f4f1afb6-71a9-4ab4-be95-d3c45d3492cc}</Project>
       <Name>UserInputTracker</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UserInterruptibilityTracker\UserInterruptibilityTracker.csproj">
+      <Project>{546a008d-f0c1-44c2-9768-9360154bb456}</Project>
+      <Name>UserInterruptibilityTracker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WindowsActivityTracker\WindowsActivityTracker.csproj">
       <Project>{2b903556-4dd2-41ce-beac-3ddd045f717d}</Project>
       <Name>WindowsActivityTracker</Name>
