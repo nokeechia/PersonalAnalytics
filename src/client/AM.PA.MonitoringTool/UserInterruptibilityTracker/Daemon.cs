@@ -92,7 +92,7 @@ namespace UserInterruptibilityTracker
 
         private TimeSpan GetNewRandomizedInterval()
         {
-            return new TimeSpan(0, 0, new Random().Next(Settings.PopupIntervalMin, Settings.PopupIntervalMax));
+            return new TimeSpan(0, new Random().Next(Settings.PopupIntervalMin, Settings.PopupIntervalMax), 0);
         }
 
         /// <summary>
@@ -119,8 +119,7 @@ namespace UserInterruptibilityTracker
                     // set previous entry to show previous entry time in popup
                     var popup = new InterruptibilityPopUp(Queries.GetPreviousInterruptibilitySurveyEntry());
 
-                    // show popup & handle response
-                    
+                    // show popup & handle response                    
                     if (((InterruptibilityPopUp)popup).ShowDialog() == true)
                     {
                         HandleIntervalPopUpResponse((InterruptibilityPopUp)popup);
@@ -140,7 +139,7 @@ namespace UserInterruptibilityTracker
         }
 
         /// <summary>
-        /// handles the response to the interval popup
+        /// handles the response to the interruptibility popup
         /// </summary>
         /// <param name="popup"></param>
         private void HandleIntervalPopUpResponse(InterruptibilityPopUp popup)
@@ -165,7 +164,7 @@ namespace UserInterruptibilityTracker
         }
 
         /// <summary>
-        /// Saves the interval-survey results in the db & resets some items
+        /// Saves the interruptibility-survey results in the db & resets some items
         /// </summary>
         /// <param name="popup"></param>
         private void SaveInterruptibilitySurvey(InterruptibilityPopUp popup)
