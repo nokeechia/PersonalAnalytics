@@ -193,7 +193,7 @@ namespace UserInterruptibilityTracker
 
         private void SkipClicked(object sender, RoutedEventArgs e)
         {
-            UserSelectedInterruptibility = 0; // didn't take it
+            UserSelectedInterruptibility = -1; // didn't take it
             PostPoneSurvey = PostPoneSurvey.Skipped;
             DialogResult = true;
             this.Close();
@@ -201,7 +201,7 @@ namespace UserInterruptibilityTracker
 
         private void Postpone1hClicked(object sender, RoutedEventArgs e)
         {
-            UserSelectedInterruptibility = 0; // didn't take it
+            UserSelectedInterruptibility = -1; // didn't take it
             PostPoneSurvey = PostPoneSurvey.Postpone1h;
             DialogResult = true;
             this.Close();
@@ -209,7 +209,7 @@ namespace UserInterruptibilityTracker
 
         private void Postpone2hClicked(object sender, RoutedEventArgs e)
         {
-            UserSelectedInterruptibility = 0; // didn't take it
+            UserSelectedInterruptibility = -1; // didn't take it
             PostPoneSurvey = PostPoneSurvey.Postpone2h;
             DialogResult = true;
             this.Close();

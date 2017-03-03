@@ -111,7 +111,7 @@ namespace UserInterruptibilityTracker
                     // if it's the first time the notification is shown
                     if (_currentSurveyEntry == null)
                     {
-                        _currentSurveyEntry = new InterruptibilitySurveyEntry();
+                        _currentSurveyEntry = new InterruptibilitySurveyEntry();                       
                         _currentSurveyEntry.TimeStampNotification = DateTime.Now;
                     }
 
@@ -146,23 +146,11 @@ namespace UserInterruptibilityTracker
         /// <param name="popup"></param>
         private void HandleInterruptibilityPopUpResponse(InterruptibilityPopUp popup)
         {
-            // user took the survey
-            if ((popup.UserSelectedInterruptibility >= 1 && popup.UserSelectedInterruptibility <= 7))
-            {
-                SaveInterruptibilitySurvey(popup);
-            }
-            // user postponed the survey
-            else if (popup.PostPoneSurvey != PostPoneSurvey.None)
-            {
-                PostponeInterruptibilitySurvey(popup);
-                Database.GetInstance().LogInfo(string.Format(CultureInfo.InvariantCulture, "The participant postponed the interruptibility-survey ({0}).", popup.PostPoneSurvey));
-            }
-            // something strange happened
-            else
-            {
-                _currentSurveyEntry = null;
-                _timeRemainingUntilNextSurvey = GetNewRandomizedInterval();
-            }
+            // always save the survey
+            SaveInterruptibilitySurvey(popup);
+
+            // set next interval
+            SetNextPopupTime(popup);
         }
 
         /// <summary>
@@ -171,12 +159,13 @@ namespace UserInterruptibilityTracker
         /// <param name="popup"></param>
         private void SaveInterruptibilitySurvey(InterruptibilityPopUp popup)
         {
-            _timeRemainingUntilNextSurvey = GetNewRandomizedInterval(); // set new default interval
-
             _currentSurveyEntry.Interruptibility = popup.UserSelectedInterruptibility;
             _currentSurveyEntry.TimeStampFinished = DateTime.Now;
+            _currentSurveyEntry.Postponed = popup.PostPoneSurvey;
             Queries.SaveInterruptibilityEntry(_currentSurveyEntry);
             _currentSurveyEntry = null; // reset
+
+            Database.GetInstance().LogInfo(string.Format(CultureInfo.InvariantCulture, "The participant closed the interruptibility-survey. Interruptibility: {0}, Postponed: {1}.", popup.UserSelectedInterruptibility, popup.PostPoneSurvey));
         }
 
         /// <summary>
@@ -184,7 +173,7 @@ namespace UserInterruptibilityTracker
         /// Hint: the selected time (e.g. postpone 1 hour) equals 1 hour of computer running (i.e. developer working) time
         /// </summary>
         /// <param name="notify"></param>
-        private void PostponeInterruptibilitySurvey(InterruptibilityPopUp notify)
+        private void SetNextPopupTime(InterruptibilityPopUp notify)
         {
             switch (notify.PostPoneSurvey)
             {
@@ -197,6 +186,7 @@ namespace UserInterruptibilityTracker
                 case (PostPoneSurvey.Postpone2h):
                     _timeRemainingUntilNextSurvey = Settings.IntervalPostpone2h + GetNewRandomizedInterval(); // in two hours + random interval
                     break;
+                case (PostPoneSurvey.None):
                 default:
                     _timeRemainingUntilNextSurvey = GetNewRandomizedInterval();  // set new interval
                     break;

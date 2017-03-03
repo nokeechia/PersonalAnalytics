@@ -11,11 +11,14 @@ namespace UserInterruptibilityTracker.Models
         public DateTime TimeStampNotification { get; set; }
         public DateTime TimeStampStarted { get; set; }
         public DateTime TimeStampFinished { get; set; }
-        public int Interruptibility { get; set; } // 1-5
+        public int Interruptibility { get; set; } // 1-7
+        public PostPoneSurvey Postponed { get; set; }
 
         public InterruptibilitySurveyEntry()
         {
             TimeStampStarted = DateTime.Now;
+            Interruptibility = -1;
+            Postponed = PostPoneSurvey.None;
         }
     }
 }
