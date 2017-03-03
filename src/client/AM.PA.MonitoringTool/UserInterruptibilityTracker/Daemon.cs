@@ -22,6 +22,8 @@ namespace UserInterruptibilityTracker
         private static TimeSpan _timeRemainingUntilNextSurvey;
         private InterruptibilitySurveyEntry _currentSurveyEntry;
 
+        #region METHODS
+
         #region ITracker Stuff
 
         public Daemon()
@@ -117,12 +119,12 @@ namespace UserInterruptibilityTracker
                     _currentSurveyEntry.TimeStampStarted = DateTime.Now;
 
                     // set previous entry to show previous entry time in popup
-                    var popup = new InterruptibilityPopUp(Queries.GetPreviousInterruptibilitySurveyEntry());
+                    var popup = new InterruptibilityPopUp();
 
                     // show popup & handle response                    
-                    if (((InterruptibilityPopUp)popup).ShowDialog() == true)
+                    if (popup.ShowDialog() == true)
                     {
-                        HandleIntervalPopUpResponse((InterruptibilityPopUp)popup);
+                        HandleInterruptibilityPopUpResponse(popup);
                     }
                     else
                     {
@@ -142,10 +144,10 @@ namespace UserInterruptibilityTracker
         /// handles the response to the interruptibility popup
         /// </summary>
         /// <param name="popup"></param>
-        private void HandleIntervalPopUpResponse(InterruptibilityPopUp popup)
+        private void HandleInterruptibilityPopUpResponse(InterruptibilityPopUp popup)
         {
             // user took the survey
-            if ((popup.UserSelectedInterruptibility >= 1 && popup.UserSelectedInterruptibility <= 5))
+            if ((popup.UserSelectedInterruptibility >= 1 && popup.UserSelectedInterruptibility <= 7))
             {
                 SaveInterruptibilitySurvey(popup);
             }
@@ -169,6 +171,8 @@ namespace UserInterruptibilityTracker
         /// <param name="popup"></param>
         private void SaveInterruptibilitySurvey(InterruptibilityPopUp popup)
         {
+            _timeRemainingUntilNextSurvey = GetNewRandomizedInterval(); // set new default interval
+
             _currentSurveyEntry.Interruptibility = popup.UserSelectedInterruptibility;
             _currentSurveyEntry.TimeStampFinished = DateTime.Now;
             Queries.SaveInterruptibilityEntry(_currentSurveyEntry);
@@ -188,10 +192,10 @@ namespace UserInterruptibilityTracker
                     _timeRemainingUntilNextSurvey = GetNewRandomizedInterval();  // set new interval
                     break;
                 case (PostPoneSurvey.Postpone1h):
-                    _timeRemainingUntilNextSurvey = TimeSpan.FromHours(1) + GetNewRandomizedInterval(); // in one hour + random interval
+                    _timeRemainingUntilNextSurvey = Settings.IntervalPostpone1h + GetNewRandomizedInterval(); // in one hour + random interval
                     break;
                 case (PostPoneSurvey.Postpone2h):
-                    _timeRemainingUntilNextSurvey = TimeSpan.FromHours(2) + GetNewRandomizedInterval(); // in two hours + random interval
+                    _timeRemainingUntilNextSurvey = Settings.IntervalPostpone2h + GetNewRandomizedInterval(); // in two hours + random interval
                     break;
                 default:
                     _timeRemainingUntilNextSurvey = GetNewRandomizedInterval();  // set new interval
@@ -206,6 +210,8 @@ namespace UserInterruptibilityTracker
         {
             RunSurvey();
         }
+
+        #endregion
 
         #endregion
     }

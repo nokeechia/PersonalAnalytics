@@ -26,30 +26,12 @@ namespace UserInterruptibilityTracker
     /// </summary>
     public partial class InterruptibilityPopUp : Window
     {
-        private InterruptibilitySurveyEntry _previousSurveyEntry;
         public int UserSelectedInterruptibility { get; set; }
         public PostPoneSurvey PostPoneSurvey { get; set; }
-        private DispatcherTimer _closeIfNotAnsweredAfterHoursTimer;
 
-        public InterruptibilityPopUp(InterruptibilitySurveyEntry previousSurveyEntry)
+        public InterruptibilityPopUp()
         {
             this.InitializeComponent();
-
-            // set default values
-            _previousSurveyEntry = previousSurveyEntry;
-
-            if (_previousSurveyEntry != null && _previousSurveyEntry.TimeStampFinished  != null && // if available
-                _previousSurveyEntry.TimeStampFinished.Day == DateTime.Now.Day) // only if it was answered today
-            {
-                var hint = string.Format(CultureInfo.InvariantCulture, "Last entry was: {0} {1}",
-                    _previousSurveyEntry.TimeStampFinished.ToShortDateString(),
-                    _previousSurveyEntry.TimeStampFinished.ToShortTimeString());
-
-                if (_previousSurveyEntry.Interruptibility > 0 && _previousSurveyEntry.Interruptibility < 7)
-                    hint += ", you answered: " + _previousSurveyEntry.Interruptibility;
-
-                LastTimeFilledOut.Text = hint;
-            }
         }
 
         /// <summary>
@@ -68,7 +50,7 @@ namespace UserInterruptibilityTracker
             this.ResizeMode = ResizeMode.NoResize;
             //this.Owner = Application.Current.MainWindow;
             
-            this.Closed += this.IntervalProductivityPopUp_OnClosed;
+            this.Closed += this.InterruptibilityPopUp_OnClosed;
 
             this.Left = SystemParameters.PrimaryScreenWidth - windowWidth;
             var top = SystemParameters.PrimaryScreenHeight - windowHeight;
@@ -91,7 +73,7 @@ namespace UserInterruptibilityTracker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void IntervalProductivityPopUp_OnClosed(object sender, EventArgs e)
+        private void InterruptibilityPopUp_OnClosed(object sender, EventArgs e)
         {
             foreach (Window window in Application.Current.Windows)
             {
@@ -116,7 +98,15 @@ namespace UserInterruptibilityTracker
         {
             if (e.Key == Key.Escape)
             {
-                Postpone2hClicked(null, null);
+                SkipClicked(null, null);
+            }
+            else if (e.Key == Key.D7)
+            {
+                UserFinishedSurvey(7);
+            }
+            else if (e.Key == Key.D6)
+            {
+                UserFinishedSurvey(6);
             }
             else if (e.Key == Key.D5)
             {
@@ -144,18 +134,11 @@ namespace UserInterruptibilityTracker
         /// <summary>
         /// Close the pop-up and save the value.
         /// </summary>
-        /// <param name="selectedProductivityValue"></param>
-        private void UserFinishedSurvey(int selectedProductivityValue)
+        /// <param name="selectedInterruptibilityValue"></param>
+        private void UserFinishedSurvey(int selectedInterruptibilityValue)
         {
-            // reset timer
-            if (_closeIfNotAnsweredAfterHoursTimer != null)
-            {
-                _closeIfNotAnsweredAfterHoursTimer.Stop();
-                _closeIfNotAnsweredAfterHoursTimer = null;
-            }
-
             // set responses
-            UserSelectedInterruptibility = selectedProductivityValue;
+            UserSelectedInterruptibility = selectedInterruptibilityValue;
             PostPoneSurvey = PostPoneSurvey.None;
 
             // close window
@@ -167,7 +150,17 @@ namespace UserInterruptibilityTracker
             this.Close(); // todo: enable
         }
 
-        #region Productivity Radio Button
+        #region Interruptibility Radio Button
+
+        private void Interruptibility7_Checked(object sender, RoutedEventArgs e)
+        {
+            UserFinishedSurvey(7);
+        }
+
+        private void Interruptibility6_Checked(object sender, RoutedEventArgs e)
+        {
+            UserFinishedSurvey(6);
+        }
 
         private void Interruptibility5_Checked(object sender, RoutedEventArgs e)
         {
