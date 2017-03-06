@@ -14,5 +14,8 @@ namespace UserInterruptibilityTracker
         public static TimeSpan IntervalPostpone1h = TimeSpan.FromHours(1);
         public static TimeSpan IntervalPostpone2h = TimeSpan.FromHours(2);
         public static TimeSpan TimerCheckInterval = TimeSpan.FromMinutes(1);
+        internal static readonly bool IsEnabledByDefault = true;
+        internal const string TRACKER_ENABLED_SETTING = "InterruptibilityTrackerEnabled";
+
     }
 }

@@ -44,7 +44,7 @@ namespace UserInterruptibilityTracker
 
         public override bool IsEnabled()
         {
-            return true; // always enabled
+            return Database.GetInstance().GetSettingsBool(Settings.TRACKER_ENABLED_SETTING, Settings.IsEnabledByDefault);
         }
 
         public override void Start()
