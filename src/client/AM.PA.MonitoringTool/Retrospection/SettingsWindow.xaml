@@ -7,7 +7,7 @@
         xmlns:paColors="clr-namespace:Shared;assembly=Shared"
         Title="PersonalAnalytics: Settings"
         Width="770"
-        Height="430"
+        Height="600"
         ResizeMode="NoResize"
         mc:Ignorable="d">
 
@@ -55,6 +55,15 @@
                         </ComboBox>
                     </StackPanel>
 
+                    <CheckBox x:Name="CbInterruptibilityPopUpsEnabled"
+                              Margin="0 20 0 0"
+                              Content="Interruptibility pop-ups enabled" />
+                    <TextBlock x:Name="TbInterruptibilityPopUpsHint"
+                               Margin="20 0 0 0"
+                               Foreground="Gray"
+                               Text="Hint: This will show you a pop-up to rate your perceived interruptibility. Please keep this setting enabled during the whole study period."
+                               TextWrapping="Wrap" />
+
                     <CheckBox x:Name="CbUserInputTrackerEnabled"
                               Margin="0 20 0 0"
                               Content="User Input Tracker enabled" />
@@ -65,7 +74,7 @@
                                TextWrapping="Wrap" />
 
                     <CheckBox x:Name="CbOpenRetrospectionInFullScreen"
-                              Margin="0 0 0 0"
+                              Margin="0 20 0 0"
                               Content="Always open the retrospection in full screen" />
 
                     <CheckBox x:Name="CbTimeSpentShowProgramsEnabled"
@@ -94,7 +103,8 @@
                     <TextBlock x:Name="PolarHint"
                                Margin="20 0 0 0"
                                Foreground="Gray"
-                               Text="Hint: If enabled, this tracker collects your heartrate measurement with a Polar chestband." />
+                               Text="Hint: If enabled, this tracker collects your heartrate measurement with a Polar chestband. Please keep this setting enabled during the whole study period."
+                               TextWrapping="Wrap" />
 
                     <CheckBox x:Name="FitbitEnabled"
                               Margin="0 20 0 0"
