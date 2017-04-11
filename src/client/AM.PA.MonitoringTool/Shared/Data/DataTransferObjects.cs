@@ -26,6 +26,7 @@ namespace Shared.Data
     {
         public bool? PopUpEnabled { get; set; }
         public int? PopUpInterval { get; set; }
+        public bool? InterruptibilityPopUpEnabled { get; set; }
         public bool? UserInputTrackerEnabled { get; set; }
         public bool? Office365ApiEnabled { get; set; }
         public bool? OpenRetrospectionInFullScreen { get; set; }

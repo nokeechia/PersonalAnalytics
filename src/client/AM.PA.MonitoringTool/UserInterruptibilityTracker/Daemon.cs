@@ -47,6 +47,23 @@ namespace UserInterruptibilityTracker
             return Database.GetInstance().GetSettingsBool(Settings.TRACKER_ENABLED_SETTING, Settings.IsEnabledByDefault);
         }
 
+        public void ChangeEnabledState(bool? userInterruptibilityTrackerEnabled)
+        {
+            Console.WriteLine(Name + " is now " + (userInterruptibilityTrackerEnabled.Value ? "enabled" : "disabled"));
+            Database.GetInstance().SetSettings(Settings.TRACKER_ENABLED_SETTING, userInterruptibilityTrackerEnabled.Value);
+            Database.GetInstance().LogInfo("The participant updated the setting '" + Settings.TRACKER_ENABLED_SETTING + "' to " + userInterruptibilityTrackerEnabled.Value);
+
+            if (userInterruptibilityTrackerEnabled.Value && !IsRunning)
+            {
+                CreateDatabaseTablesIfNotExist();
+                Start();
+            }
+            else if (!userInterruptibilityTrackerEnabled.Value && IsRunning)
+            {
+                Stop();
+            }
+        }
+
         public override void Start()
         {
             if (_timer != null)

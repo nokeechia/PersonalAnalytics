@@ -24,6 +24,7 @@ namespace Retrospection
     {
         private bool defaultPopUpIsEnabled;
         private int defaultPopUpInterval;
+        private bool defaultInterruptibilityPopUpIsEnabled;
         private bool defaultOffice365ApiEnabled;
         private bool defaultUserInputTrackerEnabled;
         private bool defaultOpenRetrospectionInFullScreen;
@@ -62,8 +63,6 @@ namespace Retrospection
             SpPopupInterval.Visibility = Visibility.Collapsed;
             CbUserInputTrackerEnabled.Visibility = Visibility.Collapsed;
             TbUserInputTrackerHint.Visibility = Visibility.Collapsed;
-            PolarEnabled.Visibility = Visibility.Collapsed;
-            PolarHint.Visibility = Visibility.Collapsed;
             FitbitEnabled.Visibility = Visibility.Collapsed;
             FitbitHint.Visibility = Visibility.Collapsed;
             TiFlowLightSettings.Visibility = Visibility.Collapsed;
@@ -74,6 +73,7 @@ namespace Retrospection
             // get defaults
             defaultPopUpIsEnabled = dto.PopUpEnabled.Value;
             defaultPopUpInterval = dto.PopUpInterval.Value;
+            defaultInterruptibilityPopUpIsEnabled = dto.InterruptibilityPopUpEnabled.Value;
             defaultOffice365ApiEnabled = dto.Office365ApiEnabled.Value;
             defaultUserInputTrackerEnabled = dto.UserInputTrackerEnabled.Value;
             defaultOpenRetrospectionInFullScreen = dto.OpenRetrospectionInFullScreen.Value;
@@ -97,6 +97,10 @@ namespace Retrospection
             CbPopUpsEnabled.Unchecked += CbPopUpsEnabled_Checked;
 
             CbPopUpInterval.SelectedValue = defaultPopUpInterval + minutesStr;
+
+            CbInterruptibilityPopUpsEnabled.IsChecked = defaultInterruptibilityPopUpIsEnabled;
+            CbInterruptibilityPopUpsEnabled.Checked += CbChecked_Update;
+            CbInterruptibilityPopUpsEnabled.Unchecked += CbChecked_Update;
 
             CbOfficeApiEnabled.IsChecked = defaultOffice365ApiEnabled;
             CbOfficeApiEnabled.Checked += CbChecked_Update;
@@ -234,6 +238,7 @@ namespace Retrospection
 
                 if ((defaultPopUpIsEnabled != CbPopUpsEnabled.IsChecked.Value) ||
                  (defaultPopUpInterval + minutesStr != CbPopUpInterval.SelectedValue.ToString()) ||
+                 (defaultInterruptibilityPopUpIsEnabled != CbInterruptibilityPopUpsEnabled.IsChecked.Value) ||
                  (defaultOffice365ApiEnabled != CbOfficeApiEnabled.IsChecked.Value) ||
                  (defaultUserInputTrackerEnabled != CbUserInputTrackerEnabled.IsChecked.Value) ||
                  (defaultOpenRetrospectionInFullScreen != CbOpenRetrospectionInFullScreen.IsChecked.Value) ||
@@ -289,6 +294,12 @@ namespace Retrospection
                     dto.PopUpInterval = int.Parse(intervalString, CultureInfo.InvariantCulture);
                 }
                 else { dto.PopUpInterval = null; }
+
+                if ((defaultInterruptibilityPopUpIsEnabled != CbInterruptibilityPopUpsEnabled.IsChecked.Value))
+                {
+                    dto.InterruptibilityPopUpEnabled = CbInterruptibilityPopUpsEnabled.IsChecked.Value;
+                }
+                else { dto.InterruptibilityPopUpEnabled = null; }
 
                 if (defaultOffice365ApiEnabled != CbOfficeApiEnabled.IsChecked.Value)
                 {

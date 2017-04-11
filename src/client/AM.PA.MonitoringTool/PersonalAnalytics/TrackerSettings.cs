@@ -40,6 +40,10 @@ namespace Shared.Data
                 {
                     if (GetUserEfficiencyTracker() != null) GetUserEfficiencyTracker().PopUpIntervalInMins = TimeSpan.FromMinutes(updatedSettings.PopUpInterval.Value);
                 }
+                if (updatedSettings.InterruptibilityPopUpEnabled.HasValue)
+                {
+                    if (GetUserInterruptibilityTracker() != null) GetUserInterruptibilityTracker().ChangeEnabledState(updatedSettings.InterruptibilityPopUpEnabled.Value);
+                }
                 if (updatedSettings.UserInputTrackerEnabled.HasValue)
                 {
                     if (GetUserInputTracker() != null) GetUserInputTracker().UserInputTrackerEnabled = updatedSettings.UserInputTrackerEnabled.Value;
@@ -110,6 +114,9 @@ namespace Shared.Data
                 var userEfficiencyTracker = GetUserEfficiencyTracker();
                 if (userEfficiencyTracker != null) dto.PopUpEnabled = userEfficiencyTracker.PopUpEnabled;
                 if (userEfficiencyTracker != null) dto.PopUpInterval = (int)userEfficiencyTracker.PopUpIntervalInMins.TotalMinutes;
+
+                var userInterruptibilityTracker = GetUserInterruptibilityTracker();
+                if (userInterruptibilityTracker != null) dto.InterruptibilityPopUpEnabled = userInterruptibilityTracker.IsEnabled();
 
                 var userInputTracker = GetUserInputTracker();
                 if (userInputTracker != null) dto.UserInputTrackerEnabled = userInputTracker.UserInputTrackerEnabled;
@@ -246,6 +253,20 @@ namespace Shared.Data
                 var tracker =
                     _trackers.Where(t => t.GetType() == typeof(UserEfficiencyTracker.Daemon))
                         .Cast<UserEfficiencyTracker.Daemon>()
+                        .FirstOrDefault();
+
+                return tracker;
+            }
+            catch { return null; }
+        }
+
+        private UserInterruptibilityTracker.Daemon GetUserInterruptibilityTracker()
+        {
+            try
+            {
+                var tracker =
+                    _trackers.Where(t => t.GetType() == typeof(UserInterruptibilityTracker.Daemon))
+                        .Cast<UserInterruptibilityTracker.Daemon>()
                         .FirstOrDefault();
 
                 return tracker;
