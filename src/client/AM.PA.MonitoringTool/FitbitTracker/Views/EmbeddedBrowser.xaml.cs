@@ -91,8 +91,7 @@ namespace FitbitTracker.Views
         
         private void ShowThanksScreen()
         {
-            PABrowser.Visibility = System.Windows.Visibility.Collapsed;
-            Success.Visibility = System.Windows.Visibility.Visible;
+            FinishEvent?.Invoke();
         }
 
         private void OK_Click(object sender, System.Windows.RoutedEventArgs e)

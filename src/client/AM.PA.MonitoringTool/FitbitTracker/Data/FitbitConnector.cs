@@ -272,8 +272,7 @@ namespace FitbitTracker.Data
                 values["grant_type"] = "authorization_code";
                 values["redirect_uri"] = Settings.REDIRECT_URI;
                 values["code"] = registrationToken;
-                values["expires_in"] = "" + Settings.TOKEN_LIFETIME;
-
+                
                 var response = client.UploadValues(REFRESH_URL, values);
                 var responseString = Encoding.Default.GetString(response);
                 AccessRefreshResponse accessResponse = JsonConvert.DeserializeObject<AccessRefreshResponse>(responseString);
