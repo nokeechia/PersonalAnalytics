@@ -78,7 +78,7 @@ namespace PersonalAnalytics
         /// </summary>
         public void Start()
         {
-#if Pilot_MSR // TODO: temp, until FlowLight is ready to be distributed
+#if Pilot_Andre_June17 // TODO: temp, until FlowLight is ready to be distributed
             FlowLight.Settings.IsEnabledByDefault = false;
 #endif
 
