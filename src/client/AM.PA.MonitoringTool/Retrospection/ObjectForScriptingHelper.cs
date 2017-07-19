@@ -10,6 +10,7 @@ using System;
 using Shared;
 using Shared.Helpers;
 using System.Globalization;
+using System.Linq;
 
 namespace Retrospection
 {
@@ -48,12 +49,24 @@ namespace Retrospection
         public delegate void OnPomodoroTimerCompleted();
         public static event OnPomodoroTimerCompleted PomodoroTimerCompleted;
 
-        public static void RemoveAllPomodoroSubscriptions()
+        public static bool PomodoroStartedEventHandlerAttached(string eventHandler)
         {
-            PomodoroTimerStarted = null;
-            PomodoroTimerPaused = null;
-            PomodoroTimerStopped = null;
-            PomodoroTimerCompleted = null;
+            return PomodoroTimerStarted.GetInvocationList().Any(x => x.Method.Name.Equals(eventHandler));           
+        }
+
+        public static bool PomodoroPausedEventHandlerAttached(string eventHandler)
+        {
+            return PomodoroTimerPaused.GetInvocationList().Any(x => x.Method.Name.Equals(eventHandler));
+        }
+
+        public static bool PomodoroStoppedEventHandlerAttached(string eventHandler)
+        {
+            return PomodoroTimerStopped.GetInvocationList().Any(x => x.Method.Name.Equals(eventHandler));
+        }
+
+        public static bool PomodoroCompletedEventHandlerAttached(string eventHandler)
+        {
+            return PomodoroTimerCompleted.GetInvocationList().Any(x => x.Method.Name.Equals(eventHandler));
         }
 
         public void JS_PomodoroTimerStarted()

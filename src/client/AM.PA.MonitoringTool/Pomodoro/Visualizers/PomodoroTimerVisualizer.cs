@@ -29,14 +29,23 @@ namespace Pomodoro.Visualizers
             _currentIteration = 0;
             _state = PomodoroState.Idle;
 
-            //this is necessary to prevent double event handling (happens otherwise on Retrospection refresh)
-            ObjectForScriptingHelper.RemoveAllPomodoroSubscriptions(); 
-
-            //subscribe for Pomodoro events
-            ObjectForScriptingHelper.PomodoroTimerStarted += PomodoroTimerStarted;
-            ObjectForScriptingHelper.PomodoroTimerPaused += PomodoroTimerPaused;
-            ObjectForScriptingHelper.PomodoroTimerStopped += PomodoroTimerStopped;
-            ObjectForScriptingHelper.PomodoroTimerCompleted += PomodoroTimerCompleted;
+            //subscribe for Pomodoro events if not yet attached
+            if (!ObjectForScriptingHelper.PomodoroStartedEventHandlerAttached("PomodoroTimerStarted"))
+            {
+                ObjectForScriptingHelper.PomodoroTimerStarted += PomodoroTimerStarted;
+            }
+            if (!ObjectForScriptingHelper.PomodoroPausedEventHandlerAttached("PomodoroTimerPaused"))
+            {
+                ObjectForScriptingHelper.PomodoroTimerPaused += PomodoroTimerPaused;
+            }
+            if (!ObjectForScriptingHelper.PomodoroStoppedEventHandlerAttached("PomodoroTimerStopped"))
+            {
+                ObjectForScriptingHelper.PomodoroTimerStopped += PomodoroTimerStopped;
+            }
+            if (!ObjectForScriptingHelper.PomodoroCompletedEventHandlerAttached("PomodoroTimerCompleted"))
+            {
+                ObjectForScriptingHelper.PomodoroTimerCompleted += PomodoroTimerCompleted;
+            }
         }
 
         public override string GetHtml()
