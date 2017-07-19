@@ -36,5 +36,18 @@ namespace Retrospection
             }
             catch { }
         }
+
+        #region Events from Pomodoro Visualizations
+
+        public delegate void OnPomodoroTimerClicked(String test);
+
+        public static event OnPomodoroTimerClicked PomodoroTimerClicked;
+
+        public void JS_PomodoroTimerClicked()
+        {
+            PomodoroTimerClicked?.Invoke("Pomodoro Timer Clicked");
+        }
+
+        #endregion
     }
 }

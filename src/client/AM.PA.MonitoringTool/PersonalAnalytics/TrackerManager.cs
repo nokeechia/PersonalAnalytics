@@ -68,6 +68,7 @@ namespace PersonalAnalytics
             Register(new PolarTracker.Deamon());
             Register(new FitbitTracker.Deamon());
             Register(new FlowTracker.Daemon());
+            Register(new Pomodoro.Visualizers.PomodoroVisualizer());
 
             return _trackers; // return trackers for retrospection
         }
