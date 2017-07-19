@@ -28,7 +28,7 @@ namespace Pomodoro
         //(this is there because the duration can be changed in the settings, to enable calculating the total minutes worked)
         private const string Duration = "duration";
 
-        //paused:<DateTime>,resumed:<DateTime>, ... 
+        //paused,<DateTime>;resumed,<DateTime>; ... 
         //(this is there to visualize pauses in a pomodoro timeline)
         private const string PausedResumed = "pausedResumed";
 
@@ -38,8 +38,8 @@ namespace Pomodoro
         //CREATE Pomodoros
         private static readonly string CREATE_POMODOROS_TABLE = "CREATE TABLE IF NOT EXISTS " + Settings.PomodoroTable + " ("
             + ID + " INTEGER PRIMARY KEY, "
-            + StartTime + " DATETIME, "
-            + EndTime + " DATETIME, "
+            + StartTime + " TEXT, "
+            + EndTime + " TEXT, "
             + Duration + " INTEGER, " 
             + PausedResumed + " TEXT, " 
             + Task + " TEXT);";
@@ -59,7 +59,7 @@ namespace Pomodoro
 
         //SELECT Pomodoro of a certain day
         private static readonly string SELECT_POMODOROS_QUERY = "SELECT * FROM " + Settings.PomodoroTable
-            + "WHERE strftime('" + Settings.DateDayFormat + "', " + EndTime + ") = {0}";
+            + " WHERE date(EndTime) = '{0}'";
             
 
         #region Create
@@ -91,8 +91,8 @@ namespace Pomodoro
         {
             try
             {
-                string query = String.Format(INSERT_POMODORO_QUERY, 
-                    pomodoro.StartTime.ToString(Settings.DateFormat), 
+                string query = String.Format(INSERT_POMODORO_QUERY,
+                    pomodoro.StartTime.ToString(Settings.DateFormat),
                     pomodoro.EndTime.ToString(Settings.DateFormat),
                     pomodoro.Duration.ToString(),
                     GetPausedResumedString(pomodoro.PausedResumed),
@@ -112,7 +112,7 @@ namespace Pomodoro
 
             foreach(Tuple<string, DateTime> pausedResumedEvent in pausedResumedDict)
             {
-                pausedResumedString += pausedResumedEvent.Item1 + ":" + pausedResumedEvent.Item2.ToString(Settings.DateFormat) + ",";
+                pausedResumedString += pausedResumedEvent.Item1 + "," + pausedResumedEvent.Item2.ToString(Settings.DateFormat) + ";";
             }
 
             return pausedResumedString;
@@ -122,12 +122,12 @@ namespace Pomodoro
 
         #region Select
 
-        internal static List<Pomodoro> GetPomodorosOfDay(DateTime date)
+        internal static List<Pomodoro> GetPomodorosOfDay(DateTimeOffset date)
         {
             string query = String.Format(SELECT_POMODOROS_QUERY, date.ToString(Settings.DateDayFormat));
             
             var pomodoros = new List<Pomodoro>();
-            var table = Database.GetInstance().ExecuteReadQuery(SELECT_POMODOROS_QUERY);
+            var table = Database.GetInstance().ExecuteReadQuery(query);
 
             try
             {
@@ -167,11 +167,11 @@ namespace Pomodoro
         {
             List<Tuple<string, DateTime>> pausedResumedTupleList = new List<Tuple<string, DateTime>>();
 
-            foreach (string pausedResumedEventString in pausedResumedString.Split(','))
+            foreach (string pausedResumedEventString in pausedResumedString.Split(';'))
             {
                 if (pausedResumedEventString.Length > 0)
                 {
-                    string[] pausedResumedStrArr = pausedResumedEventString.Split(':');
+                    string[] pausedResumedStrArr = pausedResumedEventString.Split(',');
                     pausedResumedTupleList.Add(new Tuple<string, DateTime> (pausedResumedStrArr[0], DateTime.ParseExact(pausedResumedStrArr[1], Settings.DateFormat, CultureInfo.InvariantCulture)));
                 }
             }
