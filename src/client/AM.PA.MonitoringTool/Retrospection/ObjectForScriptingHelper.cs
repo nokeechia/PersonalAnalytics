@@ -48,6 +48,14 @@ namespace Retrospection
         public delegate void OnPomodoroTimerCompleted();
         public static event OnPomodoroTimerCompleted PomodoroTimerCompleted;
 
+        public static void RemoveAllPomodoroSubscriptions()
+        {
+            PomodoroTimerStarted = null;
+            PomodoroTimerPaused = null;
+            PomodoroTimerStopped = null;
+            PomodoroTimerCompleted = null;
+        }
+
         public void JS_PomodoroTimerStarted()
         {
             PomodoroTimerStarted?.Invoke();
@@ -62,11 +70,11 @@ namespace Retrospection
         {
             PomodoroTimerStopped?.Invoke();
         }
+
         public void JS_PomodoroTimerCompleted()
         {
             PomodoroTimerCompleted?.Invoke();
         }
-
 
         #endregion
     }

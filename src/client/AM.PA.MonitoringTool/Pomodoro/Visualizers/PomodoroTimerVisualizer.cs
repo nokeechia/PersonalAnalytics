@@ -29,6 +29,10 @@ namespace Pomodoro.Visualizers
             _currentIteration = 0;
             _state = PomodoroState.Idle;
 
+            //this is necessary to prevent double event handling (happens otherwise on Retrospection refresh)
+            ObjectForScriptingHelper.RemoveAllPomodoroSubscriptions(); 
+
+            //subscribe for Pomodoro events
             ObjectForScriptingHelper.PomodoroTimerStarted += PomodoroTimerStarted;
             ObjectForScriptingHelper.PomodoroTimerPaused += PomodoroTimerPaused;
             ObjectForScriptingHelper.PomodoroTimerStopped += PomodoroTimerStopped;
@@ -37,8 +41,7 @@ namespace Pomodoro.Visualizers
 
         public override string GetHtml()
         {
-            var script = string.Empty;
-            script =
+            var script =
                 "<script>" +
                     "var timer = new Timer(); " +
                     "$('#countdown').html(timer.getTimeValues().toString()); " +
@@ -79,8 +82,7 @@ namespace Pomodoro.Visualizers
                     "$('#stopButton').hide(); " +
             "</script>";
 
-            var css = string.Empty;
-            css =
+            var css = 
                 "<style>" +
                     ".pomodoroTimerWrapper { " +
                         "text-align: center; padding: 10px;" +
@@ -115,7 +117,6 @@ namespace Pomodoro.Visualizers
                 "</style>";
 
             var html = string.Empty;
-
             html += "<div class='pomodoroTimerWrapper' id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='align: center; font-size: 1.15em;'>";
             html += "<div id='countdown'>25:00</div>";
             html += "<div>";
@@ -135,8 +136,6 @@ namespace Pomodoro.Visualizers
 
         private void PomodoroTimerStarted()
         {
-            Console.WriteLine("Pomodoro Timer started");
-
             if (_state == PomodoroState.Idle)
             {
                 _currentPomodoro = new Pomodoro() { StartTime = DateTime.Now, Duration = Settings.DefaultPomodoroDuration };
@@ -151,8 +150,6 @@ namespace Pomodoro.Visualizers
 
         private void PomodoroTimerPaused()
         {
-            Console.WriteLine("Pomodoro Timer paused");
-
             if (_state == PomodoroState.Pomodoro)
             {
                 _currentPomodoro.PausedResumed.Add(new Tuple<string, DateTime>("Paused", DateTime.Now));
@@ -162,24 +159,18 @@ namespace Pomodoro.Visualizers
 
         private void PomodoroTimerStopped()
         {
-            Console.WriteLine("Pomodoro Timer stopped");
-
             if (_state == PomodoroState.Pomodoro || _state == PomodoroState.Pause)
             {
-                _currentPomodoro = null; //cancel pomodoro
                 _state = PomodoroState.Idle;
             }
         }
 
         private void PomodoroTimerCompleted()
         {
-            Console.WriteLine("Pomodoro Timer completed");
-
             if (_state == PomodoroState.Pomodoro)
             {
                 _currentPomodoro.EndTime = DateTime.Now;
                 DatabaseConnector.AddPomodoro(_currentPomodoro);
-                _currentPomodoro = null;
                 _state = PomodoroState.Idle;
             }
         }
