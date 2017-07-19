@@ -34,8 +34,9 @@ namespace Pomodoro.Visualizers
 
         public override List<IVisualization> GetVisualizationsDay(DateTimeOffset date)
         {
-            var vis = new PomodoroTimerVisualizer(date);
-            return new List<IVisualization> { vis };
+            var timerVis = new PomodoroTimerVisualizer(date);
+            var dailyPomodorosVis = new PomodoroVisualizerForDay(date);
+            return new List<IVisualization> { timerVis, dailyPomodorosVis };
         }
     }
 }
