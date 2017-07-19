@@ -106,7 +106,13 @@ namespace PersonalAnalytics
                 FlowLight.Handler.GetInstance().EnforcingCancelled += TrackerManager_EnforcingCancelled;
                 FlowLight.Handler.GetInstance().FlowLightStarted += TrackerManager_FlowLightStarted;
                 FlowLight.Handler.GetInstance().FLowLightStopped += TrackerManager_FLowLightStopped;
-            }            
+
+                //register Pomodoro Events for FlowLight Connection
+                Retrospection.ObjectForScriptingHelper.PomodoroTimerStarted += SetFlowLightToBusyFromPomodoro;
+                Retrospection.ObjectForScriptingHelper.PomodoroTimerPaused += SetFlowLightToFreeFromPomodoro;
+                Retrospection.ObjectForScriptingHelper.PomodoroTimerStopped += SetFlowLightToFreeFromPomodoro;
+                Retrospection.ObjectForScriptingHelper.PomodoroTimerCompleted += SetFlowLightToFreeFromPomodoro;
+            }
 
             // run database updates for trackers
             PerformDatabaseUpdatesIfNecessary();
@@ -141,6 +147,16 @@ namespace PersonalAnalytics
             Database.GetInstance().CreateTimeZoneTable();
             SaveCurrentTimeZone(null, null);
             SystemEvents.TimeChanged += SaveCurrentTimeZone;
+        }
+
+        private void SetFlowLightToFreeFromPomodoro()
+        {
+            FlowLight.Handler.GetInstance().ResetEnforcingClicked();
+        }
+
+        private void SetFlowLightToBusyFromPomodoro()
+        {
+            FlowLight.Handler.GetInstance().EnforcingClicked(FlowLight.Handler.EnforceStatus.Busy, 1500);
         }
 
         private void TrackerManager_EnforcingCancelled(object sender, EventArgs e)
