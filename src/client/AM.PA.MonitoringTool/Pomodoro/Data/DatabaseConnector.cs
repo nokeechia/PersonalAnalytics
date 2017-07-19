@@ -45,17 +45,17 @@ namespace Pomodoro
             + Task + " TEXT);";
 
         //INSERT Pomodoro
-        private static readonly string INSERT_POMODORO_QUERY = "INSRET INTO " + Settings.PomodoroTable 
-            + "(" + StartTime + ", " 
+        private static readonly string INSERT_POMODORO_QUERY = "INSERT INTO " + Settings.PomodoroTable 
+            + " (" + StartTime + ", " 
             + EndTime + ", " 
             + Duration + ", " 
             + PausedResumed + ", "
             + Task + ") VALUES ("
-            + "{0}, "
-            + "{1}, "
+            + "'{0}', "
+            + "'{1}', "
             + "{2}, "
-            + "{3}, "
-            + "{4});";
+            + "'{3}', "
+            + "'{4}');";
 
         //SELECT Pomodoro of a certain day
         private static readonly string SELECT_POMODOROS_QUERY = "SELECT * FROM " + Settings.PomodoroTable
@@ -106,13 +106,13 @@ namespace Pomodoro
             }
         }
 
-        internal static string GetPausedResumedString(Dictionary<string, DateTime> pausedResumedDict)
+        internal static string GetPausedResumedString(List<Tuple<string, DateTime>> pausedResumedDict)
         {
             string pausedResumedString = string.Empty;
 
-            foreach(KeyValuePair<string, DateTime> pausedResumedEvent in pausedResumedDict)
+            foreach(Tuple<string, DateTime> pausedResumedEvent in pausedResumedDict)
             {
-                pausedResumedString += pausedResumedEvent.Key + ":" + pausedResumedEvent.Value.ToString(Settings.DateFormat) + ",";
+                pausedResumedString += pausedResumedEvent.Item1 + ":" + pausedResumedEvent.Item2.ToString(Settings.DateFormat) + ",";
             }
 
             return pausedResumedString;
@@ -141,7 +141,7 @@ namespace Pomodoro
                             StartTime = DateTime.ParseExact(row[StartTime].ToString(), Settings.DateFormat, CultureInfo.InvariantCulture),
                             EndTime = DateTime.ParseExact(row[EndTime].ToString(), Settings.DateFormat, CultureInfo.InvariantCulture),
                             Duration = int.Parse(row[Duration].ToString()),
-                            PausedResumed = GetPausedResumedDict(row[PausedResumed].ToString()),
+                            PausedResumed = GetPausedResumedTupleList(row[PausedResumed].ToString()),
                             Task = row[Task].ToString()
                         });
                     }
@@ -163,20 +163,20 @@ namespace Pomodoro
             return pomodoros;
         }
 
-        internal static Dictionary<string, DateTime> GetPausedResumedDict(string pausedResumedString)
+        internal static List<Tuple<string, DateTime>> GetPausedResumedTupleList(string pausedResumedString)
         {
-            Dictionary<string, DateTime> pausedResumedDict = new Dictionary<string, DateTime>();
+            List<Tuple<string, DateTime>> pausedResumedTupleList = new List<Tuple<string, DateTime>>();
 
             foreach (string pausedResumedEventString in pausedResumedString.Split(','))
             {
                 if (pausedResumedEventString.Length > 0)
                 {
                     string[] pausedResumedStrArr = pausedResumedEventString.Split(':');
-                    pausedResumedDict.Add(pausedResumedStrArr[0], DateTime.ParseExact(pausedResumedStrArr[1], Settings.DateFormat, CultureInfo.InvariantCulture));
+                    pausedResumedTupleList.Add(new Tuple<string, DateTime> (pausedResumedStrArr[0], DateTime.ParseExact(pausedResumedStrArr[1], Settings.DateFormat, CultureInfo.InvariantCulture)));
                 }
             }
 
-            return pausedResumedDict;
+            return pausedResumedTupleList;
         }
 
         #endregion

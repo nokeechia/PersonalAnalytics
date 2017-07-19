@@ -39,14 +39,34 @@ namespace Retrospection
 
         #region Events from Pomodoro Visualizations
 
-        public delegate void OnPomodoroTimerClicked(String test);
+        public delegate void OnPomodoroTimerStarted();
+        public static event OnPomodoroTimerStarted PomodoroTimerStarted;
+        public delegate void OnPomodoroTimerPaused();
+        public static event OnPomodoroTimerPaused PomodoroTimerPaused;
+        public delegate void OnPomodoroTimerStopped();
+        public static event OnPomodoroTimerStopped PomodoroTimerStopped;
+        public delegate void OnPomodoroTimerCompleted();
+        public static event OnPomodoroTimerCompleted PomodoroTimerCompleted;
 
-        public static event OnPomodoroTimerClicked PomodoroTimerClicked;
-
-        public void JS_PomodoroTimerClicked()
+        public void JS_PomodoroTimerStarted()
         {
-            PomodoroTimerClicked?.Invoke("Pomodoro Timer Clicked");
+            PomodoroTimerStarted?.Invoke();
         }
+
+        public void JS_PomodoroTimerPaused()
+        {
+            PomodoroTimerPaused?.Invoke();
+        }
+
+        public void JS_PomodoroTimerStopped()
+        {
+            PomodoroTimerStopped?.Invoke();
+        }
+        public void JS_PomodoroTimerCompleted()
+        {
+            PomodoroTimerCompleted?.Invoke();
+        }
+
 
         #endregion
     }
