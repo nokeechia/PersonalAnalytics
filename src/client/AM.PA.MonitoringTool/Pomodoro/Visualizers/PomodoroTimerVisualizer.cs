@@ -25,10 +25,21 @@ namespace Pomodoro.Visualizers
 
         public override string GetHtml()
         {
+            var script = string.Empty;
+            script =
+                "<script>" +
+                    "var timer = new Timer(); " +
+                    "timer.start(); " +
+                    "timer.addEventListener('secondsUpdated', function(e) { " +
+                        "$('#countdown').html(timer.getTimeValues().toString()); " +
+                    "}); " +
+            "</script>";
+
             var html = string.Empty;
 
             html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='align: center; font-size: 1.15em;'>";
-            html += "<div class='countdown'></div>";
+            html += "<div id='countdown'>00:00:00</div>";
+            html += script;
             html += "<button type='button' onclick =\"window.external.JS_PomodoroTimerClicked()\" >CLICK ME!</button> ";
             html += "</div>";
 

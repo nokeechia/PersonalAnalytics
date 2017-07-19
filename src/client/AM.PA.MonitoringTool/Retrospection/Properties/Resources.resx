@@ -136,6 +136,9 @@
   <data name="masonry_pkgd_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>masonry_pkgd_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="easytimer_min_js" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>easytimer_min_js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="personalanalytics_html" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>personalanalytics.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

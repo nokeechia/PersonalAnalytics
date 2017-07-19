@@ -132,6 +132,7 @@
     <None Include="Properties\c3_min_js" />
     <None Include="Properties\d3_min_js" />
     <None Include="Properties\d3_timeline_js" />
+    <None Include="Properties\easytimer_min_js" />
     <None Include="Properties\jquery_1_11_3_min_js" />
     <None Include="Properties\masonry_pkgd_min_js" />
     <None Include="Properties\Settings.settings">
