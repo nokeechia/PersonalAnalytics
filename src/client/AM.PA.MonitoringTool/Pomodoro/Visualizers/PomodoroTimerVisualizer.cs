@@ -55,7 +55,14 @@ namespace Pomodoro.Visualizers
                     "var timer = new Timer(); " +
                     "$('#countdown').html(timer.getTimeValues().toString()); " +
                     "timer.addEventListener('secondsUpdated', function(e) { " +
-                        "$('#countdown').html(timer.getTimeValues().toString(['minutes', 'seconds'])); " + 
+                        "$('#countdown').html(timer.getTimeValues().toString(['minutes', 'seconds'])); " +
+                        "if (timer.getTimeValues().minutes <= 5 && !$('#pomodoroTimerWrapper').hasClass('timeCueLast5min')) {" +
+                            "$('#pomodoroTimerWrapper').addClass('timeCueLast5min');" +
+                            "$('#pomodoroTimerWrapper').removeClass('timeCueNormal'); " +
+                        "} " +
+                        "if (timer.getTimeValues().minutes <= 0 && timer.getTimeValues().seconds <= 15) {" +
+                            "$('#pomodoroTimerWrapper').fadeToggle('slow', 'linear');" +
+                        "} " +
                     "}); " +
                     "timer.addEventListener('targetAchieved', function(e) { " +
                         "$('#text').html('You made it! <br\\>Time for a break. =)'); " +
@@ -63,6 +70,7 @@ namespace Pomodoro.Visualizers
                         "$('#startButton').show(); " +
                         "$('#pauseButton').hide(); " +
                         "$('#stopButton').hide(); " +
+                        "$('#pomodoroTimerWrapper').removeClass('timeCueLast5min');" +
                     "}); " +
                     "$('#startButton').click(function() { " +
                         "timer.start({countdown: true, startValues: {seconds: " + 60 * Settings.DefaultPomodoroDuration + "}}); " +
@@ -70,6 +78,11 @@ namespace Pomodoro.Visualizers
                         "$('#startButton').hide(); " +
                         "$('#pauseButton').show(); " +
                         "$('#stopButton').show(); " +
+                        "if (timer.getTimeValues().minutes <= 5) { " +
+                            "$('#pomodoroTimerWrapper').addClass('timeCueLast5min');" +
+                        "} else { " +
+                            "$('#pomodoroTimerWrapper').addClass('timeCueNormal');" +
+                        "} " +
                     "}); " + 
                     "$('#pauseButton').click(function() { " +
                         "timer.pause(); " +
@@ -77,6 +90,8 @@ namespace Pomodoro.Visualizers
                         "$('#startButton').show(); " +
                         "$('#pauseButton').hide(); " +
                         "$('#stopButton').show(); " +
+                        "$('#pomodoroTimerWrapper').removeClass('timeCueNormal');" +
+                        "$('#pomodoroTimerWrapper').removeClass('timeCueLast5min');" +
                     "}); " +
                     "$('#stopButton').click(function() { " +
                         "timer.stop(); " +
@@ -85,6 +100,8 @@ namespace Pomodoro.Visualizers
                         "$('#startButton').show(); " +
                         "$('#pauseButton').hide(); " +
                         "$('#stopButton').hide(); " +
+                        "$('#pomodoroTimerWrapper').removeClass('timeCueNormal');" +
+                        "$('#pomodoroTimerWrapper').removeClass('timeCueLast5min');" +
                     "}); " +
                     "$('#startButton').show(); " +
                     "$('#pauseButton').hide(); " +
@@ -93,13 +110,13 @@ namespace Pomodoro.Visualizers
 
             var css = 
                 "<style>" +
-                    ".pomodoroTimerWrapper { " +
-                        "text-align: center; padding: 10px;" +
+                    "#pomodoroTimerWrapper { " +
+                        "text-align: center; padding: 10px; border-radius:5px;" +
                     "} " +
                     "#countdown { " +
                         "padding: 20px; font-size: 20px; font-weight: bold; " +
                     "} " +
-                    ".pomodoroTimerWrapper .button { " +
+                    "#pomodoroTimerWrapper .button { " +
                         "border-radius: 14px; display: inline-block; cursor: pointer; color: rgb(255, 255, 255);  font-size: 18px; font-weight:bold; margin: 3px; padding: 13px 25px; text-decoration: none; " +
                     "} " +
                     "#startButton:hover { " +
@@ -123,10 +140,17 @@ namespace Pomodoro.Visualizers
                     "#text { " +
                         "padding: 20px; font-size: 20px; " +
                     "} " +
+                    ".timeCueNormal { " +
+                        "background-color: #f3abab; " +
+                    "} " +
+                    ".timeCueLast5min { " +
+                        "background-color: #e1bee7; " +
+                    "} " +
                 "</style>";
 
             var html = string.Empty;
-            html += "<div class='pomodoroTimerWrapper' id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='align: center; font-size: 1.15em;'>";
+            html += "<div id='" + VisHelper.CreateChartHtmlTitle(Title) + "' style='align: center; font-size: 1.15em;'>";
+            html += "<div id='pomodoroTimerWrapper'> ";
             html += "<div id='countdown'>25:00</div>";
             html += "<div>";
             html += "<div id='startButton' class='button' onclick='window.external.JS_PomodoroTimerStarted()'>Start</div>";
@@ -135,6 +159,7 @@ namespace Pomodoro.Visualizers
             html += "</div>";
             html += "<div id='text'/>";
             html += "Let&#39;s get started!";
+            html += "</div>";
             html += "</div>";
             html += css;
             html += script;
