@@ -42,7 +42,7 @@
     <SuiteName>PersonalAnalytics</SuiteName>
     <MinimumRequiredVersion>0.9.5.5</MinimumRequiredVersion>
     <WebPage>index.html</WebPage>
-    <ApplicationRevision>181</ApplicationRevision>
+    <ApplicationRevision>183</ApplicationRevision>
     <ApplicationVersion>0.9.5.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -55,7 +55,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;Pilot_Andre_June17</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
