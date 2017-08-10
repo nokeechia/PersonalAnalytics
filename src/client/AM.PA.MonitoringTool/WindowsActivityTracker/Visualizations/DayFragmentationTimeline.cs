@@ -176,7 +176,7 @@ namespace WindowsActivityTracker.Visualizations
                              ", 'starting_time_formatted': '" + activityEntry.StartTime.ToShortTimeString() + 
                              "', 'ending_time_formatted': '" + activityEntry.EndTime.ToShortTimeString() + 
                              "', 'duration': " + Math.Round(activityEntry.DurationInSeconds / 60.0, 1) + 
-                             ", 'window_titles': '" + ReadableWindowTitles(activityEntry.WindowProcessList) + 
+                             ", 'window_titles': '" + ReadableWindowTitles(activityEntry.WindowProcessList) +
                              "', 'processes': '" + ReadableProcesses(activityEntry.WindowProcessList) + 
                              "', 'color': '" + GetHtmlColorForContextCategory(activityEntry.ActivityCategory) +
                              "', 'activity': '" + GetDescriptionForContextCategory(activityEntry.ActivityCategory) + "'}, ";
@@ -211,7 +211,7 @@ namespace WindowsActivityTracker.Visualizations
             {
                 foreach (var item in windowTitles) str += FormatWindowTitle(item);
             }
-            return str.Trim().TrimEnd(',');
+            return str.Trim().TrimEnd(',').Replace("/", "//").Replace(@"\", @"\\");
         }
 
         private string FormatWindowTitle(string windowTitle)
