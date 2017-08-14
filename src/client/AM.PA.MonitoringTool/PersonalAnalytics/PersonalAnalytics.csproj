@@ -280,13 +280,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FitbitTracker\FitbitTracker.csproj">
-      <Project>{d7752ed4-6dd5-4953-8b5f-bbce24136d1c}</Project>
-      <Name>FitbitTracker</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PolarTracker\PolarTracker.csproj">
-      <Project>{c42cc860-6372-469f-a52b-5d675f2650d6}</Project>
-      <Name>PolarTracker</Name>
+    <ProjectReference Include="..\Shared\Shared.csproj">
+      <Project>{2bbdfa6d-20dd-4a7b-893e-43c388382c9a}</Project>
+      <Name>Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\TimeSpentVisualizer\TimeSpentVisualizer.csproj">
       <Project>{8eba3b95-be0e-4498-9eac-20d417176a00}</Project>
@@ -299,10 +295,6 @@
     <ProjectReference Include="..\Retrospection\Retrospection.csproj">
       <Project>{ebd795e6-e7ad-49e4-a812-d2de29186c49}</Project>
       <Name>Retrospection</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Shared\Shared.csproj">
-      <Project>{2bbdfa6d-20dd-4a7b-893e-43c388382c9a}</Project>
-      <Name>Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\UserEfficiencyTracker\UserEfficiencyTracker.csproj">
       <Project>{30dda905-2068-4985-8372-ffb11c8ad4d9}</Project>

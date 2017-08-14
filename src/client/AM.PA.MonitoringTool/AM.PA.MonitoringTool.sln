@@ -21,13 +21,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSpentVisualizerTests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsOfficeTracker", "MsOfficeTracker\MsOfficeTracker.csproj", "{82ED616D-1508-41C5-A72A-B6A4F7C9B7E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluetoothLowEnergyConnector", "BluetoothLowEnergyConnector\BluetoothLowEnergyConnector.csproj", "{6FF21D77-0B66-409D-B57C-E5338C50849B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolarTracker", "PolarTracker\PolarTracker.csproj", "{C42CC860-6372-469F-A52B-5D675F2650D6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitbitTracker", "FitbitTracker\FitbitTracker.csproj", "{D7752ED4-6DD5-4953-8B5F-BBCE24136D1C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitbitTrackerTests", "FitbitTrackerTests\FitbitTrackerTests.csproj", "{5A61DDD2-DE30-40D8-BFFF-8EF238BA65A5}"
+# Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluetoothLowEnergyConnector", "BluetoothLowEnergyConnector\BluetoothLowEnergyConnector.csproj", "{6FF21D77-0B66-409D-B57C-E5338C50849B}"
+# EndProject
+# Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolarTracker", "PolarTracker\PolarTracker.csproj", "{C42CC860-6372-469F-A52B-5D675F2650D6}"
+# EndProject
+# Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitbitTracker", "FitbitTracker\FitbitTracker.csproj", "{D7752ED4-6DD5-4953-8B5F-BBCE24136D1C}"
+# EndProject
+# Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitbitTrackerTests", "FitbitTrackerTests\FitbitTrackerTests.csproj", "{5A61DDD2-DE30-40D8-BFFF-8EF238BA65A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
